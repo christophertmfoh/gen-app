@@ -495,14 +495,20 @@
         if (styleBlendSettings.enabled && selection.styles.length > 1) {
           // Style blending with weights
           const styleTexts = selection.styles.map((style, index) => {
-            if (index === 0) {
-              return `${style.text}:1.2`;
-            } else {
-              return `${style.text}:0.8`;
+            if (style && style.text) {
+              if (index === 0) {
+                return `${style.text}:1.2`;
+              } else {
+                return `${style.text}:0.8`;
+              }
             }
-          });
-          prompt += `, ${styleTexts.join(', ')}`;
-        } else {
+            return null;
+          }).filter(s => s); // Remove nulls
+          
+          if (styleTexts.length > 0) {
+            prompt += `, ${styleTexts.join(', ')}`;
+          }
+        } else if (selection.styles[0] && selection.styles[0].text) {
           prompt += `, ${selection.styles[0].text}`;
         }
       }
@@ -1163,21 +1169,25 @@
           }
           
           // 2. STYLE LoRA (should match selected style)
-          if (lorasByType.style.length > 0 && selection.styles && selection.styles.length > 0) {
-            // Try to find a style LoRA that matches the chosen style
-            const chosenStyleText = selection.styles[0].text.toLowerCase();
-            const matchingStyleLora = lorasByType.style.find(lora => {
-              const loraName = lora.name.toLowerCase();
-              // Check for style matches
-              if (chosenStyleText.includes('gothic') && (loraName.includes('gothic') || lora.id === 2 || lora.id === 25 || lora.id === 27)) return true;
-              if (chosenStyleText.includes('pop art') && lora.id === 9) return true;
-              if (chosenStyleText.includes('ghibli') && lora.id === 26) return true;
-              if (chosenStyleText.includes('vintage') && (lora.id === 10 || lora.id === 31)) return true;
-              if (chosenStyleText.includes('90s') && lora.id === 1) return true;
-              if (chosenStyleText.includes('cyberpunk') && lora.id === 15) return true;
-              if (chosenStyleText.includes('noir') && lora.id === 16) return true;
-              return false;
-            });
+          if (lorasByType.style.length > 0) {
+            let matchingStyleLora = null;
+            
+            // Try to match style if styles exist
+            if (selection.styles && selection.styles.length > 0 && selection.styles[0] && selection.styles[0].text) {
+              const chosenStyleText = selection.styles[0].text.toLowerCase();
+              matchingStyleLora = lorasByType.style.find(lora => {
+                const loraName = lora.name.toLowerCase();
+                // Check for style matches
+                if (chosenStyleText.includes('gothic') && (loraName.includes('gothic') || lora.id === 2 || lora.id === 25 || lora.id === 27)) return true;
+                if (chosenStyleText.includes('pop art') && lora.id === 9) return true;
+                if (chosenStyleText.includes('ghibli') && lora.id === 26) return true;
+                if (chosenStyleText.includes('vintage') && (lora.id === 10 || lora.id === 31)) return true;
+                if (chosenStyleText.includes('90s') && lora.id === 1) return true;
+                if (chosenStyleText.includes('cyberpunk') && lora.id === 15) return true;
+                if (chosenStyleText.includes('noir') && lora.id === 16) return true;
+                return false;
+              });
+            }
             
             selectedByType.style = matchingStyleLora || 
               (Math.random() < 0.4 ? // 40% chance for random style LoRA
@@ -1190,15 +1200,22 @@
           }
           
           // 4. POSE LoRA (contextual to selected pose, 20% chance)
-          if (lorasByType.pose.length > 0 && Math.random() < 0.2 && selection.pose) {
+          if (lorasByType.pose.length > 0 && Math.random() < 0.2 && selection.pose && selection.pose.text) {
             const poseText = selection.pose.text.toLowerCase();
             let relevantPoseLoRAs = [];
             
-            if (poseText.includes('foot') || poseText.includes('barefoot')) relevantPoseLoRAs.push(lorasByType.pose.find(l => l.id === 3));
-            if (poseText.includes('prone') || poseText.includes('lying')) relevantPoseLoRAs.push(lorasByType.pose.find(l => l.id === 23));
-            if (poseText.includes('kiss')) relevantPoseLoRAs.push(lorasByType.pose.find(l => l.id === 24));
-            
-            relevantPoseLoRAs = relevantPoseLoRAs.filter(l => l); // Remove nulls
+            if (poseText.includes('foot') || poseText.includes('barefoot')) {
+              const footLora = lorasByType.pose.find(l => l.id === 3);
+              if (footLora) relevantPoseLoRAs.push(footLora);
+            }
+            if (poseText.includes('prone') || poseText.includes('lying')) {
+              const proneLora = lorasByType.pose.find(l => l.id === 23);
+              if (proneLora) relevantPoseLoRAs.push(proneLora);
+            }
+            if (poseText.includes('kiss')) {
+              const kissLora = lorasByType.pose.find(l => l.id === 24);
+              if (kissLora) relevantPoseLoRAs.push(kissLora);
+            }
             
             selectedByType.pose = relevantPoseLoRAs.length > 0 
               ? randomChoice(relevantPoseLoRAs)
@@ -1337,9 +1354,15 @@
                 ? contextualChoice(catalog.locations, primaryVibe, isLocationCompatible, rng)
                 : rng ? rng.choice(catalog.locations) : randomChoice(catalog.locations),
               
-          styles: locks.style && currentGeneration.selection?.styles
+          styles: locks.style && currentGeneration.selection?.styles && Array.isArray(currentGeneration.selection.styles)
             ? currentGeneration.selection.styles
             : (() => {
+                // Ensure we have a valid styles catalog
+                if (!catalog.styles || catalog.styles.length === 0) {
+                  console.warn('⚠️ No styles available in catalog');
+                  return [];
+                }
+                
                 const numStyles = toggles.styleBlend 
                   ? (Math.random() < 0.1 ? 3 : 2)  // 10% chance for 3 styles
                   : 1;
@@ -1348,7 +1371,7 @@
                 
                 // Get compatible styles first (only in contextual mode)
                 const compatibleStyles = toggles.contextualMode && primaryVibe 
-                  ? availableStyles.filter(style => isStyleCompatible(style, primaryVibe))
+                  ? availableStyles.filter(style => style && isStyleCompatible(style, primaryVibe))
                   : [];
                 
                 for (let i = 0; i < numStyles && availableStyles.length > 0; i++) {
@@ -1357,33 +1380,51 @@
                   // 70% chance to use compatible style, 30% random (only in contextual mode)
                   if (toggles.contextualMode && compatibleStyles.length > 0 && Math.random() < 0.7) {
                     selectedStyle = rng ? rng.choice(compatibleStyles) : randomChoice(compatibleStyles);
-                    compatibleStyles.splice(compatibleStyles.indexOf(selectedStyle), 1);
+                    const index = compatibleStyles.indexOf(selectedStyle);
+                    if (index > -1) compatibleStyles.splice(index, 1);
                   } else {
                     selectedStyle = rng ? rng.choice(availableStyles) : randomChoice(availableStyles);
                   }
                   
-                  if (selectedStyle) {
+                  if (selectedStyle && selectedStyle.text) {
                     selectedStyles.push(selectedStyle);
-                    availableStyles.splice(availableStyles.indexOf(selectedStyle), 1);
+                    const index = availableStyles.indexOf(selectedStyle);
+                    if (index > -1) availableStyles.splice(index, 1);
                   }
                 }
                 
+                console.log('🎨 Selected styles:', selectedStyles.map(s => s?.text || 'Unknown'));
                 return selectedStyles;
               })()
         };
         
         // Update no-repeat sets
         if (toggles.noRepeat) {
-          if (selection.subject) noRepeatSets.subjects.add(selection.subject.id);
-          if (selection.pose) noRepeatSets.poses.add(selection.pose.id);
-          if (selection.expression) noRepeatSets.expressions.add(selection.expression.id);
-          if (selection.location) noRepeatSets.locations.add(selection.location.id);
-          if (selection.styles) {
-            selection.styles.forEach(style => noRepeatSets.styles.add(style.id));
+          if (selection.subject && selection.subject.id) noRepeatSets.subjects.add(selection.subject.id);
+          if (selection.pose && selection.pose.id) noRepeatSets.poses.add(selection.pose.id);
+          if (selection.expression && selection.expression.id) noRepeatSets.expressions.add(selection.expression.id);
+          if (selection.location && selection.location.id) noRepeatSets.locations.add(selection.location.id);
+          if (selection.styles && Array.isArray(selection.styles)) {
+            selection.styles.forEach(style => {
+              if (style && style.id) noRepeatSets.styles.add(style.id);
+            });
           }
         }
         
         // Debug: Log contextual info
+        // Debug: Validate selection object
+        console.log('🔍 Selection validation:', {
+          hasSubject: !!selection.subject,
+          hasPose: !!selection.pose,
+          hasExpression: !!selection.expression,
+          hasLocation: !!selection.location,
+          hasStyles: !!selection.styles,
+          stylesLength: selection.styles?.length || 0,
+          stylesArray: selection.styles,
+          firstStyle: selection.styles?.[0],
+          firstStyleText: selection.styles?.[0]?.text
+        });
+        
         console.log('🧠 Contextual Generation:', {
           primaryVibe,
           subject: baseSubject?.description?.substring(0, 50) + '...',
@@ -1394,8 +1435,8 @@
             pose: selection.pose?.text?.substring(0, 30) + '...',
             expression: selection.expression?.text?.substring(0, 30) + '...',
             location: selection.location?.text?.substring(0, 30) + '...',
-            styles: selection.styles?.map(s => s.text?.substring(0, 20) + '...'),
-            loras: selectedLoras?.map(l => l.name?.substring(0, 20) + '...')
+            styles: selection.styles?.map(s => s?.text?.substring(0, 20) + '...') || 'No styles',
+            loras: selectedLoras?.map(l => l?.name?.substring(0, 20) + '...') || 'No LoRAs'
           }
         });
         
@@ -2095,7 +2136,8 @@
                           } else if (bucket === 'location') {
                             newSelection.location = rng ? rng.choice(catalog.locations) : randomChoice(catalog.locations);
                           } else if (bucket === 'style') {
-                            newSelection.styles = [rng ? rng.choice(catalog.styles) : randomChoice(catalog.styles)];
+                            const selectedStyle = rng ? rng.choice(catalog.styles) : randomChoice(catalog.styles);
+                            newSelection.styles = selectedStyle ? [selectedStyle] : [];
                           }
                           
                           // Use same smart LoRA selection for re-rolls (simplified version)
