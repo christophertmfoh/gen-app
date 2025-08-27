@@ -724,10 +724,22 @@
       elegant_styles: [6, 7, 10, 17], // stylized soejima, CLAMP ornate, nomura fantasy, neo-traditional
     };
 
+    // Check if LoRA is a character sheet type
+    function isCharacterSheetLoRA(lora) {
+      return lora.id === 14 || lora.id === 19 || // Known character sheet LoRAs
+             lora.name.toLowerCase().includes('character sheet') ||
+             lora.triggers.some(trigger => trigger.toLowerCase().includes('character sheet'));
+    }
+
     // LoRA type classification with contextual awareness
     function getLoRAType(lora) {
       const name = lora.name.toLowerCase();
       const triggers = lora.triggers.join(' ').toLowerCase();
+      
+      // Character sheet LoRAs (special category)
+      if (isCharacterSheetLoRA(lora)) {
+        return 'character_sheet';
+      }
       
       // Character LoRAs - these should override subjects
       if (name.includes('rebecca') || name.includes('cyberpunk') || name.includes('lucy') || 
@@ -769,17 +781,17 @@
       
       // Style LoRAs
       1: ['innocent', 'retro'], // 90s Anime
-      2: ['gothic', 'dark'], // Gothic Retro Anime
+      2: ['gothic', 'dark', 'punk', 'tragic'], // Gothic Retro Anime - now compatible with more dark vibes
       4: ['seductive', 'intense'], // ExpressiveH
       7: ['teasing', 'playful'], // E-Girls
       9: ['vibrant', 'playful'], // Pop Art
       10: ['retro', 'sultry'], // Vintage Cartoon
       15: ['cyberpunk', 'modern'], // Neon City
-      16: ['dark', 'mysterious'], // Noir Detective
-      25: ['gothic', 'dark'], // Gothic Neon
-      26: ['innocent', 'dreamy'], // Ghibli
-      27: ['gothic', 'dark'], // Gothic Details
-      28: ['dark', 'horror'], // Junji Ito
+      16: ['dark', 'mysterious', 'stoic', 'tragic'], // Noir Detective - expanded compatibility
+      25: ['gothic', 'dark', 'punk', 'siren'], // Gothic Neon - more gothic combinations
+      26: ['innocent', 'dreamy', 'ethereal', 'nurturing'], // Ghibli - soft vibes
+      27: ['gothic', 'dark', 'punk', 'tragic'], // Gothic Details - all dark themes
+      28: ['dark', 'horror', 'tragic', 'ethereal'], // Junji Ito - horror + mysterious vibes
       31: ['retro', 'innocent'], // Vintage 1990s
       
       // Pose/Concept LoRAs
@@ -992,7 +1004,8 @@
         styleBlend: false,
         includeStyleExprNegatives: true,
         randomizeSettings: false,
-        lockSeed: false
+        lockSeed: false,
+        allowCharacterSheets: false
       });
       
       const [locks, setLocks] = useState({
@@ -1087,7 +1100,11 @@
         
         // 2. Select contextually aware LoRAs first (they might override subject)
         const selectedLoras = (() => {
-          const availableLoras = [...catalog.loras];
+          // Filter out character sheet LoRAs unless explicitly allowed
+          let availableLoras = catalog.loras.filter(lora => 
+            toggles.allowCharacterSheets || !isCharacterSheetLoRA(lora)
+          );
+          
           const contextualLoras = [];
           
           // If we have a primary vibe and contextual mode is on, try to get compatible LoRAs
@@ -1122,7 +1139,7 @@
             }
           } else {
             // Fallback to old LoRA selection if no vibe context
-            return pickLoRAs(catalog.loras, loraCount, 5, rng);
+            return pickLoRAs(availableLoras, loraCount, 5, rng);
           }
           
           return contextualLoras;
@@ -1243,6 +1260,8 @@
           primaryVibe,
           subject: baseSubject?.description?.substring(0, 50) + '...',
           characterOverride: characterLoras.length > 0 ? characterLoras[0].name : null,
+          availableLoRAs: catalog.loras.length,
+          compatibleLoRAs: primaryVibe ? catalog.loras.filter(lora => isLoRACompatible(lora, primaryVibe)).length : 'N/A',
           selectedElements: {
             pose: selection.pose?.text?.substring(0, 30) + '...',
             expression: selection.expression?.text?.substring(0, 30) + '...',
@@ -1251,6 +1270,20 @@
             loras: selectedLoras?.map(l => l.name?.substring(0, 20) + '...')
           }
         });
+        
+        // Debug: Log gothic LoRA matching specifically
+        if (primaryVibe && (primaryVibe.includes('gothic') || primaryVibe === 'punk' || primaryVibe === 'tragic')) {
+          const gothicLoras = catalog.loras.filter(lora => 
+            loraVibeCompatibility[lora.id]?.some(vibe => 
+              ['gothic', 'dark', 'punk', 'tragic'].includes(vibe)
+            )
+          );
+          console.log('🖤 Gothic/Dark LoRA Matching:', {
+            detectedVibe: primaryVibe,
+            availableGothicLoRAs: gothicLoras.map(l => `${l.id}: ${l.name}`),
+            gothicLoRACount: gothicLoras.length
+          });
+        }
         
         const prompt = assemblePrompt(selection, selectedLoras, { enabled: toggles.styleBlend });
         const negative = assembleNegatives(selection, toggles.includeStyleExprNegatives);
@@ -1437,6 +1470,7 @@
                       const loraType = getLoRAType(lora);
                       const typeColors = {
                         character: 'text-pink-400 bg-pink-500/10 border-pink-500/20',
+                        character_sheet: 'text-orange-400 bg-orange-500/10 border-orange-500/20',
                         style: 'text-blue-400 bg-blue-500/10 border-blue-500/20',
                         lighting: 'text-yellow-400 bg-yellow-500/10 border-yellow-500/20',
                         concept: 'text-green-400 bg-green-500/10 border-green-500/20',
@@ -1450,7 +1484,7 @@
                           <div className="flex justify-between items-start mb-2">
                             <span className="text-xs font-medium text-blue-400">LoRA #{lora.id}</span>
                             <span className={`text-xs font-bold px-2 py-1 rounded border ${typeColor}`}>
-                              {loraType.toUpperCase()}
+                              {loraType === 'character_sheet' ? 'SHEET' : loraType.toUpperCase()}
                             </span>
                           </div>
                           <div className="text-xs font-medium text-slate-200 mb-2">{lora.name}</div>
@@ -1809,11 +1843,17 @@
                         <div className="flex-1">
                           <span className="text-sm text-slate-200 group-hover:text-slate-100 transition-colors">
                             {key === 'contextualMode' ? '🧠 Smart Contextual Generation' : 
+                             key === 'allowCharacterSheets' ? '📋 Allow Character Sheet LoRAs' :
                              key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}
                           </span>
                           {key === 'contextualMode' && (
                             <div className="text-xs text-slate-500 mt-1">
                               AI picks compatible poses, expressions, locations & styles based on subject vibe
+                            </div>
+                          )}
+                          {key === 'allowCharacterSheets' && (
+                            <div className="text-xs text-slate-500 mt-1">
+                              Include character sheet LoRAs that generate multiple views/reference sheets
                             </div>
                           )}
                         </div>
@@ -1932,7 +1972,11 @@
                             newSelection.styles = [rng ? rng.choice(catalog.styles) : randomChoice(catalog.styles)];
                           }
                           
-                          const selectedLoras = pickLoRAs(catalog.loras, loraCount, 5, rng);
+                          // Filter out character sheet LoRAs unless explicitly allowed
+                          const filteredLoras = catalog.loras.filter(lora => 
+                            toggles.allowCharacterSheets || !isCharacterSheetLoRA(lora)
+                          );
+                          const selectedLoras = pickLoRAs(filteredLoras, loraCount, 5, rng);
                           const prompt = assemblePrompt(newSelection, selectedLoras, { enabled: toggles.styleBlend });
                           const negative = assembleNegatives(newSelection, toggles.includeStyleExprNegatives);
                           const settings = formatSettings(toggles.randomizeSettings, toggles.lockSeed ? seedValue : null);
