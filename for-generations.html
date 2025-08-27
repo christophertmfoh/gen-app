@@ -445,6 +445,19 @@
 
     // Prompt assembly following exact rules
     function assemblePrompt(selection, loras, styleBlendSettings) {
+      console.log('🔧 assemblePrompt called with:', {
+        selectionExists: !!selection,
+        selectionType: typeof selection,
+        lorasCount: loras?.length || 0,
+        styleBlendEnabled: styleBlendSettings?.enabled
+      });
+      
+      // Validate inputs
+      if (!selection) {
+        console.error('❌ assemblePrompt: selection is null/undefined');
+        throw new Error('Selection object is required for assemblePrompt');
+      }
+      
       const baseTags = "1girl, score_9, score_8_up, score_7_up, score_6_up, score_5_up, score_4_up, source_anime, rating_explicit, (1girl:1.3)";
       
       let prompt = baseTags;
@@ -490,12 +503,20 @@
         prompt += `, in ${selection.location.text}`;
       }
       
-      // Style(s)
-      if (selection.styles && selection.styles.length > 0) {
-        if (styleBlendSettings.enabled && selection.styles.length > 1) {
+      // Style(s) - with comprehensive validation
+      console.log('🎨 Processing styles:', {
+        hasStyles: !!selection.styles,
+        stylesType: typeof selection.styles,
+        isArray: Array.isArray(selection.styles),
+        stylesLength: selection.styles?.length,
+        firstStyle: selection.styles?.[0]
+      });
+      
+      if (selection.styles && Array.isArray(selection.styles) && selection.styles.length > 0) {
+        if (styleBlendSettings?.enabled && selection.styles.length > 1) {
           // Style blending with weights
           const styleTexts = selection.styles.map((style, index) => {
-            if (style && style.text) {
+            if (style && typeof style === 'object' && style.text) {
               if (index === 0) {
                 return `${style.text}:1.2`;
               } else {
@@ -508,9 +529,11 @@
           if (styleTexts.length > 0) {
             prompt += `, ${styleTexts.join(', ')}`;
           }
-        } else if (selection.styles[0] && selection.styles[0].text) {
+        } else if (selection.styles[0] && typeof selection.styles[0] === 'object' && selection.styles[0].text) {
           prompt += `, ${selection.styles[0].text}`;
         }
+      } else {
+        console.warn('⚠️ No valid styles found in selection');
       }
       
       // Add ONLY CONCEPT INTEGRATION to prompt (NO trigger words)
@@ -1306,10 +1329,17 @@
         }
         
         // 4. Now select other elements contextually based on final vibe
-        const selection = {
-          subject: finalSubject,
-          
-          pose: locks.pose && currentGeneration.selection?.pose
+        console.log('🏗️ Building selection object...');
+        
+        let selectedSubject = finalSubject;
+        let selectedPose = null;
+        let selectedExpression = null;
+        let selectedLocation = null;
+        let selectedStyles = [];
+        
+        // Pose selection
+        try {
+          selectedPose = locks.pose && currentGeneration.selection?.pose
             ? currentGeneration.selection.pose  
             : toggles.noRepeat
               ? (() => {
@@ -1322,9 +1352,15 @@
                 })()
               : toggles.contextualMode 
                 ? contextualChoice(catalog.poses, primaryVibe, isPoseCompatible, rng)
-                : rng ? rng.choice(catalog.poses) : randomChoice(catalog.poses),
+                : rng ? rng.choice(catalog.poses) : randomChoice(catalog.poses);
+        } catch (e) {
+          console.error('❌ Error selecting pose:', e);
+          selectedPose = randomChoice(catalog.poses);
+        }
               
-          expression: locks.expression && currentGeneration.selection?.expression
+        // Expression selection  
+        try {
+          selectedExpression = locks.expression && currentGeneration.selection?.expression
             ? currentGeneration.selection.expression
             : toggles.noRepeat
               ? (() => {
@@ -1337,9 +1373,15 @@
                 })()
               : toggles.contextualMode 
                 ? contextualChoice(catalog.expressions, primaryVibe, isExpressionCompatible, rng)
-                : rng ? rng.choice(catalog.expressions) : randomChoice(catalog.expressions),
+                : rng ? rng.choice(catalog.expressions) : randomChoice(catalog.expressions);
+        } catch (e) {
+          console.error('❌ Error selecting expression:', e);
+          selectedExpression = randomChoice(catalog.expressions);
+        }
               
-          location: locks.location && currentGeneration.selection?.location
+        // Location selection
+        try {
+          selectedLocation = locks.location && currentGeneration.selection?.location
             ? currentGeneration.selection.location
             : toggles.noRepeat
               ? (() => {
@@ -1352,9 +1394,15 @@
                 })()
               : toggles.contextualMode 
                 ? contextualChoice(catalog.locations, primaryVibe, isLocationCompatible, rng)
-                : rng ? rng.choice(catalog.locations) : randomChoice(catalog.locations),
+                : rng ? rng.choice(catalog.locations) : randomChoice(catalog.locations);
+        } catch (e) {
+          console.error('❌ Error selecting location:', e);
+          selectedLocation = randomChoice(catalog.locations);
+        }
               
-          styles: locks.style && currentGeneration.selection?.styles && Array.isArray(currentGeneration.selection.styles)
+        // Styles selection
+        try {
+          selectedStyles = locks.style && currentGeneration.selection?.styles && Array.isArray(currentGeneration.selection.styles)
             ? currentGeneration.selection.styles
             : (() => {
                 // Ensure we have a valid styles catalog
@@ -1395,8 +1443,29 @@
                 
                 console.log('🎨 Selected styles:', selectedStyles.map(s => s?.text || 'Unknown'));
                 return selectedStyles;
-              })()
+              })();
+        } catch (e) {
+          console.error('❌ Error selecting styles:', e);
+          selectedStyles = [randomChoice(catalog.styles)].filter(s => s);
+        }
+        
+        // Build selection object safely
+        const selection = {
+          subject: selectedSubject || null,
+          pose: selectedPose || null,
+          expression: selectedExpression || null,
+          location: selectedLocation || null,
+          styles: Array.isArray(selectedStyles) ? selectedStyles : []
         };
+        
+        console.log('✅ Selection object built successfully:', {
+          hasSubject: !!selection.subject,
+          hasPose: !!selection.pose,
+          hasExpression: !!selection.expression,
+          hasLocation: !!selection.location,
+          hasStyles: !!selection.styles,
+          stylesCount: selection.styles.length
+        });
         
         // Update no-repeat sets
         if (toggles.noRepeat) {
@@ -1412,18 +1481,27 @@
         }
         
         // Debug: Log contextual info
-        // Debug: Validate selection object
-        console.log('🔍 Selection validation:', {
-          hasSubject: !!selection.subject,
-          hasPose: !!selection.pose,
-          hasExpression: !!selection.expression,
-          hasLocation: !!selection.location,
-          hasStyles: !!selection.styles,
-          stylesLength: selection.styles?.length || 0,
-          stylesArray: selection.styles,
-          firstStyle: selection.styles?.[0],
-          firstStyleText: selection.styles?.[0]?.text
-        });
+        // Debug: Validate selection object thoroughly
+        console.log('🔍 Full selection object:', selection);
+        console.log('🔍 Selection type:', typeof selection);
+        console.log('🔍 Selection is null?', selection === null);
+        console.log('🔍 Selection is undefined?', selection === undefined);
+        
+        if (selection) {
+          console.log('🔍 Selection validation:', {
+            hasSubject: !!selection.subject,
+            hasPose: !!selection.pose,
+            hasExpression: !!selection.expression,
+            hasLocation: !!selection.location,
+            hasStyles: !!selection.styles,
+            stylesLength: selection.styles?.length || 0,
+            stylesArray: selection.styles,
+            firstStyle: selection.styles?.[0],
+            firstStyleText: selection.styles?.[0]?.text
+          });
+        } else {
+          console.error('❌ Selection object is null or undefined!');
+        }
         
         console.log('🧠 Contextual Generation:', {
           primaryVibe,
@@ -1453,6 +1531,18 @@
             gothicLoRACount: gothicLoras.length
           });
         }
+        
+        // Validate selection before assembling prompt
+        if (!selection) {
+          throw new Error('Selection object is null or undefined');
+        }
+        
+        console.log('🛠️ About to assemble prompt with:', {
+          selectionType: typeof selection,
+          hasSelection: !!selection,
+          lorasCount: selectedLoras?.length || 0,
+          styleBlendEnabled: toggles.styleBlend
+        });
         
         const prompt = assemblePrompt(selection, selectedLoras, { enabled: toggles.styleBlend });
         const negative = assembleNegatives(selection, toggles.includeStyleExprNegatives);
