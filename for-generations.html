@@ -1,0 +1,2426 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>For Generations — Prompt Generator</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: {
+              50: '#f0f9ff',
+              100: '#e0f2fe', 
+              500: '#0ea5e9',
+              600: '#0284c7',
+              700: '#0369a1'
+            },
+            surface: {
+              50: '#f8fafc',
+              100: '#f1f5f9',
+              200: '#e2e8f0',
+              700: '#334155',
+              800: '#1e293b',
+              850: '#1a2332',
+              900: '#0f172a',
+              950: '#020617'
+            }
+          },
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif']
+          },
+          boxShadow: {
+            'soft': '0 2px 8px 0 rgba(0, 0, 0, 0.12)',
+            'medium': '0 4px 16px 0 rgba(0, 0, 0, 0.16)',
+            'glass': '0 8px 32px 0 rgba(0, 0, 0, 0.37)'
+          },
+          backdropBlur: {
+            'xs': '2px',
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    /* Custom slider styles */
+    .slider-thumb::-webkit-slider-thumb {
+      appearance: none;
+      height: 20px;
+      width: 20px;
+      border-radius: 50%;
+      background: #0ea5e9;
+      cursor: pointer;
+      border: 2px solid #1e293b;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+      transition: all 0.2s ease;
+    }
+    .slider-thumb::-webkit-slider-thumb:hover {
+      background: #0284c7;
+      transform: scale(1.1);
+    }
+    .slider-thumb::-moz-range-thumb {
+      height: 20px;
+      width: 20px;
+      border-radius: 50%;
+      background: #0ea5e9;
+      cursor: pointer;
+      border: 2px solid #1e293b;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+    }
+    
+    /* Custom scrollbar styles */
+    .scrollbar-thin::-webkit-scrollbar {
+      width: 6px;
+    }
+    .scrollbar-track-surface-800::-webkit-scrollbar-track {
+      background: #1e293b;
+      border-radius: 3px;
+    }
+    .scrollbar-thumb-surface-600::-webkit-scrollbar-thumb {
+      background: #475569;
+      border-radius: 3px;
+    }
+    .scrollbar-thumb-surface-600::-webkit-scrollbar-thumb:hover {
+      background: #64748b;
+    }
+    
+    /* Focus ring improvements */
+    .focus\:ring-primary-500\/50:focus {
+      --tw-ring-color: rgb(14 165 233 / 0.5);
+    }
+    .focus\:ring-primary-500\/20:focus {
+      --tw-ring-color: rgb(14 165 233 / 0.2);
+    }
+  </style>
+</head>
+<body class="bg-gradient-to-br from-surface-950 via-surface-900 to-surface-950 text-slate-100 min-h-screen font-sans antialiased">
+  <div id="root"></div>
+
+  <!-- React & Babel -->
+  <script src="https://cdn.jsdelivr.net/npm/react@18.3.1/umd/react.production.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/react-dom@18.3.1/umd/react-dom.production.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@babel/standalone/babel.min.js"></script>
+
+  <script type="text/babel">
+    const { useState, useEffect, useMemo, useCallback } = React;
+
+    // Embedded packet data (verbatim from TXT)
+    const packetData = {
+      subjects: [
+        { id: 1, description: "Nude adult woman with long straight crimson hair down to hips, curvy hourglass figure (bust 36C, waist 26\", hips 38\"), golden tanned skin, sharp cheekbones, sultry half-lidded eyes with a seductive smirk, full perky breasts with pink erect nipples, narrow waist flaring to wide hips, trimmed pubic hair above prominent labia and clitoris, firm round buttocks, long toned legs with smooth thighs to delicate feet, slutty vibe like a confident femme fatale." },
+        { id: 2, description: "Nude adult woman with short wavy platinum blonde hair, skinny petite build (bust 32A, waist 24\", hips 34\"), pale skin with faint freckles, round innocent eyes, shy blushing cheeks with parted lips, small pert breasts with soft areolas, flat stomach, narrow hips, smooth shaved pubic area revealing vulva details, tight small buttocks, slender legs to petite toes, innocent vibe like a curious schoolgirl." },
+        { id: 3, description: "Nude adult woman with shoulder-length emerald green hair in loose curls, voluptuous curvy body (bust 38D, waist 28\", hips 40\"), sun-kissed skin, high cheekbones, preppy arched brows with a poised smile, large heavy breasts with dark nipples, soft belly with navel piercing, wide childbearing hips, bushy pubic mound over labia, plump buttocks, thick thighs to sturdy feet, preppy vibe like a chic socialite." },
+        { id: 4, description: "Nude adult woman with long black hair in a single braid, athletic toned physique (bust 34B, waist 25\", hips 36\"), olive skin, fierce narrowed eyes, mischievous grin, medium firm breasts with puffy nipples, ripped abs, powerful hips, neat pubic strip over engorged clitoris, sculpted buttocks, strong legs with defined calves to broad feet, dominant vibe like a sporty competitor." },
+        { id: 5, description: "Nude adult woman with curly auburn hair in a high bun, pear-shaped curvy body (bust 34B, waist 27\", hips 42\"), warm medium skin, soft doe eyes, gentle smile with dimples, modest breasts with rosy nipples, slight belly pooch, exaggerated hips, detailed vulva with visible arousal, large soft buttocks, shapely legs to dainty ankles, nurturing vibe like a caring artist." },
+        { id: 6, description: "Nude adult woman with sleek silver hair to waist, skinny slender frame (bust 32A, waist 23\", hips 33\"), dark ebony skin, elegant almond eyes, serene closed-lip expression, flat chest with tiny nipples, lithe waist, subtle hips, bare pubic bone with minimalistic genitalia, flat buttocks, long slim legs to pointed feet, ethereal vibe like a mystical dancer." },
+        { id: 7, description: "Nude adult woman with spiky pink hair in a mohawk, busty athletic build (bust 36D, waist 26\", hips 37\"), freckled fair skin, bold makeup eyes, rebellious sneer, oversized breasts with veiny undersides, chiseled abs, flared hips, wild pubic hair over swollen labia, perky tattooed buttocks, muscular thighs to sturdy feet, punk vibe like a defiant rockstar." },
+        { id: 8, description: "Nude adult woman with long lavender hair in waves, voluptuous full-figured body (bust 38DD, waist 30\", hips 44\"), golden brown skin, plump cheeks, innocent wide eyes with pout, ample sagging breasts with stretch marks, rounded belly, broad hips, thick pubic bush, dimpled buttocks, chubby legs to rounded toes, cozy vibe like a plush romantic." },
+        { id: 9, description: "Nude adult woman with asymmetrical blue hair (short one side, long other), lean skinny build (bust 32B, waist 24\", hips 34\"), porcelain skin, intense gaze, sly wink, small conical breasts with pierced nipples, flat toned stomach, narrow hips, smooth hairless pubic area, tight buttocks, sinewy legs to narrow feet, cunning vibe like a sly trickster." },
+        { id: 10, description: "Nude adult woman with coiled orange hair in an afro, curvy plus-size frame (bust 40D, waist 32\", hips 46\"), deep chocolate skin, full lips, joyful laughing eyes, massive pendulous breasts with wide areolas, layered belly rolls, massive hips, dense pubic curls, enormous jiggling buttocks, thick legs to wide feet, vibrant vibe like a lively performer." },
+        { id: 11, description: "Nude adult woman with sleek brown hair in a low ponytail, athletic inverted triangle body (bust 34C, waist 25\", hips 35\"), warm beige skin, strong jaw, determined eyes with firm expression, athletic breasts with small nipples, v-shaped torso, slim hips, minimal pubic trim, firm angular buttocks, strong legs to athletic feet, sporty vibe like a driven gymnast." },
+        { id: 12, description: "Nude adult woman with frizzy teal hair in pigtails, extreme hourglass body (bust 36C, waist 24\", hips 40\"), ivory skin with rosy flushes, cute button nose, playful tongue-out expression, balloon-like breasts with puffy nipples, dramatic waist, exaggerated hips, shaved pubic mound with arousal drips, heart-shaped buttocks, curvy legs to cute toes, idol vibe like a teasing popstar." },
+        { id: 13, description: "Nude adult woman with straight golden hair to mid-back, curvy apple-shaped body (bust 38C, waist 30\", hips 38\"), sun-kissed skin, elegant features, regal gaze with slight smile, heavy upper breasts with downward nipples, fuller upper belly, moderate hips, light pubic fuzz, rounded buttocks, balanced legs to elegant feet, regal vibe like a noble beauty." },
+        { id: 14, description: "Nude adult woman with choppy indigo hair, muscular athletic build (bust 34B, waist 26\", hips 36\"), caramel skin, bold brows, fierce snarl, compact firm breasts with dark nipples, stocky torso with abs, sturdy hips, bushy pubic area, solid buttocks, strong legs to broad feet, fierce vibe like a determined fighter." },
+        { id: 15, description: "Nude adult woman with layered violet hair in a shag, skinny banana-shaped body (bust 32A, waist 24\", hips 34\"), light olive skin, soft eyes, dreamy distant look, modest sloping breasts with subtle nipples, smooth torso, subtle hips, smooth pubic transition, flat toned buttocks, straight legs to slender feet, poetic vibe like a wistful dreamer." },
+        { id: 16, description: "Nude adult woman with braided white hair in a crown, tall athletic build (bust 36B, waist 27\", hips 38\"), bronze skin, chiseled features, intense stare, large sculpted breasts with erect nipples, powerful core, wide hips, trimmed pubic arrow, massive firm buttocks, long striding legs to large feet, goddess vibe like a commanding warrior." },
+        { id: 17, description: "Nude adult woman with slicked-back red hair, rectangular athletic body (bust 34B, waist 26\", hips 36\"), cool undertone skin, sharp nose, neutral hooded eyes, medium balanced breasts with average nipples, straight waist, even hips, neat pubic strip, rectangular buttocks, uniform legs to standard feet, stoic vibe like a calm guardian." },
+        { id: 18, description: "Nude adult woman with voluminous cyan hair in curls, curvy bottom-heavy build (bust 34B, waist 28\", hips 42\"), honey skin, heart-shaped face, flirtatious wink, small perky breasts with tiny nipples, slim waist, explosive hips, wild pubic curls, oversized plush buttocks, dramatic thigh curves to tapered toes, siren vibe like a seductive temptress." },
+        { id: 19, description: "Nude adult woman with straight ebony hair to ankles, skinny willowy build (bust 32A, waist 23\", hips 33\"), ghostly pale skin, delicate features, melancholic sad smile, barely-there breasts with faint nipples, rib-visible torso, bony hips, sparse pubic hair, bony buttocks, spindly legs to fragile feet, tragic vibe like a sorrowful heroine." },
+        { id: 20, description: "Nude adult woman with spiked magenta hair, hybrid curvy-muscular build (bust 36C, waist 27\", hips 39\"), mocha skin, exotic eyes, ecstatic open-mouthed expression, hybrid firm-full breasts with textured nipples, blended abs and curves, balanced hips, detailed pubic design, toned plump buttocks, hybrid shapely legs to dynamic feet, passionate vibe like a fiery performer." },
+        { id: 21, description: "Nude adult woman with long, sleek navy-blue hair in a high ponytail, skinny athletic build (bust 32B, waist 24\", hips 35\"), caramel skin with a warm glow, angular face with bold brows and a haughty smirk, small firm breasts with dark nipples, toned abs, narrow hips, smooth pubic area revealing detailed vulva, tight angular buttocks, lean legs with defined calves to slender feet, arrogant vibe like a confident runway model strutting her form." },
+        { id: 22, description: "Nude adult woman with shoulder-length rose-pink hair in soft waves, curvy voluptuous build (bust 38D, waist 28\", hips 42\"), ivory skin with rosy undertones, heart-shaped face with wide innocent eyes and a gentle pout, large soft breasts with pink areolas, slight belly curve, wide swaying hips, bushy pubic mound over prominent labia, plump jiggling buttocks, thick thighs to rounded feet, shy vibe like a reserved romantic unveiling herself." },
+        { id: 23, description: "Nude adult woman with choppy lime-green hair in a pixie cut, skinny petite frame (bust 32A, waist 23\", hips 33\"), pale porcelain skin, elfin features with a cheeky grin and freckled cheeks, flat chest with tiny budding nipples, flat stomach, subtle hips, minimalistic pubic slit, small perky buttocks, slender androgynous legs to petite toes, playful vibe like a mischievous sprite teasing with her pose." },
+        { id: 24, description: "Nude adult woman with waist-length golden-blonde hair in loose curls, athletic hourglass build (bust 34C, waist 26\", hips 38\"), sun-kissed tan skin, sharp cheekbones with a sultry half-lidded gaze, full perky breasts with erect nipples, narrow waist flaring to hips, trimmed pubic strip over engorged clitoris, firm round buttocks, toned legs to delicate feet, seductive vibe like a femme fatale in control." },
+        { id: 25, description: "Nude adult woman with long, straight raven-black hair, curvy pear-shaped body (bust 34B, waist 27\", hips 41\"), warm olive skin, soft round face with dreamy eyes and a subtle smile, modest breasts with rosy nipples, gentle belly pooch, exaggerated hips, detailed vulva with arousal cues, large soft buttocks with dimples, shapely legs to dainty ankles, nurturing vibe like a warm artist embracing her curves." },
+        { id: 26, description: "Nude adult woman with spiky coral hair in a short crop, busty athletic build (bust 36C, waist 26\", hips 37\"), freckled fair skin, bold makeup with fierce narrowed eyes and a rebellious sneer, oversized breasts with veiny undersides, chiseled abs, flared hips, wild pubic hair over swollen labia, perky tattooed buttocks, muscular thighs to sturdy feet, punk vibe like a defiant street artist." },
+        { id: 27, description: "Nude adult woman with wavy auburn hair to mid-back, voluptuous full-figured build (bust 38DD, waist 30\", hips 43\"), golden brown skin, plump cheeks with innocent wide eyes and a pout, ample sagging breasts with stretch marks, rounded belly, broad hips, thick pubic bush, dimpled buttocks, chubby legs to rounded toes, cozy vibe like a plush romantic lounging nude." },
+        { id: 28, description: "Nude adult woman with long silver-grey hair in a loose braid, skinny slender frame (bust 32A, waist 23\", hips 34\"), ebony skin with a glossy sheen, elegant almond eyes with a serene closed-lip expression, flat chest with tiny nipples, lithe waist, subtle hips, bare pubic bone with minimalistic genitalia, flat buttocks, long slim legs to pointed feet, ethereal vibe like a mystical dancer in repose." },
+        { id: 29, description: "Nude adult woman with asymmetrical teal hair (long one side, shaved other), lean skinny build (bust 32B, waist 24\", hips 34\"), porcelain skin with faint veins, intense gaze with a sly wink, small conical breasts with pierced nipples, flat toned stomach, narrow hips, smooth hairless pubic area, tight buttocks, sinewy legs to narrow feet, cunning vibe like a clever rogue posing provocatively." },
+        { id: 30, description: "Nude adult woman with coiled amber hair in a tight bun, curvy plus-size frame (bust 40D, waist 31\", hips 45\"), deep mocha skin, full lips with joyful laughing eyes, massive pendulous breasts with wide areolas, layered belly rolls, massive hips, dense pubic curls, enormous jiggling buttocks, thick legs to wide feet, vibrant vibe like a lively performer celebrating her form." },
+        { id: 31, description: "Nude adult woman with sleek chestnut-brown hair in a low bun, athletic inverted triangle body (bust 34B, waist 25\", hips 35\"), warm beige skin, strong jaw with determined eyes and a firm expression, athletic breasts with small nipples, v-shaped torso, slim hips, minimal pubic trim, firm angular buttocks, strong legs to athletic feet, sporty vibe like a driven competitor at rest." },
+        { id: 32, description: "Nude adult woman with frizzy magenta hair in twin tails, extreme hourglass build (bust 36C, waist 24\", hips 40\"), ivory skin with rosy flushes, cute button nose with a playful tongue-out expression, balloon-like breasts with puffy nipples, dramatic waist, exaggerated hips, shaved pubic mound with arousal drips, heart-shaped buttocks, curvy legs to cute toes, idol vibe like a teasing anime star." },
+        { id: 33, description: "Nude adult woman with straight platinum hair to mid-back, curvy apple-shaped body (bust 38C, waist 29\", hips 38\"), sun-kissed skin, elegant features with a regal gaze and slight smile, heavy upper breasts with downward nipples, fuller upper belly, moderate hips, light pubic fuzz, rounded buttocks, balanced legs to elegant feet, regal vibe like a noble beauty commanding attention." },
+        { id: 34, description: "Nude adult woman with choppy violet hair in a bob, muscular athletic build (bust 34B, waist 26\", hips 36\"), caramel skin, bold brows with a fierce snarl, compact firm breasts with dark nipples, stocky torso with abs, sturdy hips, bushy pubic area, solid buttocks, strong legs to broad feet, fierce vibe like a determined fighter ready to strike." },
+        { id: 35, description: "Nude adult woman with layered indigo hair in a shag, skinny banana-shaped body (bust 32A, waist 24\", hips 34\"), light olive skin, soft eyes with a dreamy distant look, modest sloping breasts with subtle nipples, smooth torso, subtle hips, smooth pubic transition, flat toned buttocks, straight legs to slender feet, poetic vibe like a wistful dreamer in contemplation." },
+        { id: 36, description: "Nude adult woman with braided white-blonde hair in a crown, tall athletic build (bust 36B, waist 27\", hips 38\"), bronze skin, chiseled features with an intense stare, large sculpted breasts with erect nipples, powerful core, wide hips, trimmed pubic arrow, massive firm buttocks, long striding legs to large feet, goddess vibe like a commanding warrior." },
+        { id: 37, description: "Nude adult woman with slicked-back burgundy hair, rectangular athletic body (bust 34B, waist 26\", hips 36\"), cool undertone skin, sharp nose with neutral hooded eyes, medium balanced breasts with average nipples, straight waist, even hips, neat pubic strip, rectangular buttocks, uniform legs to standard feet, stoic vibe like a calm guardian." },
+        { id: 38, description: "Nude adult woman with voluminous cyan hair in curls, curvy bottom-heavy build (bust 34B, waist 28\", hips 42\"), honey skin, heart-shaped face with a flirtatious wink, small perky breasts with tiny nipples, slim waist, explosive hips, wild pubic curls, oversized plush buttocks, dramatic thigh curves to tapered toes, siren vibe like a seductive temptress." },
+        { id: 39, description: "Nude adult woman with straight onyx hair to ankles, skinny willowy build (bust 32A, waist 23\", hips 33\"), ghostly pale skin, delicate features with a melancholic sad smile, barely-there breasts with faint nipples, rib-visible torso, bony hips, sparse pubic hair, bony buttocks, spindly legs to fragile feet, tragic vibe like a sorrowful heroine." },
+        { id: 40, description: "Nude adult woman with spiked tangerine hair, hybrid curvy-muscular build (bust 36C, waist 27\", hips 39\"), mocha skin with a sheen, exotic eyes with an ecstatic open-mouthed expression, hybrid firm-full breasts with textured nipples, blended abs and curves, balanced hips, detailed pubic design, toned plump buttocks, hybrid shapely legs to dynamic feet, passionate vibe like a fiery performer in climax." }
+      ],
+      poses: [
+        { id: 1, text: "Reverse Cowboy Grind: Straddling an imaginary surface, leaning forward with arched back", angle: "low-angle view from behind emphasizes exposed rear and grinding motion" },
+        { id: 2, text: "Face-to-Face Embrace: Kneeling with arms wrapped around herself, legs bent", angle: "close-up frontal angle highlights intertwined limbs and intense gaze" },
+        { id: 3, text: "Over-the-Shoulder Lift: Standing with one leg raised high, arms balancing", angle: "side profile angle focuses on lifted leg's curves and exposed groin" },
+        { id: 4, text: "Bent-Back Arch: Lying back with spine dramatically arched, legs spread wide", angle: "top-down view showcases the arch and open hips" },
+        { id: 5, text: "Sideways Scissor Lock: On her side, legs scissored and twisted", angle: "side angle captures hip alignment and skin contours" },
+        { id: 6, text: "Standing Wall Press: Pinned against an imaginary wall, one leg raised", angle: "frontal view on pressed body, arched back, and intense expression" },
+        { id: 7, text: "Lying Back Spread: Flat on back, legs wide apart", angle: "low-angle from below highlights exposed genitals and arched torso" },
+        { id: 8, text: "Seated Thigh Ride: Straddling an invisible seat, grinding thighs", angle: "side view on motion, exposed thighs, and teasing smirk" },
+        { id: 9, text: "Over-the-Edge Hang: Upper body hanging off an edge, legs raised", angle: "dynamic side angle on hanging pose and lifted hips" },
+        { id: 10, text: "Kneeling Back Bend: Kneeling bent backward, hands on floor", angle: "rear view emphasizes arched back and spread legs" },
+        { id: 11, text: "Face-Down Lift: Face down, hips lifted high", angle: "low rear angle on elevated ass and exposed rear" },
+        { id: 12, text: "Crossed Leg Lock: Sitting with legs crossed tightly", angle: "frontal close-up on exposed chest and locked eyes" },
+        { id: 13, text: "Standing Rear Entry: Bent forward standing, hands on knees", angle: "side/rear angle on bent pose and exposed back" },
+        { id: 14, text: "Lying Side Spoon: Side-lying, body curved", angle: "curved side view on hip curve and relaxed pose" },
+        { id: 15, text: "Seated Face Sit: Sitting with hips raised, facing away", angle: "top-down on exposed rear and confident stance" },
+        { id: 16, text: "Inverted V Spread: Bent at waist in a V, legs spread", angle: "rear view on spread stance and hanging torso" },
+        { id: 17, text: "Chest-to-Chest Grind: Lying flat, arms pressing chest", angle: "close-up on skin-on-skin friction and passionate expression" },
+        { id: 18, text: "Raised Leg Lift: Back-lying, one leg high", angle: "side angle on lifted leg, open groin, and stretched form" },
+        { id: 19, text: "Kneeling Face-Off: Kneeling with one leaning back, hands supporting", angle: "frontal on grind pose and exposed body" },
+        { id: 20, text: "Back-to-Chest Hug: Standing with arms wrapped around herself, rear entry pose", angle: "side angle on curves and thrusting motion" },
+        { id: 21, text: "Graceful Contrapposto Stand: Standing with weight on one leg, hips shifted, arms relaxed at sides", angle: "three-quarter angle highlights natural curves and serene expression" },
+        { id: 22, text: "Elegant Reclining Side: Lying on side, one arm supporting head, legs gently bent", angle: "side view captures flowing lines of the body and contemplative gaze" },
+        { id: 23, text: "Seated Lotus Fold: Sitting cross-legged, hands resting on knees", angle: "frontal angle emphasizes balanced symmetry and peaceful introspection" },
+        { id: 24, text: "Arched Back Kneel: Kneeling with back slightly arched, hands on thighs", angle: "low frontal view showcases elongated torso and subtle poise" },
+        { id: 25, text: "Arms-Over-Head Stretch: Standing with arms raised overhead, body elongated", angle: "profile angle focuses on stretched form and soft lighting on skin" },
+        { id: 26, text: "Curled Fetal Pose: Curled on side, knees to chest, arms hugging legs", angle: "overhead view highlights vulnerability and intimate curves" },
+        { id: 27, text: "Seated Forward Lean: Sitting with torso leaning forward, arms draped over knees", angle: "three-quarter angle captures thoughtful expression and gentle contours" },
+        { id: 28, text: "Standing Hip Tilt: Standing with one hand on hip, slight tilt", angle: "full-frontal view emphasizes confident stance and natural proportions" },
+        { id: 29, text: "Lying Back Gaze: Flat on back, arms at sides, head turned", angle: "top-down angle showcases relaxed body and dreamy upward gaze" },
+        { id: 30, text: "Kneeling Arms Crossed: Kneeling with arms crossed over chest", angle: "side angle highlights modest coverage and elegant lines" },
+        { id: 31, text: "Twisted Torso Turn: Standing with torso twisted, one arm behind", angle: "profile view captures dynamic yet graceful rotation and skin highlights" },
+        { id: 32, text: "Seated Leg Extend: Sitting with one leg extended, arms supporting", angle: "low angle emphasizes leg length and balanced composition" },
+        { id: 33, text: "Reclining Elbow Prop: Reclining on elbows, legs crossed", angle: "three-quarter view focuses on supported pose and subtle shadows" },
+        { id: 34, text: "Standing Arms Behind: Standing with arms clasped behind back", angle: "rear three-quarter angle showcases posture and flowing hair" },
+        { id: 35, text: "Curved Spine Sit: Sitting with spine curved forward, hands on floor", angle: "side view highlights arched form and introspective mood" },
+        { id: 36, text: "Lying Prone Arch: Lying on stomach, upper body arched up", angle: "overhead angle captures lifted torso and serene expression" },
+        { id: 37, text: "Kneeling Side Glance: Kneeling with body turned slightly, glancing over shoulder", angle: "profile angle emphasizes neck curve and soft lighting" },
+        { id: 38, text: "Seated Hug Knees: Sitting hugging knees to chest", angle: "frontal view showcases compact form and gentle vulnerability" },
+        { id: 39, text: "Standing Leg Cross: Standing with legs crossed, arms relaxed", angle: "full-body angle highlights poise and natural stance" },
+        { id: 40, text: "Reclining Hand Rest: Reclining with one hand under head, legs extended", angle: "side angle captures relaxed elegance and subtle contours" }
+      ],
+      expressions: [
+        { id: 1, text: "Innocent Wide-Eyed: Large, sparkling eyes gazing upward, slightly parted lips, raised brows with a gentle curve, faint blush on cheeks. Conveys naive curiosity." },
+        { id: 2, text: "Shy Blush: Half-lidded eyes looking downward, pursed lips with a timid smile, furrowed brows, deep rosy blush across cheeks and nose. Exudes bashful charm." },
+        { id: 3, text: "Dreamy Gaze: Soft, unfocused eyes staring into the distance, relaxed mouth with a subtle smile, smooth brows, faint flush. Evokes wistful longing." },
+        { id: 4, text: "Coy Glance: Sideways glance with one eye partially covered by hair, small smirk, arched brow, light blush. Suggests playful teasing." },
+        { id: 5, text: "Gentle Smile: Closed lips with a warm, upward curve, slightly squinted eyes, relaxed brows, soft cheek flush. Radiates kind warmth." },
+        { id: 6, text: "Nervous Bite: Teeth gently biting lower lip, wide eyes with raised brows, flushed cheeks, tense expression. Shows anxious anticipation." },
+        { id: 7, text: "Pouting Sulks: Puffed-out lips, furrowed brows, narrowed eyes looking aside, light blush. Conveys petulant charm." },
+        { id: 8, text: "Curious Tilt: Head tilted, one brow raised, wide curious eyes, slightly open mouth with a hint of smile. Exudes inquisitive innocence." },
+        { id: 9, text: "Flirtatious Wink: One eye closed in a wink, sly smirk, arched brow, glowing cheeks. Projects confident allure." },
+        { id: 10, text: "Smoldering Stare: Half-lidded eyes with intense focus, parted lips with a seductive curve, raised brow, subtle blush. Exudes sultry confidence.", weightRange: [0.8, 1.2] },
+        { id: 11, text: "Ecstatic Moan: Eyes rolled back slightly, open mouth with a gasp, flushed cheeks, furrowed brows in pleasure. Conveys intense arousal.", weightRange: [0.8, 1.2] },
+        { id: 12, text: "Mischievous Grin: Wide, cheeky grin with bared teeth, squinted eyes, raised brows, light flush. Suggests playful defiance." },
+        { id: 13, text: "Haughty Sneer: Lifted chin, narrowed eyes with a scornful gaze, pursed lips with a slight smirk, no blush. Radiates arrogant dominance." },
+        { id: 14, text: "Passionate Cry: Wide open mouth in a moan, eyes clenched shut, furrowed brows, heavy blush across face. Exudes raw desire.", weightRange: [0.8, 1.2] },
+        { id: 15, text: "Seductive Smirk: Crooked smile with parted lips, half-lidded eyes with a knowing look, arched brow, glowing blush. Projects femme fatale allure.", weightRange: [0.8, 1.2] },
+        { id: 16, text: "Defiant Glare: Narrowed eyes with a fierce stare, clenched jaw, furrowed brows, no blush. Conveys rebellious intensity." },
+        { id: 17, text: "Blissful Sigh: Relaxed eyes half-closed, soft open-mouthed smile, smooth brows, faint blush. Shows contented pleasure." },
+        { id: 18, text: "Lustful Gaze: Heavy-lidded eyes with dilated pupils, parted lips with tongue slightly out, flushed cheeks, intense brow arch. Exudes overt sexual desire.", weightRange: [0.8, 1.2] },
+        { id: 19, text: "Teasing Tongue: Tongue sticking out playfully, squinted eyes, raised brows, rosy cheeks. Conveys cheeky seduction." },
+        { id: 20, text: "Orgasmic Ecstasy: Eyes rolled back, wide open mouth in a loud moan, flushed face, tensed brows. Radiates peak arousal.", weightRange: [0.8, 1.2] }
+      ],
+      locations: [
+        { id: 1, text: "Cozy Master Bedroom: Spacious room with king-size bed draped in soft white sheets, wooden nightstands with lamps casting warm glows, large windows with sheer curtains letting in natural light" },
+        { id: 2, text: "Minimalist Guest Room: Simple bed with gray linens, single side table, plain white walls" },
+        { id: 3, text: "Vintage Boudoir: Ornate vanity mirror with brushes and perfumes, satin pillows on a chaise lounge, lace curtains" },
+        { id: 4, text: "Modern Loft Bedroom: High ceilings with exposed beams, platform bed with black sheets, large floor-to-ceiling windows" },
+        { id: 5, text: "Rustic Cabin Bedroom: Wooden walls and ceiling, quilted bedspread on a log-frame bed, stone fireplace with gentle embers" },
+        { id: 6, text: "Elegant Study Nook: Bookshelves lining walls, leather armchair beside a desk, reading lamp with soft illumination" },
+        { id: 7, text: "Sunny Sunroom: Glass walls with potted plants, wicker furniture and cushions, natural sunlight streaming in" },
+        { id: 8, text: "Attic Hideaway: Slanted wooden ceiling with beams, old trunk as a table, small skylight window" },
+        { id: 9, text: "Luxurious En Suite Bathroom: Marble countertops, freestanding bathtub with bubbles, fogged mirror" },
+        { id: 10, text: "Cozy Living Room Corner: Plush sofa with throw pillows, coffee table with books, bay window with cushions" },
+        { id: 11, text: "Kitchen Island Setup: Granite countertop island, bar stools, pendant lights hanging above" },
+        { id: 12, text: "Home Office Den: Wooden desk with lamp, swivel chair, bookshelves with organized volumes" },
+        { id: 13, text: "Balcony Adjoined Bedroom: Sliding glass doors to a small balcony with railing, bed nearby with linens, potted flowers outside" },
+        { id: 14, text: "Hallway Alcove: Narrow corridor with wall sconces, small bench or stool, framed artwork on walls" },
+        { id: 15, text: "Basement Lounge: Low ceiling with recessed lights, sectional sofa with blankets, entertainment center with shelves" },
+        { id: 16, text: "Formal Dining Room: Long wooden table with chairs, chandelier overhead, sideboard with vases" },
+        { id: 17, text: "Nursery Turned Retreat: Soft pastel walls, crib converted to daybed, rocking chair" },
+        { id: 18, text: "Walk-In Closet: Mirrored doors, clothing racks with empty hangers, shoe shelves" },
+        { id: 19, text: "Home Gym Corner: Yoga mat on floor, weights and mirror wall, exercise ball" },
+        { id: 20, text: "Conservatory Extension: Glass roof and walls with indoor plants, wicker seating, tiled floor" }
+      ],
+      styles: [
+        { id: 1, text: "Studio Trigger Neon: Bold, high-contrast line art with exaggerated proportions, vibrant neon colors (pinks, blues, yellows), dynamic angular shading" },
+        { id: 2, text: "Retro 90s Cel Animation: Clean, thick black outlines with flat, vibrant color fills, soft cel-shading for depth" },
+        { id: 3, text: "Pop Art Anime: Comic book-inspired with bold outlines, halftone dot shading, and vivid primary colors (red, blue, yellow)" },
+        { id: 4, text: "Ghibli-Inspired Soft Anime: Delicate line art with subtle, hand-painted textures, muted yet rich colors" },
+        { id: 5, text: "Cyberpunk Anime: Neon-lit, high-tech aesthetic with glowing accents (cyan, magenta), thin line art, and reflective surfaces" },
+        { id: 6, text: "Shigenori Soejima Stylized: Angular, expressive line work with vibrant color blocks and dramatic poses" },
+        { id: 7, text: "CLAMP Ornate Anime: Intricate, flowing line art with elegant details, vivid jewel tones (emerald, ruby)" },
+        { id: 8, text: "90s OVA Grit: Rough, sketch-like line art with muted, grainy colors and textured shading" },
+        { id: 9, text: "Hentai Line Art: Ultra-clean, thin lines with minimal shading, hyper-detailed anatomy, and bright colors" },
+        { id: 10, text: "Tetsuya Nomura Fantasy Anime: Sleek, angular lines with glossy highlights, dark and vibrant color palettes" },
+        { id: 11, text: "Mecha Anime Chrome: Metallic, reflective textures with sharp lines, cool blue-gray tones" },
+        { id: 12, text: "Shigenobu Matsumoto Bold: Thick, expressive outlines with flat, saturated colors" },
+        { id: 13, text: "Magical Girl Sparkle: Glittery highlights, pastel gradients, and soft outlines" },
+        { id: 14, text: "Retro Sci-Fi Anime: Clean lines with bold, retro-futuristic colors (teal, orange)" },
+        { id: 15, text: "Gothic Anime Elegance: Dark, moody palettes with intricate line work, crimson and violet accents" },
+        { id: 16, text: "Y2K Anime Flash: Bright, glossy colors with metallic highlights, chunky outlines" },
+        { id: 17, text: "Neo-Traditional Anime: Blend of 90s clean lines with modern smooth gradients" },
+        { id: 18, text: "Watercolor Anime: Soft, translucent color washes with delicate lines" },
+        { id: 19, text: "Street Art Anime: Graffiti-inspired with bold spray-paint textures, vibrant urban colors" },
+        { id: 20, text: "Classic Shojo Glow: Thin, elegant lines with soft pastel shading, sparkling highlights" }
+      ],
+      loras: [
+        { id: 1, name: "Vixon's Anime/Manga Styles - 90's Anime", triggers: ["90s4n1m3"], weightRange: [0.5, 0.9], notes: "Retro anime style" },
+        { id: 2, name: "Vixon's Anime/Manga Styles - Gothic Retro Anime", triggers: ["gothicretroanime"], weightRange: [0.6, 1.0], notes: "Gothic anime aesthetic" },
+        { id: 3, name: "Bestfootpose", triggers: ["bestfootpose", "barefoot", "toes"], weightRange: [0.5, 1.0], notes: "Foot pose focused" },
+        { id: 4, name: "ExpressiveH Hentai LoRA Style", triggers: ["expressiveh"], weightRange: [0.6, 1.0], notes: "Facial expression enhancement" },
+        { id: 5, name: "Rebecca from Cyberpunk: Edgerunners [Pony]", triggers: ["ERRebecca", "green hair", "twin tails", "red pupils"], weightRange: [0.8, 1.2], notes: "Character LoRA" },
+        { id: 6, name: "S1 Dramatic Lighting", triggers: ["s1_dram"], weightRange: [0.2, 1.0], notes: "Lighting effects" },
+        { id: 7, name: "E-Girls", triggers: ["egirl"], weightRange: [0.5, 0.9], notes: "E-girl aesthetic - only use if randomly selected" },
+        { id: 8, name: "Vixon's Comic Styles - Shubina & Archie Comic", triggers: ["4RCH13"], weightRange: [0.6, 1.0], notes: "Comic book style" },
+        { id: 9, name: "Pop Art Anime Style", triggers: ["p0p4rt", "colorful"], weightRange: [0.6, 1.0], notes: "Pop art aesthetic" },
+        { id: 10, name: "Vintage Cartoon Style", triggers: ["vintoons", "cartoon style", "pin-up"], weightRange: [0.7, 1.1], notes: "1950-70s style" },
+        { id: 11, name: "Incase Style", triggers: [], weightRange: [0.8, 1.2], notes: "Artist style" },
+        { id: 12, name: "COMMIX - Style LORA for AutismMix SDXL", triggers: ["commix style"], weightRange: [0.8, 1.0], notes: "Comic style" },
+        { id: 13, name: "Cyberpunk: Edgerunners - Kiwi", triggers: ["cpkiwi"], weightRange: [0.6, 1.0], notes: "Character LoRA" },
+        { id: 14, name: "Vixon's Pony Styles - character sheet", triggers: ["cut3ch4r", "multiple views"], weightRange: [0.6, 1.0], notes: "Character sheet style" },
+        { id: 15, name: "Neon City Pony XL", triggers: ["NeonCity_PDXL"], weightRange: [0.8, 1.2], notes: "Cyberpunk background" },
+        { id: 16, name: "Watercoloured Noir Detective Style - Artstyle PDXL", triggers: ["p4int3dn0ir art style"], weightRange: [0.8, 1.2], notes: "Noir aesthetic" },
+        { id: 17, name: "Lucy \"Lucyna Kushinada\" - Cyberpunk: Edge Runners", triggers: ["lucy", "short hair", "blue eyes", "blue hair"], weightRange: [0.8, 1.2], notes: "Character LoRA" },
+        { id: 18, name: "Cigarette - Smoking", triggers: ["cigarette", "smoking", "mouth hold"], weightRange: [0.5, 0.9], notes: "Smoking concept" },
+        { id: 19, name: "Expression Anime Character Sheet / PONY DIFFUSION", triggers: ["character sheet", "multiple views", "expressions"], weightRange: [0.7, 1.0], notes: "Expression sheets" },
+        { id: 20, name: "Rogue / Marvel / (NSFW/SFW) SDXL LORA PONY", triggers: ["rogueSDXL", "long hair", "brown hair"], weightRange: [0.8, 1.0], notes: "Marvel character" },
+        { id: 21, name: "Chained Vampira Thong & Sinner Top", triggers: ["latex panties", "latex halterneck", "fishnets"], weightRange: [0.5, 0.9], notes: "Gothic clothing" },
+        { id: 22, name: "V Over Face", triggers: ["v over face", "tongue out"], weightRange: [0.6, 1.0], notes: "Pose LoRA" },
+        { id: 23, name: "Prone with Feet Up", triggers: ["prone", "on stomach", "lying"], weightRange: [0.6, 1.0], notes: "Specific pose" },
+        { id: 24, name: "Blowing Kisses", triggers: ["blowing kiss", "k1ss3s", "looking at viewer"], weightRange: [0.4, 0.8], notes: "Pose/expression" },
+        { id: 25, name: "Vixon's Pony Styles - gothic neon", triggers: ["g0th1c", "glowing", "neon lights"], weightRange: [0.6, 1.0], notes: "Gothic neon style" },
+        { id: 26, name: "Vixon's Anime/Manga Styles - Ghibli v2", triggers: ["ghibli"], weightRange: [0.6, 1.0], notes: "Studio Ghibli style" },
+        { id: 27, name: "Vixon's Pony Styles - Gothic Details", triggers: ["gd", "gothic", "spikes"], weightRange: [0.6, 1.0], notes: "Gothic accessories" },
+        { id: 28, name: "Vixon's Anime/Manga Styles - Junji Ito", triggers: ["junj11t0", "junji ito", "monochrome"], weightRange: [0.6, 1.0], notes: "Horror manga style" },
+        { id: 29, name: "Tattoos", triggers: ["t4ts", "tattoos", "tattoo"], weightRange: [0.5, 0.9], notes: "Tattoo effects", tattooPlacements: ["hips", "thighs", "shoulders", "lower back", "chest", "upper arms"] },
+        { id: 30, name: "Fang Helper", triggers: ["f4ng", "small fangs", "fangs"], weightRange: [0.5, 0.9], notes: "Fang details" },
+        { id: 31, name: "Vintage 1990s Anime SDXL LoRA (Style) Pony", triggers: ["Vintage", "1990s (style)"], weightRange: [0.5, 0.75], notes: "Retro 90s anime" }
+      ],
+      negatives: {
+        standard: ["<TI:FFSD51AB6>", "<TI:5D619863AC>", "<TI:5FDAD45040BA>", "<TI:8A94867251>", "low-res", "bad anatomy", "bad hands", "text", "error", "missing fingers", "extra digit", "fewer digits", "cropped", "worst quality", "low quality", "normal quality", "jpeg artifacts", "signature", "watermark", "username", "blurry", "artist name", "(deformed, distorted, disfigured:1.3)", "poorly drawn", "bad anatomy", "wrong anatomy", "extra limb", "missing limb", "floating limbs", "(mutated hands and fingers:1.4)", "disconnected limbs", "mutation", "mutated", "ugly", "disgusting", "blurry", "amputation", "source_pony", "source_furry", "source_cartoon", "sketch", "painting", "monochrome", "rating_safe", "rating_questionable", "two people", "multiple characters", "couple", "male"],
+        byStyle: {
+          "Cyberpunk Anime": ["no blurry textures", "no excessive gradients"],
+          "Hentai Line Art": ["no blurry textures", "no oversaturated colors"],
+          "Retro 90s Cel Animation": ["no excessive gradients", "no modern elements"]
+        },
+        byExpression: {
+          "Ecstatic Moan": ["no distorted face", "no blurry eyes"],
+          "Passionate Cry": ["no distorted face", "no blurry eyes"],
+          "Orgasmic Ecstasy": ["no distorted face", "no blurry eyes"]
+        }
+      }
+    };
+
+    // RNG utilities with crypto.getRandomValues fallback to Math.random
+    function rngFloat(min, max, precision = 2) {
+      try {
+        const array = new Uint32Array(1);
+        crypto.getRandomValues(array);
+        const random = array[0] / 0xFFFFFFFF;
+        return parseFloat((min + (max - min) * random).toFixed(precision));
+      } catch {
+        return parseFloat((min + (max - min) * Math.random()).toFixed(precision));
+      }
+    }
+
+    function rngInt(min, max) {
+      try {
+        const array = new Uint32Array(1);
+        crypto.getRandomValues(array);
+        const random = array[0] / 0xFFFFFFFF;
+        return Math.floor(min + (max - min + 1) * random);
+      } catch {
+        return Math.floor(min + (max - min + 1) * Math.random());
+      }
+    }
+
+    function randomChoice(list) {
+      if (!list || list.length === 0) return null;
+      return list[rngInt(0, list.length - 1)];
+    }
+
+    // Simple 32-bit xorshift PRNG for seed lock
+    class XorShift32 {
+      constructor(seed) {
+        this.state = seed || 1;
+      }
+      
+      next() {
+        this.state ^= this.state << 13;
+        this.state ^= this.state >>> 17;
+        this.state ^= this.state << 5;
+        return (this.state >>> 0) / 0xFFFFFFFF;
+      }
+      
+      float(min, max, precision = 2) {
+        return parseFloat((min + (max - min) * this.next()).toFixed(precision));
+      }
+      
+      int(min, max) {
+        return Math.floor(min + (max - min + 1) * this.next());
+      }
+      
+      choice(list) {
+        if (!list || list.length === 0) return null;
+        return list[this.int(0, list.length - 1)];
+      }
+    }
+
+    // localStorage utilities
+    const LS_KEYS = {
+      userData: 'fg.userData.v1',
+      history: 'fg.history.v1'
+    };
+
+    function loadUserData() {
+      try {
+        const data = localStorage.getItem(LS_KEYS.userData);
+        return data ? JSON.parse(data) : { subjects: [], poses: [], expressions: [], locations: [], styles: [], loras: [] };
+      } catch {
+        return { subjects: [], poses: [], expressions: [], locations: [], styles: [], loras: [] };
+      }
+    }
+
+    function saveUserData(userData) {
+      try {
+        localStorage.setItem(LS_KEYS.userData, JSON.stringify(userData));
+      } catch (e) {
+        console.error('Failed to save user data:', e);
+      }
+    }
+
+    function loadHistory() {
+      try {
+        const data = localStorage.getItem(LS_KEYS.history);
+        return data ? JSON.parse(data) : [];
+      } catch {
+        return [];
+      }
+    }
+
+    function saveHistory(history) {
+      try {
+        localStorage.setItem(LS_KEYS.history, JSON.stringify(history.slice(-20))); // Keep only last 20
+      } catch (e) {
+        console.error('Failed to save history:', e);
+      }
+    }
+
+    // Merge packet data with user data
+    function getMergedCatalog(userData) {
+      return {
+        subjects: [...packetData.subjects, ...userData.subjects],
+        poses: [...packetData.poses, ...userData.poses],
+        expressions: [...packetData.expressions, ...userData.expressions],
+        locations: [...packetData.locations, ...userData.locations],
+        styles: [...packetData.styles, ...userData.styles],
+        loras: [...packetData.loras, ...userData.loras]
+      };
+    }
+
+    // LoRA selection with weight assignment
+    function pickLoRAs(allLoRAs, desiredCount, maxCap = 5, rng = null) {
+      const clampedCount = Math.max(0, Math.min(desiredCount, maxCap));
+      if (clampedCount === 0) return [];
+      
+      const shuffled = [...allLoRAs].sort(() => (rng?.next() || Math.random()) - 0.5);
+      const selected = shuffled.slice(0, clampedCount);
+      
+      return selected.map(lora => ({
+        ...lora,
+        weight: rng 
+          ? rng.float(lora.weightRange[0], lora.weightRange[1])
+          : rngFloat(lora.weightRange[0], lora.weightRange[1])
+      }));
+    }
+
+    // No-repeat functionality
+    function applyNoRepeat(bucketName, list, prevPicksSet, rng = null) {
+      const available = list.filter(item => !prevPicksSet.has(item.id));
+      if (available.length === 0) {
+        // Reset and use full list
+        prevPicksSet.clear();
+        return rng ? rng.choice(list) : randomChoice(list);
+      }
+      return rng ? rng.choice(available) : randomChoice(available);
+    }
+
+    // Prompt assembly following exact rules
+    function assemblePrompt(selection, loras, styleBlendSettings) {
+      console.log('🔧 assemblePrompt called with:', {
+        selectionExists: !!selection,
+        selectionType: typeof selection,
+        lorasCount: loras?.length || 0,
+        styleBlendEnabled: styleBlendSettings?.enabled
+      });
+      
+      // Validate inputs
+      if (!selection) {
+        console.error('❌ assemblePrompt: selection is null/undefined');
+        throw new Error('Selection object is required for assemblePrompt');
+      }
+      
+      const baseTags = "1girl, score_9, score_8_up, score_7_up, score_6_up, score_5_up, score_4_up, source_anime, rating_explicit, (1girl:1.3)";
+      
+      let prompt = baseTags;
+      
+      // Check if any character LoRAs are selected - they override subjects
+      const characterLoras = loras ? loras.filter(lora => getLoRAType(lora) === 'character') : [];
+      
+      // Subject (or character LoRA override)
+      if (characterLoras.length > 0) {
+        // Use character LoRA triggers instead of subject
+        const characterLora = characterLoras[0]; // Use first character LoRA
+        const characterTriggers = characterLora.triggers.filter(trigger => 
+          !['1girl', 'solo'].includes(trigger.toLowerCase())
+        );
+        if (characterTriggers.length > 0) {
+          prompt += `, ${characterTriggers.join(', ')}`;
+        }
+      } else if (selection.subject) {
+        prompt += `, ${selection.subject.description}`;
+      }
+      
+      // Expression (immediately after subject)
+      if (selection.expression) {
+        const expressionText = selection.expression.text;
+        // Extract core expression from description
+        const coreExpression = expressionText.split(':')[0].trim();
+        prompt += `, with ${coreExpression}`;
+        
+        // Apply weight if defined and 50% chance
+        if (selection.expression.weightRange && Math.random() < 0.5) {
+          const weight = rngFloat(0.8, 1.2);
+          prompt += ` (${coreExpression}:${weight})`;
+        }
+      }
+      
+      // Pose
+      if (selection.pose) {
+        prompt += `, ${selection.pose.text}, ${selection.pose.angle}`;
+      }
+      
+      // Location (2-3 details max)
+      if (selection.location) {
+        prompt += `, in ${selection.location.text}`;
+      }
+      
+      // Style(s) - with comprehensive validation
+      console.log('🎨 Processing styles:', {
+        hasStyles: !!selection.styles,
+        stylesType: typeof selection.styles,
+        isArray: Array.isArray(selection.styles),
+        stylesLength: selection.styles?.length,
+        firstStyle: selection.styles?.[0]
+      });
+      
+      if (selection.styles && Array.isArray(selection.styles) && selection.styles.length > 0) {
+        if (styleBlendSettings?.enabled && selection.styles.length > 1) {
+          // Style blending with weights
+          const styleTexts = selection.styles.map((style, index) => {
+            if (style && typeof style === 'object' && style.text) {
+              if (index === 0) {
+                return `${style.text}:1.2`;
+              } else {
+                return `${style.text}:0.8`;
+              }
+            }
+            return null;
+          }).filter(s => s); // Remove nulls
+          
+          if (styleTexts.length > 0) {
+            prompt += `, ${styleTexts.join(', ')}`;
+          }
+        } else if (selection.styles[0] && typeof selection.styles[0] === 'object' && selection.styles[0].text) {
+          prompt += `, ${selection.styles[0].text}`;
+        }
+      } else {
+        console.warn('⚠️ No valid styles found in selection');
+      }
+      
+      // Add ONLY CONCEPT INTEGRATION to prompt (NO trigger words)
+      if (loras && loras.length > 0) {
+        const conceptModifications = [];
+        
+        loras.forEach(lora => {
+          const loraType = getLoRAType(lora);
+          
+          // CONCEPT LoRAs: Add actual concept to prompt, NO triggers
+          if (loraType === 'concept') {
+            if (lora.id === 23) { // "Prone with Feet Up"
+              conceptModifications.push("lying prone on stomach with feet up in the air");
+            } else if (lora.id === 18) { // "Cigarette - Smoking"
+              conceptModifications.push("smoking a cigarette");
+            } else if (lora.id === 22) { // "V Over Face"
+              conceptModifications.push("making a peace sign over face");
+            } else if (lora.id === 24) { // "Blowing Kisses"
+              conceptModifications.push("blowing a kiss");
+            } else if (lora.id === 29) { // "Tattoos"
+              if (lora.tattooPlacements) {
+                const placement = randomChoice(lora.tattooPlacements);
+                conceptModifications.push(`tattoos on ${placement}`);
+              } else {
+                conceptModifications.push("tattoos");
+              }
+            } else if (lora.id === 30) { // "Fang Helper"
+              conceptModifications.push("small fangs");
+            } else if (lora.id === 4) { // "ExpressiveH" - enhance facial expressions
+              conceptModifications.push("highly detailed facial expression");
+            }
+          }
+        });
+        
+        // Add concept modifications to prompt (NO trigger words at all)
+        if (conceptModifications.length > 0) {
+          prompt += `, ${conceptModifications.join(', ')}`;
+        }
+      }
+      
+      return prompt;
+    }
+
+    // Negative prompt assembly
+    function assembleNegatives(selection, includeStyleExpr) {
+      console.log('🔧 assembleNegatives called with:', {
+        selectionExists: !!selection,
+        includeStyleExpr,
+        selectionType: typeof selection
+      });
+      
+      // Validate inputs
+      if (!selection) {
+        console.error('❌ assembleNegatives: selection is null/undefined');
+        return packetData.negatives.standard.join(', ');
+      }
+      
+      let negatives = [...packetData.negatives.standard];
+      
+      if (includeStyleExpr) {
+        // Add style-specific negatives (50% chance each)
+        if (selection.styles && Array.isArray(selection.styles) && selection.styles.length > 0) {
+          selection.styles.forEach(style => {
+            if (style && style.text && Math.random() < 0.5) {
+              try {
+                const styleKey = style.text.split(':')[0].trim();
+                const styleNegatives = packetData.negatives.byStyle[styleKey];
+                if (styleNegatives) {
+                  negatives.push(...styleNegatives);
+                }
+              } catch (e) {
+                console.error('❌ Error processing style negative:', e, style);
+              }
+            }
+          });
+        }
+        
+        // Add expression-specific negatives (50% chance)
+        if (selection.expression && selection.expression.text && Math.random() < 0.5) {
+          try {
+            const exprKey = selection.expression.text.split(':')[0].trim();
+            const exprNegatives = packetData.negatives.byExpression[exprKey];
+            if (exprNegatives) {
+              negatives.push(...exprNegatives);
+            }
+          } catch (e) {
+            console.error('❌ Error processing expression negative:', e, selection.expression);
+          }
+        }
+      }
+      
+      return negatives.join(', ');
+    }
+
+    // Settings formatting
+    function formatSettings(randomizeSettings, seedValue) {
+      const baseSettings = {
+        model: "Perfect Pony XL V6",
+        sampler: "Euler a",
+        steps: 25,
+        cfg: 7.0,
+        hires_strength: 0.4,
+        aspect_ratio: "512x768",
+        clip_skip: -2,
+        prompt_enhance: true,
+        prompt_behavior: "V2 Unlimited",
+        upscaler: "REAL-ESRGAN-X4-ANIME-CFORMER",
+        seed: seedValue || rngInt(1000000, 2147483647)
+      };
+      
+      if (randomizeSettings) {
+        baseSettings.sampler = Math.random() < 0.5 ? "Euler a" : "DPM++ 2M";
+        baseSettings.steps = rngInt(25, 40);
+        baseSettings.cfg = rngFloat(7, 9, 1);
+        baseSettings.hires_strength = rngFloat(0.3, 0.5, 1);
+        baseSettings.aspect_ratio = Math.random() < 0.5 ? "512x768" : "1024x1536";
+      }
+      
+      return baseSettings;
+    }
+
+    // CONTEXTUAL INTELLIGENCE SYSTEM
+    
+    // Subject vibe analysis based on actual packet data
+    const subjectVibes = {
+      // Sultry/Seductive vibes (femme fatales, confident)
+      sultry: [1, 24], // "sultry vibe like a confident femme fatale", "seductive vibe like a femme fatale"
+      
+      // Innocent/Shy vibes (schoolgirls, romantic)
+      innocent: [2, 22], // "innocent vibe like a curious schoolgirl", "shy vibe like a reserved romantic"
+      
+      // Preppy/Elegant vibes (socialites, nobles)
+      preppy: [3, 13, 33], // "preppy vibe like a chic socialite", "regal vibe like a noble beauty"
+      
+      // Athletic/Dominant vibes (competitors, fighters)
+      athletic: [4, 11, 14, 16, 31, 34, 36], // "dominant vibe like a sporty competitor", "goddess vibe like a commanding warrior"
+      
+      // Nurturing/Cozy vibes (artists, romantics)
+      nurturing: [5, 8, 25, 27, 30], // "nurturing vibe like a caring artist", "cozy vibe like a plush romantic"
+      
+      // Ethereal/Mystical vibes (dancers, dreamers)  
+      ethereal: [6, 15, 28, 35, 39], // "ethereal vibe like a mystical dancer", "poetic vibe like a wistful dreamer"
+      
+      // Punk/Rebellious vibes (rockstars, street artists)
+      punk: [7, 26], // "punk vibe like a defiant rockstar", "punk vibe like a defiant street artist"
+      
+      // Cunning/Sly vibes (tricksters, rogues)
+      cunning: [9, 29], // "cunning vibe like a sly trickster", "cunning vibe like a clever rogue"
+      
+      // Vibrant/Performer vibes (lively performers)
+      vibrant: [10, 30], // "vibrant vibe like a lively performer"
+      
+      // Teasing/Idol vibes (popstars, anime stars)
+      teasing: [12, 32], // "idol vibe like a teasing popstar", "idol vibe like a teasing anime star"
+      
+      // Stoic/Guardian vibes (calm guardians)
+      stoic: [17, 37], // "stoic vibe like a calm guardian"
+      
+      // Siren/Seductive vibes (temptresses) 
+      siren: [18, 38], // "siren vibe like a seductive temptress"
+      
+      // Tragic/Sorrowful vibes (melancholic heroines)
+      tragic: [19, 39], // "tragic vibe like a sorrowful heroine"
+      
+      // Passionate/Fiery vibes (fiery performers)
+      passionate: [20, 40], // "passionate vibe like a fiery performer"
+      
+      // Arrogant/Model vibes (confident runway models)
+      arrogant: [21], // "arrogant vibe like a confident runway model"
+      
+      // Playful/Sprite vibes (mischievous sprites)
+      playful: [23] // "playful vibe like a mischievous sprite"
+    };
+
+    // Pose compatibility with vibes
+    const poseVibeCompatibility = {
+      // Sultry/Seductive poses work with sultry, siren, passionate vibes
+      sultry_poses: [1, 2, 6, 8, 13, 15, 17, 19, 20], // Sexual poses
+      
+      // Elegant/Graceful poses work with preppy, ethereal, nurturing vibes
+      elegant_poses: [21, 22, 23, 24, 25, 27, 28, 30, 31, 32, 33, 34, 36, 37, 40], // Graceful poses
+      
+      // Athletic/Dynamic poses work with athletic, punk, vibrant vibes
+      athletic_poses: [3, 4, 5, 9, 10, 11, 16, 18], // Dynamic poses
+      
+      // Intimate/Vulnerable poses work with innocent, nurturing, tragic vibes
+      intimate_poses: [26, 35, 38], // Curled, vulnerable poses
+      
+      // Playful poses work with teasing, playful, cunning vibes
+      playful_poses: [7, 14, 39], // Spread, crossed, relaxed poses
+      
+      // Confident poses work with arrogant, stoic, dominant vibes
+      confident_poses: [12, 29] // Sitting confident, lying back
+    };
+
+    // Expression compatibility with vibes
+    const expressionVibeCompatibility = {
+      // Innocent expressions
+      innocent_expressions: [1, 2, 5, 6, 8], // wide-eyed, shy blush, gentle smile, nervous bite, curious tilt
+      
+      // Seductive expressions
+      seductive_expressions: [9, 10, 15, 18], // flirtatious wink, smoldering stare, seductive smirk, lustful gaze
+      
+      // Intense expressions
+      intense_expressions: [11, 13, 14, 16, 20], // ecstatic moan, haughty sneer, passionate cry, defiant glare, orgasmic ecstasy
+      
+      // Playful expressions
+      playful_expressions: [4, 7, 12, 19], // coy glance, pouting sulks, mischievous grin, teasing tongue
+      
+      // Dreamy expressions
+      dreamy_expressions: [3, 17], // dreamy gaze, blissful sigh
+    };
+
+    // Location compatibility with vibes
+    const locationVibeCompatibility = {
+      // Luxurious/Elegant locations
+      luxurious_locations: [1, 3, 6, 9, 16, 20], // master bedroom, vintage boudoir, study nook, bathroom, dining room, conservatory
+      
+      // Cozy/Intimate locations
+      cozy_locations: [2, 5, 7, 10, 17], // guest room, rustic cabin, sunroom, living room, nursery
+      
+      // Modern/Sleek locations
+      modern_locations: [4, 11, 12, 15, 18, 19], // modern loft, kitchen island, office, basement, walk-in closet, gym
+      
+      // Private/Secluded locations
+      private_locations: [8, 13, 14], // attic hideaway, balcony bedroom, hallway alcove
+    };
+
+    // Style compatibility with vibes
+    const styleVibeCompatibility = {
+      // Innocent/Soft styles
+      innocent_styles: [4, 13, 18, 20], // Ghibli, magical girl, watercolor, classic shojo
+      
+      // Seductive/Bold styles
+      seductive_styles: [1, 3, 9, 12, 16, 19], // neon trigger, pop art, hentai line art, bold matsumoto, Y2K flash, street art
+      
+      // Gothic/Dark styles
+      gothic_styles: [15], // gothic anime elegance
+      
+      // Retro/Vintage styles
+      retro_styles: [2, 8], // 90s cel animation, 90s OVA grit
+      
+      // Cyberpunk/Modern styles
+      cyberpunk_styles: [5, 11, 14], // cyberpunk anime, mecha chrome, retro sci-fi
+      
+      // Elegant/Sophisticated styles
+      elegant_styles: [6, 7, 10, 17], // stylized soejima, CLAMP ornate, nomura fantasy, neo-traditional
+    };
+
+    // Check if LoRA is a character sheet type
+    function isCharacterSheetLoRA(lora) {
+      return lora.id === 14 || lora.id === 19 || // Known character sheet LoRAs
+             lora.name.toLowerCase().includes('character sheet') ||
+             lora.triggers.some(trigger => trigger.toLowerCase().includes('character sheet'));
+    }
+
+    // LoRA type classification with contextual awareness
+    function getLoRAType(lora) {
+      const name = lora.name.toLowerCase();
+      const triggers = lora.triggers.join(' ').toLowerCase();
+      
+      // Character sheet LoRAs (special category)
+      if (isCharacterSheetLoRA(lora)) {
+        return 'character_sheet';
+      }
+      
+      // Character LoRAs - these should override subjects
+      if (name.includes('rebecca') || name.includes('cyberpunk') || name.includes('lucy') || 
+          name.includes('rogue') || name.includes('marvel') || name.includes('kiwi') ||
+          triggers.includes('errebecca') || triggers.includes('cpkiwi') || triggers.includes('roguesd') ||
+          triggers.includes('lucy')) {
+        return 'character';
+      }
+      
+      // Style LoRAs
+      if (name.includes('style') || name.includes('anime') || name.includes('manga') || 
+          name.includes('gothic') || name.includes('vintage') || name.includes('pop art') ||
+          name.includes('comic') || name.includes('ghibli') || name.includes('noir')) {
+        return 'style';
+      }
+      
+      // Lighting LoRAs
+      if (name.includes('lighting') || name.includes('dramatic') || triggers.includes('s1_dram')) {
+        return 'lighting';
+      }
+      
+      // Pose LoRAs
+      if (name.includes('pose') || name.includes('foot') || name.includes('prone') || 
+          name.includes('kiss') || triggers.includes('bestfootpose') || triggers.includes('prone')) {
+        return 'pose';
+      }
+      
+      // Concept LoRAs (everything else)
+      return 'concept';
+    }
+
+    // LoRA vibe compatibility
+    const loraVibeCompatibility = {
+      // Character LoRAs have specific vibes
+      5: ['punk', 'cyberpunk'], // Rebecca - punk/cyberpunk
+      13: ['cyberpunk'], // Kiwi - cyberpunk  
+      17: ['cyberpunk'], // Lucy - cyberpunk
+      20: ['sultry', 'passionate'], // Rogue - sultry/passionate
+      
+      // Style LoRAs
+      1: ['innocent', 'retro'], // 90s Anime
+      2: ['gothic', 'dark', 'punk', 'tragic'], // Gothic Retro Anime - now compatible with more dark vibes
+      4: ['seductive', 'intense'], // ExpressiveH
+      7: ['teasing', 'playful'], // E-Girls
+      9: ['vibrant', 'playful'], // Pop Art
+      10: ['retro', 'sultry'], // Vintage Cartoon
+      15: ['cyberpunk', 'modern'], // Neon City
+      16: ['dark', 'mysterious', 'stoic', 'tragic'], // Noir Detective - expanded compatibility
+      25: ['gothic', 'dark', 'punk', 'siren'], // Gothic Neon - more gothic combinations
+      26: ['innocent', 'dreamy', 'ethereal', 'nurturing'], // Ghibli - soft vibes
+      27: ['gothic', 'dark', 'punk', 'tragic'], // Gothic Details - all dark themes
+      28: ['dark', 'horror', 'tragic', 'ethereal'], // Junji Ito - horror + mysterious vibes
+      31: ['retro', 'innocent'], // Vintage 1990s
+      
+      // Pose/Concept LoRAs
+      3: ['playful', 'teasing'], // Foot poses
+      22: ['playful', 'teasing'], // V over face
+      23: ['sultry', 'seductive'], // Prone with feet up
+      24: ['playful', 'flirty'], // Blowing kisses
+      29: ['rebellious', 'edgy'], // Tattoos
+      30: ['playful', 'cute'] // Fang helper
+    };
+
+    // Get subject's primary vibe
+    function getSubjectVibe(subject) {
+      if (!subject) return null;
+      
+      for (const [vibe, ids] of Object.entries(subjectVibes)) {
+        if (ids.includes(subject.id)) {
+          return vibe;
+        }
+      }
+      return null;
+    }
+
+    // Check pose compatibility with vibe
+    function isPoseCompatible(pose, vibe) {
+      if (!pose || !vibe) return true; // default to compatible
+      
+      for (const [category, poses] of Object.entries(poseVibeCompatibility)) {
+        if (poses.includes(pose.id)) {
+          const compatibleVibes = {
+            sultry_poses: ['sultry', 'siren', 'passionate'],
+            elegant_poses: ['preppy', 'ethereal', 'nurturing', 'arrogant'],
+            athletic_poses: ['athletic', 'punk', 'vibrant'],
+            intimate_poses: ['innocent', 'nurturing', 'tragic', 'ethereal'],
+            playful_poses: ['teasing', 'playful', 'cunning'],
+            confident_poses: ['arrogant', 'stoic', 'athletic']
+          };
+          
+          return compatibleVibes[category]?.includes(vibe) || false;
+        }
+      }
+      
+      return true; // If pose not categorized, assume compatible
+    }
+
+    // Check expression compatibility with vibe
+    function isExpressionCompatible(expression, vibe) {
+      if (!expression || !vibe) return true;
+      
+      for (const [category, expressions] of Object.entries(expressionVibeCompatibility)) {
+        if (expressions.includes(expression.id)) {
+          const compatibleVibes = {
+            innocent_expressions: ['innocent', 'nurturing', 'playful', 'ethereal'],
+            seductive_expressions: ['sultry', 'siren', 'passionate', 'arrogant'],
+            intense_expressions: ['passionate', 'punk', 'athletic', 'vibrant'],
+            playful_expressions: ['teasing', 'playful', 'cunning'],
+            dreamy_expressions: ['ethereal', 'tragic', 'nurturing']
+          };
+          
+          return compatibleVibes[category]?.includes(vibe) || false;
+        }
+      }
+      
+      return true;
+    }
+
+    // Check location compatibility with vibe
+    function isLocationCompatible(location, vibe) {
+      if (!location || !vibe) return true;
+      
+      for (const [category, locations] of Object.entries(locationVibeCompatibility)) {
+        if (locations.includes(location.id)) {
+          const compatibleVibes = {
+            luxurious_locations: ['preppy', 'sultry', 'arrogant', 'siren'],
+            cozy_locations: ['innocent', 'nurturing', 'ethereal', 'tragic'],
+            modern_locations: ['athletic', 'cyberpunk', 'vibrant', 'arrogant'],
+            private_locations: ['cunning', 'ethereal', 'tragic']
+          };
+          
+          return compatibleVibes[category]?.includes(vibe) || false;
+        }
+      }
+      
+      return true;
+    }
+
+    // Check style compatibility with vibe
+    function isStyleCompatible(style, vibe) {
+      if (!style || !vibe) return true;
+      
+      for (const [category, styles] of Object.entries(styleVibeCompatibility)) {
+        if (styles.includes(style.id)) {
+          const compatibleVibes = {
+            innocent_styles: ['innocent', 'nurturing', 'ethereal'],
+            seductive_styles: ['sultry', 'siren', 'passionate', 'vibrant'],
+            gothic_styles: ['gothic', 'punk', 'tragic'],
+            retro_styles: ['retro', 'playful', 'nurturing'],
+            cyberpunk_styles: ['cyberpunk', 'punk', 'athletic'],
+            elegant_styles: ['preppy', 'arrogant', 'ethereal']
+          };
+          
+          return compatibleVibes[category]?.includes(vibe) || false;
+        }
+      }
+      
+      return true;
+    }
+
+    // Check LoRA compatibility with vibe
+    function isLoRACompatible(lora, vibe) {
+      if (!lora || !vibe) return true;
+      
+      const compatibleVibes = loraVibeCompatibility[lora.id];
+      if (compatibleVibes) {
+        return compatibleVibes.some(loraVibe => 
+          vibe.includes(loraVibe) || loraVibe.includes(vibe)
+        );
+      }
+      
+      return true; // If not categorized, assume compatible
+    }
+
+    // Contextual selection with fallback to random
+    function contextualChoice(items, vibe, compatibilityFunc, rng = null) {
+      if (!vibe || !items || items.length === 0) {
+        return rng ? rng.choice(items) : randomChoice(items);
+      }
+      
+      // Get compatible items
+      const compatible = items.filter(item => compatibilityFunc(item, vibe));
+      
+      // If no compatible items found, fall back to all items
+      const candidates = compatible.length > 0 ? compatible : items;
+      
+      // Weight compatible items higher (70% chance) vs random (30% chance)  
+      if (compatible.length > 0 && Math.random() < 0.7) {
+        return rng ? rng.choice(compatible) : randomChoice(compatible);
+      } else {
+        return rng ? rng.choice(items) : randomChoice(items);
+      }
+    }
+
+    // Validation function
+    function validateData(fullData) {
+      const errors = [];
+      
+      // Check for empty fields
+      ['subjects', 'poses', 'expressions', 'locations', 'styles', 'loras'].forEach(bucket => {
+        if (!fullData[bucket] || fullData[bucket].length === 0) {
+          errors.push(`${bucket} cannot be empty`);
+        }
+      });
+      
+      // Check for duplicates (case-insensitive)
+      ['subjects', 'poses', 'expressions', 'locations', 'styles'].forEach(bucket => {
+        const items = fullData[bucket] || [];
+        const descriptions = items.map(item => 
+          (item.description || item.text || '').toLowerCase()
+        );
+        const uniqueDescriptions = new Set(descriptions);
+        if (descriptions.length !== uniqueDescriptions.size) {
+          errors.push(`Duplicate descriptions found in ${bucket}`);
+        }
+      });
+      
+      // Check LoRA names for duplicates
+      const loraNames = (fullData.loras || []).map(lora => lora.name.toLowerCase());
+      const uniqueLoraNames = new Set(loraNames);
+      if (loraNames.length !== uniqueLoraNames.size) {
+        errors.push('Duplicate LoRA names found');
+      }
+      
+      // Check weight ranges
+      ['expressions', 'loras'].forEach(bucket => {
+        const items = fullData[bucket] || [];
+        items.forEach(item => {
+          if (item.weightRange && item.weightRange.length === 2) {
+            const [min, max] = item.weightRange;
+            if (min > max) {
+              errors.push(`Invalid weight range in ${bucket}: min (${min}) > max (${max})`);
+            }
+          }
+        });
+      });
+      
+      // Check location details (max 3)
+      const locations = fullData.locations || [];
+      locations.forEach(location => {
+        const details = location.text.split(',').length;
+        if (details > 3) {
+          errors.push(`Location "${location.text.substring(0, 30)}..." has too many details (${details}, max 3)`);
+        }
+      });
+      
+      return errors;
+    }
+
+    console.log('For Generations app loading...');
+    
+    function App() {
+      // State management
+      const [userData, setUserData] = useState(() => loadUserData());
+      const [history, setHistory] = useState(() => loadHistory());
+      const [activeTab, setActiveTab] = useState('catalog');
+      
+      // Generator state
+      const [toggles, setToggles] = useState({
+        contextualMode: true,
+        noRepeat: true,
+        styleBlend: false,
+        includeStyleExprNegatives: true,
+        randomizeSettings: false,
+        lockSeed: false,
+        allowCharacterSheets: false
+      });
+      
+      const [locks, setLocks] = useState({
+        subject: false,
+        pose: false,
+        expression: false,
+        location: false,
+        style: false
+      });
+      
+      const [seedValue, setSeedValue] = useState(null);
+      
+      // Current generation state
+      const [currentGeneration, setCurrentGeneration] = useState({
+        prompt: '',
+        negative: '',
+        settings: '',
+        selection: null,
+        loras: []
+      });
+      
+      // Debug: Log state changes
+      useEffect(() => {
+        console.log('🔄 Current generation updated:', {
+          hasPrompt: !!currentGeneration.prompt,
+          hasNegative: !!currentGeneration.negative,
+          hasSettings: !!currentGeneration.settings,
+          hasSelection: !!currentGeneration.selection
+        });
+      }, [currentGeneration]);
+      
+      const [noRepeatSets, setNoRepeatSets] = useState({
+        subjects: new Set(),
+        poses: new Set(),
+        expressions: new Set(),
+        locations: new Set(),
+        styles: new Set()
+      });
+      
+      // Toast notification state
+      const [toast, setToast] = useState(null);
+      
+      // Show toast helper
+      const showToast = useCallback((message, type = 'success') => {
+        setToast({ message, type });
+        setTimeout(() => setToast(null), 3000);
+      }, []);
+      
+      // Copy to clipboard with toast
+      const copyToClipboard = useCallback((text, label) => {
+        navigator.clipboard?.writeText(text).then(() => {
+          showToast(`${label} copied to clipboard!`);
+        }).catch(() => {
+          showToast(`Failed to copy ${label}`, 'error');
+        });
+      }, [showToast]);
+      
+      // Merged catalog
+      const catalog = useMemo(() => getMergedCatalog(userData), [userData]);
+      
+      const generatePrompt = useCallback(() => {
+        console.log('🚀 Generate Prompt button clicked!');
+        console.log('📊 Current state:', { toggles, locks, seedValue });
+        console.log('📚 Catalog size:', {
+          subjects: catalog.subjects?.length || 0,
+          poses: catalog.poses?.length || 0, 
+          expressions: catalog.expressions?.length || 0,
+          locations: catalog.locations?.length || 0,
+          styles: catalog.styles?.length || 0,
+          loras: catalog.loras?.length || 0
+        });
+        
+        try {
+          const rng = toggles.lockSeed && seedValue ? new XorShift32(seedValue) : null;
+          
+          // CONTEXTUAL INTELLIGENCE: Start with subject/character to determine vibe
+          let baseSubject = null;
+          let primaryVibe = null;
+        
+        // 1. Select subject/character first (or use locked)
+        if (locks.subject && currentGeneration.selection?.subject) {
+          baseSubject = currentGeneration.selection.subject;
+        } else if (toggles.noRepeat) {
+          baseSubject = applyNoRepeat('subjects', catalog.subjects, noRepeatSets.subjects, rng);
+        } else {
+          baseSubject = rng ? rng.choice(catalog.subjects) : randomChoice(catalog.subjects);
+        }
+        
+        // Get the primary vibe from subject (only if contextual mode is enabled)
+        primaryVibe = toggles.contextualMode ? getSubjectVibe(baseSubject) : null;
+        
+        // 2. SIMPLE LoRA selection to fix the error (will enhance later)
+        const selectedLoras = (() => {
+          try {
+            // Filter out character sheet LoRAs unless explicitly allowed
+            let availableLoras = catalog.loras.filter(lora => 
+              toggles.allowCharacterSheets || !isCharacterSheetLoRA(lora)
+            );
+            
+            console.log('🔧 Simple LoRA selection with', availableLoras.length, 'available LoRAs');
+            
+            // Simple selection: pick 1-3 random LoRAs
+            const maxLoras = Math.min(3, availableLoras.length);
+            const numLoras = Math.floor(Math.random() * maxLoras) + 1; // 1 to maxLoras
+            
+            const selected = [];
+            const used = new Set();
+            
+            for (let i = 0; i < numLoras && selected.length < availableLoras.length; i++) {
+              let attempts = 0;
+              let lora = null;
+              
+              // Try to pick an unused LoRA
+              while (attempts < 10 && !lora) {
+                const candidate = rng ? rng.choice(availableLoras) : randomChoice(availableLoras);
+                if (!used.has(candidate.id)) {
+                  lora = candidate;
+                  used.add(candidate.id);
+                }
+                attempts++;
+              }
+              
+              if (lora) {
+                selected.push({
+                  ...lora,
+                  weight: rng 
+                    ? rng.float(lora.weightRange[0], lora.weightRange[1])
+                    : rngFloat(lora.weightRange[0], lora.weightRange[1])
+                });
+              }
+            }
+            
+            console.log('🎯 Simple LoRA selection:', selected.map(l => l.name));
+            return selected;
+          } catch (e) {
+            console.error('❌ Error in LoRA selection:', e);
+            return [];
+          }
+        })();
+        
+        // 3. Check if character LoRAs should override subject
+        const characterLoras = selectedLoras.filter(lora => getLoRAType(lora) === 'character');
+        let finalSubject = baseSubject;
+        
+        // If character LoRA selected, it might change the vibe
+        if (characterLoras.length > 0) {
+          const characterLora = characterLoras[0];
+          const characterVibes = loraVibeCompatibility[characterLora.id];
+          if (characterVibes && characterVibes.length > 0) {
+            // Use character's vibe instead of subject's
+            primaryVibe = characterVibes[0];
+            // Subject will be overridden in prompt assembly, but we keep it for reference
+          }
+        }
+        
+        // 4. Now select other elements contextually based on final vibe
+        console.log('🏗️ Building selection object...');
+        
+        let selectedSubject = finalSubject;
+        let selectedPose = null;
+        let selectedExpression = null;
+        let selectedLocation = null;
+        let selectedStyles = [];
+        
+        // Pose selection
+        try {
+          selectedPose = locks.pose && currentGeneration.selection?.pose
+            ? currentGeneration.selection.pose  
+            : toggles.noRepeat
+              ? (() => {
+                  const available = catalog.poses.filter(item => !noRepeatSets.poses.has(item.id));
+                  const candidates = available.length > 0 ? available : [...catalog.poses];
+                  if (available.length === 0) noRepeatSets.poses.clear();
+                  return toggles.contextualMode 
+                    ? contextualChoice(candidates, primaryVibe, isPoseCompatible, rng)
+                    : rng ? rng.choice(candidates) : randomChoice(candidates);
+                })()
+              : toggles.contextualMode 
+                ? contextualChoice(catalog.poses, primaryVibe, isPoseCompatible, rng)
+                : rng ? rng.choice(catalog.poses) : randomChoice(catalog.poses);
+        } catch (e) {
+          console.error('❌ Error selecting pose:', e);
+          selectedPose = randomChoice(catalog.poses);
+        }
+              
+        // Expression selection  
+        try {
+          selectedExpression = locks.expression && currentGeneration.selection?.expression
+            ? currentGeneration.selection.expression
+            : toggles.noRepeat
+              ? (() => {
+                  const available = catalog.expressions.filter(item => !noRepeatSets.expressions.has(item.id));
+                  const candidates = available.length > 0 ? available : [...catalog.expressions];
+                  if (available.length === 0) noRepeatSets.expressions.clear();
+                  return toggles.contextualMode 
+                    ? contextualChoice(candidates, primaryVibe, isExpressionCompatible, rng)
+                    : rng ? rng.choice(candidates) : randomChoice(candidates);
+                })()
+              : toggles.contextualMode 
+                ? contextualChoice(catalog.expressions, primaryVibe, isExpressionCompatible, rng)
+                : rng ? rng.choice(catalog.expressions) : randomChoice(catalog.expressions);
+        } catch (e) {
+          console.error('❌ Error selecting expression:', e);
+          selectedExpression = randomChoice(catalog.expressions);
+        }
+              
+        // Location selection
+        try {
+          selectedLocation = locks.location && currentGeneration.selection?.location
+            ? currentGeneration.selection.location
+            : toggles.noRepeat
+              ? (() => {
+                  const available = catalog.locations.filter(item => !noRepeatSets.locations.has(item.id));
+                  const candidates = available.length > 0 ? available : [...catalog.locations];
+                  if (available.length === 0) noRepeatSets.locations.clear();
+                  return toggles.contextualMode 
+                    ? contextualChoice(candidates, primaryVibe, isLocationCompatible, rng)
+                    : rng ? rng.choice(candidates) : randomChoice(candidates);
+                })()
+              : toggles.contextualMode 
+                ? contextualChoice(catalog.locations, primaryVibe, isLocationCompatible, rng)
+                : rng ? rng.choice(catalog.locations) : randomChoice(catalog.locations);
+        } catch (e) {
+          console.error('❌ Error selecting location:', e);
+          selectedLocation = randomChoice(catalog.locations);
+        }
+              
+        // Styles selection
+        try {
+          selectedStyles = locks.style && currentGeneration.selection?.styles && Array.isArray(currentGeneration.selection.styles)
+            ? currentGeneration.selection.styles
+            : (() => {
+                // Ensure we have a valid styles catalog
+                if (!catalog.styles || catalog.styles.length === 0) {
+                  console.warn('⚠️ No styles available in catalog');
+                  return [];
+                }
+                
+                const numStyles = toggles.styleBlend 
+                  ? (Math.random() < 0.1 ? 3 : 2)  // 10% chance for 3 styles
+                  : 1;
+                const selectedStyles = [];
+                const availableStyles = [...catalog.styles];
+                
+                // Get compatible styles first (only in contextual mode)
+                const compatibleStyles = toggles.contextualMode && primaryVibe 
+                  ? availableStyles.filter(style => style && isStyleCompatible(style, primaryVibe))
+                  : [];
+                
+                for (let i = 0; i < numStyles && availableStyles.length > 0; i++) {
+                  let selectedStyle = null;
+                  
+                  // 70% chance to use compatible style, 30% random (only in contextual mode)
+                  if (toggles.contextualMode && compatibleStyles.length > 0 && Math.random() < 0.7) {
+                    selectedStyle = rng ? rng.choice(compatibleStyles) : randomChoice(compatibleStyles);
+                    const index = compatibleStyles.indexOf(selectedStyle);
+                    if (index > -1) compatibleStyles.splice(index, 1);
+                  } else {
+                    selectedStyle = rng ? rng.choice(availableStyles) : randomChoice(availableStyles);
+                  }
+                  
+                  if (selectedStyle && selectedStyle.text) {
+                    selectedStyles.push(selectedStyle);
+                    const index = availableStyles.indexOf(selectedStyle);
+                    if (index > -1) availableStyles.splice(index, 1);
+                  }
+                }
+                
+                console.log('🎨 Selected styles:', selectedStyles.map(s => s?.text || 'Unknown'));
+                return selectedStyles;
+              })();
+        } catch (e) {
+          console.error('❌ Error selecting styles:', e);
+          selectedStyles = [randomChoice(catalog.styles)].filter(s => s);
+        }
+        
+        // Build selection object safely
+        const selection = {
+          subject: selectedSubject || null,
+          pose: selectedPose || null,
+          expression: selectedExpression || null,
+          location: selectedLocation || null,
+          styles: Array.isArray(selectedStyles) ? selectedStyles : []
+        };
+        
+        console.log('✅ Selection object built successfully:', {
+          hasSubject: !!selection.subject,
+          hasPose: !!selection.pose,
+          hasExpression: !!selection.expression,
+          hasLocation: !!selection.location,
+          hasStyles: !!selection.styles,
+          stylesCount: selection.styles.length
+        });
+        
+        // Update no-repeat sets
+        if (toggles.noRepeat) {
+          if (selection.subject && selection.subject.id) noRepeatSets.subjects.add(selection.subject.id);
+          if (selection.pose && selection.pose.id) noRepeatSets.poses.add(selection.pose.id);
+          if (selection.expression && selection.expression.id) noRepeatSets.expressions.add(selection.expression.id);
+          if (selection.location && selection.location.id) noRepeatSets.locations.add(selection.location.id);
+          if (selection.styles && Array.isArray(selection.styles)) {
+            selection.styles.forEach(style => {
+              if (style && style.id) noRepeatSets.styles.add(style.id);
+            });
+          }
+        }
+        
+        // Debug: Log contextual info
+        // Debug: Validate selection object thoroughly
+        console.log('🔍 Full selection object:', selection);
+        console.log('🔍 Selection type:', typeof selection);
+        console.log('🔍 Selection is null?', selection === null);
+        console.log('🔍 Selection is undefined?', selection === undefined);
+        
+        if (selection) {
+          console.log('🔍 Selection validation:', {
+            hasSubject: !!selection.subject,
+            hasPose: !!selection.pose,
+            hasExpression: !!selection.expression,
+            hasLocation: !!selection.location,
+            hasStyles: !!selection.styles,
+            stylesLength: selection.styles?.length || 0,
+            stylesArray: selection.styles,
+            firstStyle: selection.styles?.[0],
+            firstStyleText: selection.styles?.[0]?.text
+          });
+        } else {
+          console.error('❌ Selection object is null or undefined!');
+        }
+        
+        console.log('🧠 Contextual Generation:', {
+          primaryVibe,
+          subject: baseSubject?.description?.substring(0, 50) + '...',
+          characterOverride: characterLoras.length > 0 ? characterLoras[0].name : null,
+          availableLoRAs: catalog.loras.length,
+          compatibleLoRAs: primaryVibe ? catalog.loras.filter(lora => isLoRACompatible(lora, primaryVibe)).length : 'N/A',
+          selectedElements: {
+            pose: selection.pose?.text?.substring(0, 30) + '...',
+            expression: selection.expression?.text?.substring(0, 30) + '...',
+            location: selection.location?.text?.substring(0, 30) + '...',
+            styles: selection.styles?.map(s => s?.text?.substring(0, 20) + '...') || 'No styles',
+            loras: selectedLoras?.map(l => l?.name?.substring(0, 20) + '...') || 'No LoRAs'
+          }
+        });
+        
+        // Debug: Log gothic LoRA matching specifically
+        if (primaryVibe && (primaryVibe.includes('gothic') || primaryVibe === 'punk' || primaryVibe === 'tragic')) {
+          const gothicLoras = catalog.loras.filter(lora => 
+            loraVibeCompatibility[lora.id]?.some(vibe => 
+              ['gothic', 'dark', 'punk', 'tragic'].includes(vibe)
+            )
+          );
+          console.log('🖤 Gothic/Dark LoRA Matching:', {
+            detectedVibe: primaryVibe,
+            availableGothicLoRAs: gothicLoras.map(l => `${l.id}: ${l.name}`),
+            gothicLoRACount: gothicLoras.length
+          });
+        }
+        
+        // Validate selection before assembling prompt
+        if (!selection) {
+          throw new Error('Selection object is null or undefined');
+        }
+        
+        console.log('🛠️ About to assemble prompt with:', {
+          selectionType: typeof selection,
+          hasSelection: !!selection,
+          lorasCount: selectedLoras?.length || 0,
+          styleBlendEnabled: toggles.styleBlend
+        });
+        
+        let prompt, negative, settings;
+        
+        try {
+          console.log('🔧 Calling assemblePrompt...');
+          prompt = assemblePrompt(selection, selectedLoras, { enabled: toggles.styleBlend });
+          console.log('✅ assemblePrompt completed');
+        } catch (e) {
+          console.error('❌ assemblePrompt failed:', e);
+          throw new Error(`Prompt assembly failed: ${e.message}`);
+        }
+        
+        try {
+          console.log('🔧 Calling assembleNegatives...');
+          negative = assembleNegatives(selection, toggles.includeStyleExprNegatives);
+          console.log('✅ assembleNegatives completed');
+        } catch (e) {
+          console.error('❌ assembleNegatives failed:', e);
+          throw new Error(`Negative assembly failed: ${e.message}`);
+        }
+        
+        try {
+          console.log('🔧 Calling formatSettings...');
+          settings = formatSettings(toggles.randomizeSettings, toggles.lockSeed ? seedValue : null);
+          console.log('✅ formatSettings completed');
+        } catch (e) {
+          console.error('❌ formatSettings failed:', e);
+          throw new Error(`Settings formatting failed: ${e.message}`);
+        }
+        
+        const generation = {
+          prompt,
+          negative,
+          settings: JSON.stringify(settings, null, 2),
+          selection,
+          loras: selectedLoras,
+          timestamp: new Date().toISOString()
+        };
+        
+        console.log('✅ Generation completed successfully:', generation);
+        setCurrentGeneration(generation);
+        
+        // Add to history
+        const newHistory = [...history, generation];
+        setHistory(newHistory);
+        saveHistory(newHistory);
+        
+        } catch (error) {
+          console.error('❌ Error during generation:', error);
+          console.error('Error stack:', error.stack);
+          showToast('Generation failed: ' + error.message, 'error');
+        }
+        
+      }, [catalog, toggles, locks, seedValue, currentGeneration.selection, noRepeatSets, history, showToast]);
+
+      return (
+        <div className="min-h-screen">
+          {/* Toast Notification */}
+          {toast && (
+            <div className={`fixed top-6 right-6 z-50 px-4 py-3 rounded-lg shadow-glass backdrop-blur-sm border transition-all duration-300 ${
+              toast.type === 'error' 
+                ? 'bg-red-500/90 border-red-400/50 text-white' 
+                : 'bg-primary-500/90 border-primary-400/50 text-white'
+            }`}>
+              {toast.message}
+            </div>
+          )}
+          
+          <header className="bg-gradient-to-r from-surface-850 to-surface-800 border-b border-surface-700/50 backdrop-blur-sm" role="banner">
+            <div className="container mx-auto px-6 py-8">
+              <h1 className="text-3xl font-bold text-slate-50 mb-3 tracking-tight">For Generations</h1>
+              <p className="text-slate-300 text-lg font-medium mb-4">Pony V6 XL Prompt Generator</p>
+              <div className="bg-amber-500/10 border border-amber-500/20 text-amber-200 px-4 py-3 rounded-lg inline-block" role="alert" aria-live="polite">
+                <span className="font-medium">⚠️ Adult Content Warning:</span> For adult characters only. Do not create harmful or illegal content.
+              </div>
+            </div>
+          </header>
+          
+          <div className="container mx-auto px-6 py-8">
+            <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
+              
+              {/* Left Panel - Catalog */}
+              <div className="space-y-6">
+                <div className="flex items-center space-x-3 mb-6">
+                  <div className="w-1 h-8 bg-primary-500 rounded-full"></div>
+                  <h2 className="text-2xl font-bold text-slate-50">Content Catalog</h2>
+                </div>
+                
+                {/* Subjects */}
+                <div className="bg-surface-800/60 backdrop-blur-sm border border-surface-700/50 rounded-xl p-6 shadow-soft">
+                  <h3 className="text-lg font-semibold text-slate-200 mb-4 flex items-center">
+                    <span className="w-2 h-2 bg-primary-500 rounded-full mr-3"></span>
+                    Subjects ({catalog.subjects.length})
+                  </h3>
+                  <div className="max-h-52 overflow-y-auto space-y-2 scrollbar-thin scrollbar-track-surface-800 scrollbar-thumb-surface-600">
+                    {catalog.subjects.map(subject => (
+                      <div key={subject.id} 
+                           className="group p-3 bg-surface-700/30 hover:bg-surface-700/50 border border-surface-600/30 hover:border-primary-500/50 rounded-lg cursor-pointer transition-all duration-200 hover:shadow-soft"
+                           onClick={() => copyToClipboard(subject.description, `Subject #${subject.id}`)}>
+                        <div className="flex items-center justify-between mb-2">
+                          <span className="text-xs font-medium text-primary-400">Subject #{subject.id}</span>
+                          <span className="text-xs text-slate-500 opacity-0 group-hover:opacity-100 transition-opacity">Click to copy</span>
+                        </div>
+                        <div className="text-xs text-slate-300 leading-relaxed">{subject.description}</div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                
+                {/* Poses */}
+                <div className="bg-surface-800/60 backdrop-blur-sm border border-surface-700/50 rounded-xl p-6 shadow-soft">
+                  <h3 className="text-lg font-semibold text-slate-200 mb-4 flex items-center">
+                    <span className="w-2 h-2 bg-emerald-500 rounded-full mr-3"></span>
+                    Poses ({catalog.poses.length})
+                  </h3>
+                  <div className="max-h-52 overflow-y-auto space-y-2 scrollbar-thin scrollbar-track-surface-800 scrollbar-thumb-surface-600">
+                    {catalog.poses.map(pose => (
+                      <div key={pose.id} 
+                           className="group p-3 bg-surface-700/30 hover:bg-surface-700/50 border border-surface-600/30 hover:border-emerald-500/50 rounded-lg cursor-pointer transition-all duration-200 hover:shadow-soft"
+                           onClick={() => copyToClipboard(`${pose.text}, ${pose.angle}`, `Pose #${pose.id}`)}>
+                        <div className="flex items-center justify-between mb-2">
+                          <span className="text-xs font-medium text-emerald-400">Pose #{pose.id}</span>
+                          <span className="text-xs text-slate-500 opacity-0 group-hover:opacity-100 transition-opacity">Click to copy</span>
+                        </div>
+                        <div className="text-xs font-medium text-slate-200 mb-1">{pose.text}</div>
+                        <div className="text-xs text-slate-400">{pose.angle}</div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                
+                {/* Expressions */}
+                <div className="bg-surface-800/60 backdrop-blur-sm border border-surface-700/50 rounded-xl p-6 shadow-soft">
+                  <h3 className="text-lg font-semibold text-slate-200 mb-4 flex items-center">
+                    <span className="w-2 h-2 bg-violet-500 rounded-full mr-3"></span>
+                    Expressions ({catalog.expressions.length})
+                  </h3>
+                  <div className="max-h-52 overflow-y-auto space-y-2 scrollbar-thin scrollbar-track-surface-800 scrollbar-thumb-surface-600">
+                    {catalog.expressions.map(expression => (
+                      <div key={expression.id} 
+                           className="group p-3 bg-surface-700/30 hover:bg-surface-700/50 border border-surface-600/30 hover:border-violet-500/50 rounded-lg cursor-pointer transition-all duration-200 hover:shadow-soft"
+                           onClick={() => copyToClipboard(`with ${expression.text.split(':')[0]}`, `Expression #${expression.id}`)}>
+                        <div className="flex items-center justify-between mb-2">
+                          <span className="text-xs font-medium text-violet-400">Expression #{expression.id}</span>
+                          <span className="text-xs text-slate-500 opacity-0 group-hover:opacity-100 transition-opacity">Click to copy</span>
+                        </div>
+                        <div className="text-xs font-medium text-slate-200 mb-1">{expression.text.split(':')[0]}</div>
+                        <div className="text-xs text-slate-400 mb-1">{expression.text.substring(expression.text.indexOf(':') + 1).trim()}</div>
+                        {expression.weightRange && (
+                          <div className="text-xs text-purple-400 font-mono">
+                            Weight: {expression.weightRange[0]} - {expression.weightRange[1]}
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                
+                {/* Locations */}
+                <div className="bg-surface-800/60 backdrop-blur-sm border border-surface-700/50 rounded-xl p-6 shadow-soft">
+                  <h3 className="text-lg font-semibold text-slate-200 mb-4 flex items-center">
+                    <span className="w-2 h-2 bg-orange-500 rounded-full mr-3"></span>
+                    Locations ({catalog.locations.length})
+                  </h3>
+                  <div className="max-h-52 overflow-y-auto space-y-2 scrollbar-thin scrollbar-track-surface-800 scrollbar-thumb-surface-600">
+                    {catalog.locations.map(location => (
+                      <div key={location.id} 
+                           className="group p-3 bg-surface-700/30 hover:bg-surface-700/50 border border-surface-600/30 hover:border-orange-500/50 rounded-lg cursor-pointer transition-all duration-200 hover:shadow-soft"
+                           onClick={() => copyToClipboard(`in ${location.text}`, `Location #${location.id}`)}>
+                        <div className="flex items-center justify-between mb-2">
+                          <span className="text-xs font-medium text-orange-400">Location #{location.id}</span>
+                          <span className="text-xs text-slate-500 opacity-0 group-hover:opacity-100 transition-opacity">Click to copy</span>
+                        </div>
+                        <div className="text-xs text-slate-300 leading-relaxed">{location.text}</div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                
+                {/* Styles */}
+                <div className="bg-surface-800/60 backdrop-blur-sm border border-surface-700/50 rounded-xl p-6 shadow-soft">
+                  <h3 className="text-lg font-semibold text-slate-200 mb-4 flex items-center">
+                    <span className="w-2 h-2 bg-pink-500 rounded-full mr-3"></span>
+                    Styles ({catalog.styles.length})
+                  </h3>
+                  <div className="max-h-52 overflow-y-auto space-y-2 scrollbar-thin scrollbar-track-surface-800 scrollbar-thumb-surface-600">
+                    {catalog.styles.map(style => (
+                      <div key={style.id} 
+                           className="group p-3 bg-surface-700/30 hover:bg-surface-700/50 border border-surface-600/30 hover:border-pink-500/50 rounded-lg cursor-pointer transition-all duration-200 hover:shadow-soft"
+                           onClick={() => copyToClipboard(style.text, `Style #${style.id}`)}>
+                        <div className="flex items-center justify-between mb-2">
+                          <span className="text-xs font-medium text-pink-400">Style #{style.id}</span>
+                          <span className="text-xs text-slate-500 opacity-0 group-hover:opacity-100 transition-opacity">Click to copy</span>
+                        </div>
+                        <div className="text-xs text-slate-300 leading-relaxed">{style.text}</div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                
+                {/* LoRAs */}
+                <div className="bg-surface-800/60 backdrop-blur-sm border border-surface-700/50 rounded-xl p-6 shadow-soft">
+                  <h3 className="text-lg font-semibold text-slate-200 mb-4 flex items-center">
+                    <span className="w-2 h-2 bg-blue-500 rounded-full mr-3"></span>
+                    LoRAs ({catalog.loras.length})
+                  </h3>
+                  <div className="max-h-52 overflow-y-auto space-y-2 scrollbar-thin scrollbar-track-surface-800 scrollbar-thumb-surface-600">
+                    {catalog.loras.map(lora => {
+                      const loraType = getLoRAType(lora);
+                      const typeColors = {
+                        character: 'text-pink-400 bg-pink-500/10 border-pink-500/20',
+                        character_sheet: 'text-orange-400 bg-orange-500/10 border-orange-500/20',
+                        style: 'text-blue-400 bg-blue-500/10 border-blue-500/20',
+                        lighting: 'text-yellow-400 bg-yellow-500/10 border-yellow-500/20',
+                        concept: 'text-green-400 bg-green-500/10 border-green-500/20',
+                        pose: 'text-purple-400 bg-purple-500/10 border-purple-500/20'
+                      };
+                      const typeColor = typeColors[loraType] || 'text-slate-400 bg-slate-500/10 border-slate-500/20';
+                      return (
+                        <div key={lora.id} 
+                             className="group p-3 bg-surface-700/30 hover:bg-surface-700/50 border border-surface-600/30 hover:border-blue-500/50 rounded-lg cursor-pointer transition-all duration-200 hover:shadow-soft"
+                             onClick={() => copyToClipboard(`<lora:${lora.name}:${lora.weightRange[0]}>`, `LoRA #${lora.id}`)}>
+                          <div className="flex justify-between items-start mb-2">
+                            <span className="text-xs font-medium text-blue-400">LoRA #{lora.id}</span>
+                            <span className={`text-xs font-bold px-2 py-1 rounded border ${typeColor}`}>
+                              {loraType === 'character_sheet' ? 'SHEET' : loraType.toUpperCase()}
+                            </span>
+                          </div>
+                          <div className="text-xs font-medium text-slate-200 mb-2">{lora.name}</div>
+                          <div className="text-xs text-slate-400 mb-1">
+                            <span className="font-medium">Triggers:</span> {lora.triggers.join(', ') || 'None'}
+                          </div>
+                          <div className="text-xs text-purple-400 font-mono mb-1">
+                            Weight: {lora.weightRange[0]} - {lora.weightRange[1]}
+                          </div>
+                          {lora.tattooPlacements && (
+                            <div className="text-xs text-emerald-400">
+                              <span className="font-medium">Tattoo placements:</span> {lora.tattooPlacements.join(', ')}
+                            </div>
+                          )}
+                          <div className="text-xs text-slate-500 opacity-0 group-hover:opacity-100 transition-opacity mt-2 pt-1 border-t border-surface-600/30">
+                            Click to copy LoRA tag
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+                
+                {/* Add New Items Section */}
+                <div className="bg-surface-800/60 backdrop-blur-sm border border-surface-700/50 rounded-xl p-6 shadow-soft">
+                  <h3 className="text-lg font-semibold text-slate-200 mb-6 flex items-center">
+                    <span className="w-2 h-2 bg-indigo-500 rounded-full mr-3"></span>
+                    Add New Items
+                  </h3>
+                  
+                  {/* Add Subject */}
+                  <div className="mb-6 p-4 bg-surface-700/30 border border-surface-600/50 rounded-lg">
+                    <h4 className="text-sm font-semibold text-primary-400 mb-3 flex items-center">
+                      <span className="w-1.5 h-1.5 bg-primary-500 rounded-full mr-2"></span>
+                      Add New Subject
+                    </h4>
+                    <textarea
+                      id="newSubjectDesc"
+                      placeholder="Enter full nude adult woman description (verbatim style)..."
+                      className="w-full bg-surface-700/50 border border-surface-600/50 focus:border-primary-500/50 rounded-lg p-3 text-sm text-slate-200 placeholder-slate-500 resize-none h-20 transition-colors focus:outline-none focus:ring-2 focus:ring-primary-500/20"
+                    />
+                    <button
+                      onClick={() => {
+                        const desc = document.getElementById('newSubjectDesc').value.trim();
+                        if (desc) {
+                          const newSubject = {
+                            id: catalog.subjects.length + 1,
+                            description: desc
+                          };
+                          const newUserData = {
+                            ...userData,
+                            subjects: [...userData.subjects, newSubject]
+                          };
+                          setUserData(newUserData);
+                          saveUserData(newUserData);
+                          document.getElementById('newSubjectDesc').value = '';
+                          showToast('New subject added successfully!');
+                        }
+                      }}
+                      className="mt-3 bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 text-sm font-medium rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-primary-500/50"
+                    >
+                      Add Subject
+                    </button>
+                  </div>
+                  
+                  {/* Add Pose */}
+                  <div className="mb-6 p-4 bg-surface-700/30 border border-surface-600/50 rounded-lg">
+                    <h4 className="text-sm font-semibold text-emerald-400 mb-3 flex items-center">
+                      <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full mr-2"></span>
+                      Add New Pose
+                    </h4>
+                    <input
+                      id="newPoseText"
+                      placeholder="Pose description..."
+                      className="w-full bg-surface-700/50 border border-surface-600/50 focus:border-emerald-500/50 rounded-lg p-3 text-sm text-slate-200 placeholder-slate-500 mb-3 transition-colors focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
+                    />
+                    <input
+                      id="newPoseAngle"
+                      placeholder="Camera angle/view description..."
+                      className="w-full bg-surface-700/50 border border-surface-600/50 focus:border-emerald-500/50 rounded-lg p-3 text-sm text-slate-200 placeholder-slate-500 transition-colors focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
+                    />
+                    <button
+                      onClick={() => {
+                        const text = document.getElementById('newPoseText').value.trim();
+                        const angle = document.getElementById('newPoseAngle').value.trim();
+                        if (text && angle) {
+                          const newPose = {
+                            id: catalog.poses.length + 1,
+                            text: text,
+                            angle: angle
+                          };
+                          const newUserData = {
+                            ...userData,
+                            poses: [...userData.poses, newPose]
+                          };
+                          setUserData(newUserData);
+                          saveUserData(newUserData);
+                          document.getElementById('newPoseText').value = '';
+                          document.getElementById('newPoseAngle').value = '';
+                          showToast('New pose added successfully!');
+                        }
+                      }}
+                      className="mt-3 bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 text-sm font-medium rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-emerald-500/50"
+                    >
+                      Add Pose
+                    </button>
+                  </div>
+                  
+                  {/* Add Expression */}
+                  <div className="mb-4 p-3 bg-zinc-800 rounded border border-neon-cyan/20">
+                    <h4 className="text-sm font-semibold text-neon-cyan mb-2">Add New Expression</h4>
+                    <input
+                      id="newExprText"
+                      placeholder="Expression name and description..."
+                      className="w-full bg-zinc-700 border border-zinc-600 rounded p-2 text-xs mb-2"
+                    />
+                    <div className="grid grid-cols-2 gap-2">
+                      <input
+                        id="newExprWeightMin"
+                        type="number"
+                        step="0.1"
+                        placeholder="Min weight (optional)"
+                        className="bg-zinc-700 border border-zinc-600 rounded p-2 text-xs"
+                      />
+                      <input
+                        id="newExprWeightMax"
+                        type="number"
+                        step="0.1"
+                        placeholder="Max weight (optional)"
+                        className="bg-zinc-700 border border-zinc-600 rounded p-2 text-xs"
+                      />
+                    </div>
+                    <button
+                      onClick={() => {
+                        const text = document.getElementById('newExprText').value.trim();
+                        const minWeight = document.getElementById('newExprWeightMin').value;
+                        const maxWeight = document.getElementById('newExprWeightMax').value;
+                        if (text) {
+                          const newExpression = {
+                            id: catalog.expressions.length + 1,
+                            text: text
+                          };
+                          if (minWeight && maxWeight && parseFloat(minWeight) <= parseFloat(maxWeight)) {
+                            newExpression.weightRange = [parseFloat(minWeight), parseFloat(maxWeight)];
+                          }
+                          const newUserData = {
+                            ...userData,
+                            expressions: [...userData.expressions, newExpression]
+                          };
+                          setUserData(newUserData);
+                          saveUserData(newUserData);
+                          document.getElementById('newExprText').value = '';
+                          document.getElementById('newExprWeightMin').value = '';
+                          document.getElementById('newExprWeightMax').value = '';
+                        }
+                      }}
+                      className="mt-2 bg-neon-cyan text-zinc-950 px-3 py-1 text-xs rounded hover:bg-neon-cyan/80"
+                    >
+                      Add Expression
+                    </button>
+                  </div>
+                  
+                  {/* Add Location */}
+                  <div className="mb-4 p-3 bg-zinc-800 rounded border border-neon-cyan/20">
+                    <h4 className="text-sm font-semibold text-neon-cyan mb-2">Add New Location</h4>
+                    <input
+                      id="newLocationText"
+                      placeholder="Location with 2-3 details max..."
+                      className="w-full bg-zinc-700 border border-zinc-600 rounded p-2 text-xs"
+                    />
+                    <button
+                      onClick={() => {
+                        const text = document.getElementById('newLocationText').value.trim();
+                        if (text) {
+                          const newLocation = {
+                            id: catalog.locations.length + 1,
+                            text: text
+                          };
+                          const newUserData = {
+                            ...userData,
+                            locations: [...userData.locations, newLocation]
+                          };
+                          setUserData(newUserData);
+                          saveUserData(newUserData);
+                          document.getElementById('newLocationText').value = '';
+                        }
+                      }}
+                      className="mt-2 bg-neon-cyan text-zinc-950 px-3 py-1 text-xs rounded hover:bg-neon-cyan/80"
+                    >
+                      Add Location
+                    </button>
+                  </div>
+                  
+                  {/* Add Style */}
+                  <div className="mb-4 p-3 bg-zinc-800 rounded border border-neon-cyan/20">
+                    <h4 className="text-sm font-semibold text-neon-cyan mb-2">Add New Style</h4>
+                    <input
+                      id="newStyleText"
+                      placeholder="Style description..."
+                      className="w-full bg-zinc-700 border border-zinc-600 rounded p-2 text-xs"
+                    />
+                    <button
+                      onClick={() => {
+                        const text = document.getElementById('newStyleText').value.trim();
+                        if (text) {
+                          const newStyle = {
+                            id: catalog.styles.length + 1,
+                            text: text
+                          };
+                          const newUserData = {
+                            ...userData,
+                            styles: [...userData.styles, newStyle]
+                          };
+                          setUserData(newUserData);
+                          saveUserData(newUserData);
+                          document.getElementById('newStyleText').value = '';
+                        }
+                      }}
+                      className="mt-2 bg-neon-cyan text-zinc-950 px-3 py-1 text-xs rounded hover:bg-neon-cyan/80"
+                    >
+                      Add Style
+                    </button>
+                  </div>
+                  
+                  {/* Add LoRA */}
+                  <div className="mb-4 p-3 bg-zinc-800 rounded border border-neon-cyan/20">
+                    <h4 className="text-sm font-semibold text-neon-cyan mb-2">Add New LoRA</h4>
+                    <input
+                      id="newLoraName"
+                      placeholder="LoRA name..."
+                      className="w-full bg-zinc-700 border border-zinc-600 rounded p-2 text-xs mb-2"
+                    />
+                    <input
+                      id="newLoraTriggers"
+                      placeholder="Trigger words (comma-separated)..."
+                      className="w-full bg-zinc-700 border border-zinc-600 rounded p-2 text-xs mb-2"
+                    />
+                    <div className="grid grid-cols-2 gap-2 mb-2">
+                      <input
+                        id="newLoraWeightMin"
+                        type="number"
+                        step="0.1"
+                        placeholder="Min weight"
+                        className="bg-zinc-700 border border-zinc-600 rounded p-2 text-xs"
+                      />
+                      <input
+                        id="newLoraWeightMax"
+                        type="number"
+                        step="0.1"
+                        placeholder="Max weight"
+                        className="bg-zinc-700 border border-zinc-600 rounded p-2 text-xs"
+                      />
+                    </div>
+                    <input
+                      id="newLoraNotes"
+                      placeholder="Notes (optional)..."
+                      className="w-full bg-zinc-700 border border-zinc-600 rounded p-2 text-xs mb-2"
+                    />
+                    <input
+                      id="newLoraTattooPlacements"
+                      placeholder="Tattoo placements (comma-separated, for tattoo LoRAs)..."
+                      className="w-full bg-zinc-700 border border-zinc-600 rounded p-2 text-xs"
+                    />
+                    <button
+                      onClick={() => {
+                        const name = document.getElementById('newLoraName').value.trim();
+                        const triggers = document.getElementById('newLoraTriggers').value.trim().split(',').map(t => t.trim()).filter(t => t);
+                        const minWeight = parseFloat(document.getElementById('newLoraWeightMin').value);
+                        const maxWeight = parseFloat(document.getElementById('newLoraWeightMax').value);
+                        const notes = document.getElementById('newLoraNotes').value.trim();
+                        const tattooPlacements = document.getElementById('newLoraTattooPlacements').value.trim().split(',').map(t => t.trim()).filter(t => t);
+                        
+                        if (name && !isNaN(minWeight) && !isNaN(maxWeight) && minWeight <= maxWeight) {
+                          const newLora = {
+                            id: catalog.loras.length + 1,
+                            name: name,
+                            triggers: triggers,
+                            weightRange: [minWeight, maxWeight]
+                          };
+                          if (notes) newLora.notes = notes;
+                          if (tattooPlacements.length > 0) newLora.tattooPlacements = tattooPlacements;
+                          
+                          const newUserData = {
+                            ...userData,
+                            loras: [...userData.loras, newLora]
+                          };
+                          setUserData(newUserData);
+                          saveUserData(newUserData);
+                          
+                          // Clear form
+                          ['newLoraName', 'newLoraTriggers', 'newLoraWeightMin', 'newLoraWeightMax', 'newLoraNotes', 'newLoraTattooPlacements'].forEach(id => {
+                            document.getElementById(id).value = '';
+                          });
+                        }
+                      }}
+                      className="mt-2 bg-neon-cyan text-zinc-950 px-3 py-1 text-xs rounded hover:bg-neon-cyan/80"
+                    >
+                      Add LoRA
+                    </button>
+                  </div>
+                  
+                  {/* Validation Button */}
+                  <button
+                    onClick={() => {
+                      const fullData = getMergedCatalog(userData);
+                      const errors = validateData(fullData);
+                      if (errors.length === 0) {
+                        alert('✅ All data is valid!');
+                      } else {
+                        alert('⚠️ Validation errors found:\n\n' + errors.join('\n'));
+                      }
+                    }}
+                    className="w-full bg-neon-purple text-zinc-950 font-bold py-2 px-4 rounded hover:bg-neon-purple/80"
+                  >
+                    Validate Data
+                  </button>
+                </div>
+              </div>
+              
+              {/* Right Panel - Generator */}
+              <div className="space-y-6">
+                <div className="flex items-center space-x-3 mb-6">
+                  <div className="w-1 h-8 bg-primary-500 rounded-full"></div>
+                  <h2 className="text-2xl font-bold text-slate-50">Generator</h2>
+                </div>
+                
+                {/* Toggles */}
+                <div className="bg-surface-800/60 backdrop-blur-sm border border-surface-700/50 rounded-xl p-6 shadow-soft">
+                  <h3 className="text-lg font-semibold text-slate-200 mb-4 flex items-center">
+                    <span className="w-2 h-2 bg-primary-500 rounded-full mr-3"></span>
+                    Generation Settings
+                  </h3>
+                  
+                  <div className="space-y-4">
+                    {Object.entries(toggles).map(([key, value]) => (
+                      <label key={key} className="flex items-center space-x-3 cursor-pointer group">
+                        <div className="relative">
+                          <input
+                            type="checkbox"
+                            checked={value}
+                            onChange={(e) => setToggles(prev => ({ ...prev, [key]: e.target.checked }))}
+                            className="sr-only"
+                          />
+                          <div className={`w-5 h-5 rounded border-2 transition-all duration-200 ${
+                            value 
+                              ? 'bg-primary-500 border-primary-500' 
+                              : 'bg-transparent border-surface-600 group-hover:border-primary-500/50'
+                          }`}>
+                            {value && (
+                              <svg className="w-3 h-3 text-white m-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                              </svg>
+                            )}
+                          </div>
+                        </div>
+                        <div className="flex-1">
+                          <span className="text-sm text-slate-200 group-hover:text-slate-100 transition-colors">
+                            {key === 'contextualMode' ? '🧠 Smart Contextual Generation' : 
+                             key === 'allowCharacterSheets' ? '📋 Allow Character Sheet LoRAs' :
+                             key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}
+                          </span>
+                          {key === 'contextualMode' && (
+                            <div className="text-xs text-slate-500 mt-1">
+                              AI picks compatible poses, expressions, locations & styles based on subject vibe
+                            </div>
+                          )}
+                          {key === 'allowCharacterSheets' && (
+                            <div className="text-xs text-slate-500 mt-1">
+                              Include character sheet LoRAs that generate multiple views/reference sheets
+                            </div>
+                          )}
+                        </div>
+                      </label>
+                    ))}
+                  </div>
+                  
+                  {/* Smart LoRA Selection Info */}
+                  <div className="pt-4 border-t border-surface-700/50">
+                    <div className="bg-surface-700/30 rounded-lg p-4">
+                      <h4 className="text-sm font-medium text-slate-200 mb-2 flex items-center">
+                        <span className="w-1.5 h-1.5 bg-blue-500 rounded-full mr-2"></span>
+                        Smart LoRA Selection
+                      </h4>
+                      <div className="text-xs text-slate-400 space-y-1">
+                        <div>• <strong>Max 1 Character</strong> LoRA (30% chance)</div>
+                        <div>• <strong>Max 1 Style</strong> LoRA - matches chosen style (40% chance)</div>
+                        <div>• <strong>Max 1 Lighting</strong> LoRA (25% chance)</div>
+                        <div>• <strong>Max 1 Pose</strong> LoRA - contextual to selected pose (20% chance)</div>
+                        <div>• <strong>Max 1-2 Concept</strong> LoRAs - integrated into prompt text (60% chance)</div>
+                        <div>• <strong>Max 1 Character Sheet</strong> - only if enabled (10% chance)</div>
+                      </div>
+                      <div className="text-xs text-blue-400 mt-3 font-medium">
+                        🎯 No more LoRA stacking conflicts!
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Seed Input (only when Lock Seed is ON) */}
+                  {toggles.lockSeed && (
+                    <div className="pt-4 border-t border-surface-700/50">
+                      <label className="block text-sm font-medium text-slate-200 mb-3">
+                        Seed Value
+                      </label>
+                      <input
+                        type="number"
+                        value={seedValue || ''}
+                        onChange={(e) => setSeedValue(e.target.value ? parseInt(e.target.value) : null)}
+                        placeholder="Enter seed (32-bit integer)"
+                        className="w-full bg-surface-700/50 border border-surface-600/50 focus:border-primary-500/50 rounded-lg p-3 text-sm text-slate-200 placeholder-slate-500 transition-colors focus:outline-none focus:ring-2 focus:ring-primary-500/20"
+                      />
+                      <div className="text-xs text-slate-500 mt-2">
+                        Leave empty for random seed
+                      </div>
+                    </div>
+                  )}
+                </div>
+                
+                {/* Locks */}
+                <div className="bg-surface-800/60 backdrop-blur-sm border border-surface-700/50 rounded-xl p-6 shadow-soft">
+                  <h3 className="text-lg font-semibold text-slate-200 mb-4 flex items-center">
+                    <span className="w-2 h-2 bg-amber-500 rounded-full mr-3"></span>
+                    Lock Per-Bucket
+                  </h3>
+                  
+                  <div className="space-y-3">
+                    {Object.entries(locks).map(([key, value]) => (
+                      <label key={key} className="flex items-center space-x-3 cursor-pointer group">
+                        <div className="relative">
+                          <input
+                            type="checkbox"
+                            checked={value}
+                            onChange={(e) => setLocks(prev => ({ ...prev, [key]: e.target.checked }))}
+                            className="sr-only"
+                          />
+                          <div className={`w-5 h-5 rounded border-2 transition-all duration-200 ${
+                            value 
+                              ? 'bg-amber-500 border-amber-500' 
+                              : 'bg-transparent border-surface-600 group-hover:border-amber-500/50'
+                          }`}>
+                            {value && (
+                              <svg className="w-3 h-3 text-white m-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
+                              </svg>
+                            )}
+                          </div>
+                        </div>
+                        <span className="text-sm text-slate-200 group-hover:text-slate-100 transition-colors">
+                          Lock {key.charAt(0).toUpperCase() + key.slice(1)}
+                        </span>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Generate Button */}
+                <button
+                  onClick={generatePrompt}
+                  className="w-full bg-gradient-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800 text-white font-semibold py-4 px-8 rounded-xl transition-all duration-200 shadow-soft hover:shadow-medium focus:outline-none focus:ring-2 focus:ring-primary-500/50 focus:ring-offset-2 focus:ring-offset-surface-900"
+                >
+                  Generate Prompt
+                </button>
+
+                {/* Re-roll Buttons */}
+                {currentGeneration.selection && (
+                  <div className="grid grid-cols-2 gap-2">
+                    {Object.keys(locks).map(bucket => (
+                      <button
+                        key={bucket}
+                        onClick={() => {
+                          // Re-roll specific bucket
+                          const rng = toggles.lockSeed && seedValue ? new XorShift32(seedValue) : null;
+                          const newSelection = { ...currentGeneration.selection };
+                          
+                          if (bucket === 'subject') {
+                            newSelection.subject = rng ? rng.choice(catalog.subjects) : randomChoice(catalog.subjects);
+                          } else if (bucket === 'pose') {
+                            newSelection.pose = rng ? rng.choice(catalog.poses) : randomChoice(catalog.poses);
+                          } else if (bucket === 'expression') {
+                            newSelection.expression = rng ? rng.choice(catalog.expressions) : randomChoice(catalog.expressions);
+                          } else if (bucket === 'location') {
+                            newSelection.location = rng ? rng.choice(catalog.locations) : randomChoice(catalog.locations);
+                          } else if (bucket === 'style') {
+                            const selectedStyle = rng ? rng.choice(catalog.styles) : randomChoice(catalog.styles);
+                            newSelection.styles = selectedStyle ? [selectedStyle] : [];
+                          }
+                          
+                          // Use same smart LoRA selection for re-rolls (simplified version)
+                          const availableLoras = catalog.loras.filter(lora => 
+                            toggles.allowCharacterSheets || !isCharacterSheetLoRA(lora)
+                          );
+                          
+                          // Simplified smart selection for re-rolls
+                          const selectedLoras = [];
+                          const lorasByType = { character: [], style: [], lighting: [], pose: [], concept: [] };
+                          availableLoras.forEach(lora => {
+                            const type = getLoRAType(lora);
+                            if (lorasByType[type]) lorasByType[type].push(lora);
+                          });
+                          
+                          // Pick one of each type randomly (simplified)
+                          if (lorasByType.character.length > 0 && Math.random() < 0.3) {
+                            selectedLoras.push({ ...randomChoice(lorasByType.character), weight: rngFloat(0.6, 1.0) });
+                          }
+                          if (lorasByType.style.length > 0 && Math.random() < 0.4) {
+                            selectedLoras.push({ ...randomChoice(lorasByType.style), weight: rngFloat(0.6, 1.0) });
+                          }
+                          if (lorasByType.lighting.length > 0 && Math.random() < 0.25) {
+                            selectedLoras.push({ ...randomChoice(lorasByType.lighting), weight: rngFloat(0.2, 1.0) });
+                          }
+                          if (lorasByType.concept.length > 0 && Math.random() < 0.6) {
+                            const conceptCount = Math.random() < 0.3 ? 2 : 1;
+                            for (let i = 0; i < conceptCount && lorasByType.concept.length > 0; i++) {
+                              const concept = randomChoice(lorasByType.concept);
+                              selectedLoras.push({ ...concept, weight: rngFloat(concept.weightRange[0], concept.weightRange[1]) });
+                              lorasByType.concept.splice(lorasByType.concept.indexOf(concept), 1);
+                            }
+                          }
+                          const prompt = assemblePrompt(newSelection, selectedLoras, { enabled: toggles.styleBlend });
+                          const negative = assembleNegatives(newSelection, toggles.includeStyleExprNegatives);
+                          const settings = formatSettings(toggles.randomizeSettings, toggles.lockSeed ? seedValue : null);
+                          
+                          const generation = {
+                            prompt,
+                            negative,
+                            settings: JSON.stringify(settings, null, 2),
+                            selection: newSelection,
+                            loras: selectedLoras,
+                            timestamp: new Date().toISOString()
+                          };
+                          
+                          setCurrentGeneration(generation);
+                        }}
+                        className="bg-surface-700/50 hover:bg-surface-700 text-slate-200 border border-surface-600/50 hover:border-primary-500/50 py-2 px-3 text-xs rounded-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-primary-500/50"
+                        disabled={locks[bucket]}
+                      >
+                        Re-roll {bucket.charAt(0).toUpperCase() + bucket.slice(1)}
+                      </button>
+                    ))}
+                  </div>
+                )}
+                
+                {/* Output */}
+                {currentGeneration.prompt && (
+                  <div className="space-y-6">
+                    <div className="bg-surface-800/60 backdrop-blur-sm border border-surface-700/50 rounded-xl p-6 shadow-soft">
+                      <div className="flex justify-between items-center mb-4">
+                        <label className="text-lg font-semibold text-slate-200 flex items-center">
+                          <span className="w-2 h-2 bg-primary-500 rounded-full mr-3"></span>
+                          Prompt
+                        </label>
+                        <button
+                          onClick={() => copyToClipboard(currentGeneration.prompt, 'Prompt')}
+                          className="bg-primary-600 hover:bg-primary-700 text-white px-3 py-1.5 text-xs font-medium rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-primary-500/50"
+                        >
+                          Copy
+                        </button>
+                      </div>
+                      <textarea
+                        value={currentGeneration.prompt}
+                        readOnly
+                        className="w-full h-32 bg-surface-700/50 border border-surface-600/50 rounded-lg p-4 text-sm font-mono text-slate-200 resize-none focus:outline-none scrollbar-thin scrollbar-track-surface-700 scrollbar-thumb-surface-600"
+                      />
+                    </div>
+                    
+                    <div className="bg-surface-800/60 backdrop-blur-sm border border-surface-700/50 rounded-xl p-6 shadow-soft">
+                      <div className="flex justify-between items-center mb-4">
+                        <label className="text-lg font-semibold text-slate-200 flex items-center">
+                          <span className="w-2 h-2 bg-red-500 rounded-full mr-3"></span>
+                          Negative Prompt
+                        </label>
+                        <button
+                          onClick={() => copyToClipboard(currentGeneration.negative, 'Negative Prompt')}
+                          className="bg-red-600 hover:bg-red-700 text-white px-3 py-1.5 text-xs font-medium rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-red-500/50"
+                        >
+                          Copy
+                        </button>
+                      </div>
+                      <textarea
+                        value={currentGeneration.negative}
+                        readOnly
+                        className="w-full h-24 bg-surface-700/50 border border-surface-600/50 rounded-lg p-4 text-sm font-mono text-slate-200 resize-none focus:outline-none scrollbar-thin scrollbar-track-surface-700 scrollbar-thumb-surface-600"
+                      />
+                    </div>
+                    
+                    {/* LoRAs Section */}
+                    {currentGeneration.loras && currentGeneration.loras.length > 0 && (
+                      <div className="bg-surface-800/60 backdrop-blur-sm border border-surface-700/50 rounded-xl p-6 shadow-soft">
+                        <div className="flex justify-between items-center mb-4">
+                          <label className="text-lg font-semibold text-slate-200 flex items-center">
+                            <span className="w-2 h-2 bg-blue-500 rounded-full mr-3"></span>
+                            LoRAs ({currentGeneration.loras.length})
+                          </label>
+                          <button
+                            onClick={() => {
+                              const loraStrings = currentGeneration.loras.map(lora => `<lora:${lora.name}:${lora.weight}>`);
+                              copyToClipboard(loraStrings.join(', '), 'LoRAs');
+                            }}
+                            className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 text-xs font-medium rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+                          >
+                            Copy All
+                          </button>
+                        </div>
+                        <div className="grid grid-cols-1 gap-3">
+                          {currentGeneration.loras.map((lora, index) => {
+                            const loraType = getLoRAType(lora);
+                            const typeColors = {
+                              character: 'text-pink-400 bg-pink-500/10 border-pink-500/20',
+                              character_sheet: 'text-orange-400 bg-orange-500/10 border-orange-500/20',
+                              style: 'text-blue-400 bg-blue-500/10 border-blue-500/20',
+                              lighting: 'text-yellow-400 bg-yellow-500/10 border-yellow-500/20',
+                              concept: 'text-green-400 bg-green-500/10 border-green-500/20',
+                              pose: 'text-purple-400 bg-purple-500/10 border-purple-500/20'
+                            };
+                            const typeColor = typeColors[loraType] || 'text-slate-400 bg-slate-500/10 border-slate-500/20';
+                            
+                            return (
+                              <div key={index} 
+                                   className="group p-3 bg-surface-700/30 hover:bg-surface-700/50 border border-surface-600/30 hover:border-blue-500/50 rounded-lg cursor-pointer transition-all duration-200"
+                                   onClick={() => copyToClipboard(`<lora:${lora.name}:${lora.weight}>`, `LoRA: ${lora.name}`)}>
+                                <div className="flex justify-between items-start mb-2">
+                                  <div className="flex items-center space-x-2">
+                                    <span className="text-xs font-medium text-blue-400">#{index + 1}</span>
+                                    <span className={`text-xs font-bold px-2 py-1 rounded border ${typeColor}`}>
+                                      {loraType === 'character_sheet' ? 'SHEET' : loraType.toUpperCase()}
+                                    </span>
+                                  </div>
+                                  <div className="text-xs font-mono text-emerald-400 font-semibold">
+                                    {lora.weight}
+                                  </div>
+                                </div>
+                                <div className="text-xs font-medium text-slate-200 mb-1">{lora.name}</div>
+                                <div className="text-xs text-slate-400 mb-2">
+                                  <span className="font-medium">Triggers:</span> {lora.triggers.join(', ') || 'None'}
+                                </div>
+                                <div className="text-xs text-slate-500 opacity-0 group-hover:opacity-100 transition-opacity border-t border-surface-600/30 pt-2">
+                                  Click to copy: <span className="font-mono bg-surface-600/20 px-1 rounded">&lt;lora:{lora.name}:{lora.weight}&gt;</span>
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    )}
+                    
+                    <div className="bg-surface-800/60 backdrop-blur-sm border border-surface-700/50 rounded-xl p-6 shadow-soft">
+                      <div className="flex justify-between items-center mb-4">
+                        <label className="text-lg font-semibold text-slate-200 flex items-center">
+                          <span className="w-2 h-2 bg-emerald-500 rounded-full mr-3"></span>
+                          Settings
+                        </label>
+                        <button
+                          onClick={() => copyToClipboard(currentGeneration.settings, 'Settings')}
+                          className="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 text-xs font-medium rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-emerald-500/50"
+                        >
+                          Copy
+                        </button>
+                      </div>
+                      <textarea
+                        value={currentGeneration.settings}
+                        readOnly
+                        className="w-full h-32 bg-surface-700/50 border border-surface-600/50 rounded-lg p-4 text-sm font-mono text-slate-200 resize-none focus:outline-none scrollbar-thin scrollbar-track-surface-700 scrollbar-thumb-surface-600"
+                      />
+                    </div>
+                    
+                    {/* Export Buttons */}
+                    <div className="grid grid-cols-2 gap-4">
+                      <button
+                        onClick={() => {
+                          let content = `Prompt:\n${currentGeneration.prompt}\n\nNegative Prompt:\n${currentGeneration.negative}`;
+                          
+                          // Add LoRAs section if present
+                          if (currentGeneration.loras && currentGeneration.loras.length > 0) {
+                            const loraStrings = currentGeneration.loras.map(lora => `<lora:${lora.name}:${lora.weight}>`);
+                            content += `\n\nLoRAs:\n${loraStrings.join('\n')}`;
+                          }
+                          
+                          content += `\n\nSettings:\n${currentGeneration.settings}`;
+                          
+                          const blob = new Blob([content], { type: 'text/plain' });
+                          const url = URL.createObjectURL(blob);
+                          const a = document.createElement('a');
+                          a.href = url;
+                          a.download = `generation-${Date.now()}.txt`;
+                          a.click();
+                          URL.revokeObjectURL(url);
+                        }}
+                        className="bg-surface-700/50 hover:bg-surface-700 text-slate-200 border border-surface-600/50 hover:border-violet-500/50 py-3 px-4 text-sm font-medium rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-violet-500/50"
+                      >
+                        📄 Download .txt
+                      </button>
+                      <button
+                        onClick={() => {
+                          const content = JSON.stringify(getMergedCatalog(userData), null, 2);
+                          const blob = new Blob([content], { type: 'application/json' });
+                          const url = URL.createObjectURL(blob);
+                          const a = document.createElement('a');
+                          a.href = url;
+                          a.download = `catalog-${Date.now()}.json`;
+                          a.click();
+                          URL.revokeObjectURL(url);
+                        }}
+                        className="bg-surface-700/50 hover:bg-surface-700 text-slate-200 border border-surface-600/50 hover:border-orange-500/50 py-3 px-4 text-sm font-medium rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-orange-500/50"
+                      >
+                        📦 Download .json
+                      </button>
+                    </div>
+                  </div>
+                )}
+
+                {/* History */}
+                {history.length > 0 && (
+                  <div className="bg-surface-800/60 backdrop-blur-sm border border-surface-700/50 rounded-xl p-6 shadow-soft">
+                    <h3 className="text-lg font-semibold text-slate-200 mb-4 flex items-center">
+                      <span className="w-2 h-2 bg-purple-500 rounded-full mr-3"></span>
+                      History ({history.length}/20)
+                    </h3>
+                    <div className="max-h-52 overflow-y-auto space-y-3 scrollbar-thin scrollbar-track-surface-800 scrollbar-thumb-surface-600">
+                      {history.slice(-5).reverse().map((generation, index) => (
+                        <div key={generation.timestamp} className="p-3 bg-surface-700/30 hover:bg-surface-700/50 border border-surface-600/30 rounded-lg group transition-all duration-200">
+                          <div className="flex justify-between items-center mb-2">
+                            <span className="text-xs font-medium text-slate-300">
+                              {new Date(generation.timestamp).toLocaleTimeString()}
+                            </span>
+                            <button
+                              onClick={() => {
+                                setCurrentGeneration(generation);
+                                // Parse settings back to update UI state if needed
+                                try {
+                                  const settings = JSON.parse(generation.settings);
+                                  setSeedValue(settings.seed);
+                                } catch (e) {
+                                  console.error('Failed to parse settings:', e);
+                                }
+                              }}
+                              className="text-xs text-purple-400 hover:text-purple-300 px-2 py-1 rounded border border-purple-500/20 hover:border-purple-500/50 transition-colors focus:outline-none focus:ring-2 focus:ring-purple-500/50"
+                            >
+                              Restore
+                            </button>
+                          </div>
+                          <div className="text-xs text-slate-500 truncate">
+                            {generation.prompt.substring(0, 80)}...
+                          </div>
+                        </div>
+                      ))}
+                      {history.length > 5 && (
+                        <div className="text-xs text-purple-400 text-center py-2 border-t border-surface-600/30">
+                          ...and {history.length - 5} more in history
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+  </script>
+</body>
+</html>
