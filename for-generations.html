@@ -579,28 +579,48 @@
 
     // Negative prompt assembly
     function assembleNegatives(selection, includeStyleExpr) {
+      console.log('🔧 assembleNegatives called with:', {
+        selectionExists: !!selection,
+        includeStyleExpr,
+        selectionType: typeof selection
+      });
+      
+      // Validate inputs
+      if (!selection) {
+        console.error('❌ assembleNegatives: selection is null/undefined');
+        return packetData.negatives.standard.join(', ');
+      }
+      
       let negatives = [...packetData.negatives.standard];
       
       if (includeStyleExpr) {
         // Add style-specific negatives (50% chance each)
-        if (selection.styles && selection.styles.length > 0) {
+        if (selection.styles && Array.isArray(selection.styles) && selection.styles.length > 0) {
           selection.styles.forEach(style => {
-            if (Math.random() < 0.5) {
-              const styleKey = style.text.split(':')[0].trim();
-              const styleNegatives = packetData.negatives.byStyle[styleKey];
-              if (styleNegatives) {
-                negatives.push(...styleNegatives);
+            if (style && style.text && Math.random() < 0.5) {
+              try {
+                const styleKey = style.text.split(':')[0].trim();
+                const styleNegatives = packetData.negatives.byStyle[styleKey];
+                if (styleNegatives) {
+                  negatives.push(...styleNegatives);
+                }
+              } catch (e) {
+                console.error('❌ Error processing style negative:', e, style);
               }
             }
           });
         }
         
         // Add expression-specific negatives (50% chance)
-        if (selection.expression && Math.random() < 0.5) {
-          const exprKey = selection.expression.text.split(':')[0].trim();
-          const exprNegatives = packetData.negatives.byExpression[exprKey];
-          if (exprNegatives) {
-            negatives.push(...exprNegatives);
+        if (selection.expression && selection.expression.text && Math.random() < 0.5) {
+          try {
+            const exprKey = selection.expression.text.split(':')[0].trim();
+            const exprNegatives = packetData.negatives.byExpression[exprKey];
+            if (exprNegatives) {
+              negatives.push(...exprNegatives);
+            }
+          } catch (e) {
+            console.error('❌ Error processing expression negative:', e, selection.expression);
           }
         }
       }
@@ -1136,181 +1156,53 @@
         // Get the primary vibe from subject (only if contextual mode is enabled)
         primaryVibe = toggles.contextualMode ? getSubjectVibe(baseSubject) : null;
         
-        // 2. SMART LoRA selection by type with limits
+        // 2. SIMPLE LoRA selection to fix the error (will enhance later)
         const selectedLoras = (() => {
-          // Filter out character sheet LoRAs unless explicitly allowed
-          let availableLoras = catalog.loras.filter(lora => 
-            toggles.allowCharacterSheets || !isCharacterSheetLoRA(lora)
-          );
-          
-          const selectedByType = {
-            character: null,
-            character_sheet: null,
-            style: null,
-            lighting: null,
-            pose: null,
-            concept: [] // Can have 1-2 concepts
-          };
-          
-          // Categorize available LoRAs by type
-          const lorasByType = {
-            character: [],
-            character_sheet: [],
-            style: [],
-            lighting: [],
-            pose: [],
-            concept: []
-          };
-          
-          availableLoras.forEach(lora => {
-            const type = getLoRAType(lora);
-            if (lorasByType[type]) {
-              lorasByType[type].push(lora);
-            }
-          });
-          
-          console.log('📊 LoRAs by type:', {
-            character: lorasByType.character.length,
-            style: lorasByType.style.length,
-            lighting: lorasByType.lighting.length,
-            pose: lorasByType.pose.length,
-            concept: lorasByType.concept.length,
-            character_sheet: lorasByType.character_sheet.length
-          });
-          
-          // SMART SELECTION: Pick one per type based on context
-          
-          // 1. CHARACTER LoRA (overrides subject if selected)
-          if (lorasByType.character.length > 0 && Math.random() < 0.3) { // 30% chance
-            const compatibleCharacters = toggles.contextualMode && primaryVibe 
-              ? lorasByType.character.filter(lora => isLoRACompatible(lora, primaryVibe))
-              : [];
+          try {
+            // Filter out character sheet LoRAs unless explicitly allowed
+            let availableLoras = catalog.loras.filter(lora => 
+              toggles.allowCharacterSheets || !isCharacterSheetLoRA(lora)
+            );
             
-            selectedByType.character = compatibleCharacters.length > 0 && Math.random() < 0.7
-              ? rng ? rng.choice(compatibleCharacters) : randomChoice(compatibleCharacters)
-              : rng ? rng.choice(lorasByType.character) : randomChoice(lorasByType.character);
-          }
-          
-          // 2. STYLE LoRA (should match selected style)
-          if (lorasByType.style.length > 0) {
-            let matchingStyleLora = null;
+            console.log('🔧 Simple LoRA selection with', availableLoras.length, 'available LoRAs');
             
-            // Try to match style if styles exist
-            if (selection.styles && selection.styles.length > 0 && selection.styles[0] && selection.styles[0].text) {
-              const chosenStyleText = selection.styles[0].text.toLowerCase();
-              matchingStyleLora = lorasByType.style.find(lora => {
-                const loraName = lora.name.toLowerCase();
-                // Check for style matches
-                if (chosenStyleText.includes('gothic') && (loraName.includes('gothic') || lora.id === 2 || lora.id === 25 || lora.id === 27)) return true;
-                if (chosenStyleText.includes('pop art') && lora.id === 9) return true;
-                if (chosenStyleText.includes('ghibli') && lora.id === 26) return true;
-                if (chosenStyleText.includes('vintage') && (lora.id === 10 || lora.id === 31)) return true;
-                if (chosenStyleText.includes('90s') && lora.id === 1) return true;
-                if (chosenStyleText.includes('cyberpunk') && lora.id === 15) return true;
-                if (chosenStyleText.includes('noir') && lora.id === 16) return true;
-                return false;
-              });
-            }
+            // Simple selection: pick 1-3 random LoRAs
+            const maxLoras = Math.min(3, availableLoras.length);
+            const numLoras = Math.floor(Math.random() * maxLoras) + 1; // 1 to maxLoras
             
-            selectedByType.style = matchingStyleLora || 
-              (Math.random() < 0.4 ? // 40% chance for random style LoRA
-                (rng ? rng.choice(lorasByType.style) : randomChoice(lorasByType.style)) : null);
-          }
-          
-          // 3. LIGHTING LoRA (25% chance)
-          if (lorasByType.lighting.length > 0 && Math.random() < 0.25) {
-            selectedByType.lighting = rng ? rng.choice(lorasByType.lighting) : randomChoice(lorasByType.lighting);
-          }
-          
-          // 4. POSE LoRA (contextual to selected pose, 20% chance)
-          if (lorasByType.pose.length > 0 && Math.random() < 0.2 && selection.pose && selection.pose.text) {
-            const poseText = selection.pose.text.toLowerCase();
-            let relevantPoseLoRAs = [];
+            const selected = [];
+            const used = new Set();
             
-            if (poseText.includes('foot') || poseText.includes('barefoot')) {
-              const footLora = lorasByType.pose.find(l => l.id === 3);
-              if (footLora) relevantPoseLoRAs.push(footLora);
-            }
-            if (poseText.includes('prone') || poseText.includes('lying')) {
-              const proneLora = lorasByType.pose.find(l => l.id === 23);
-              if (proneLora) relevantPoseLoRAs.push(proneLora);
-            }
-            if (poseText.includes('kiss')) {
-              const kissLora = lorasByType.pose.find(l => l.id === 24);
-              if (kissLora) relevantPoseLoRAs.push(kissLora);
-            }
-            
-            selectedByType.pose = relevantPoseLoRAs.length > 0 
-              ? randomChoice(relevantPoseLoRAs)
-              : (rng ? rng.choice(lorasByType.pose) : randomChoice(lorasByType.pose));
-          }
-          
-          // 5. CONCEPT LoRAs (1-2 max, contextually smart)
-          if (lorasByType.concept.length > 0) {
-            const maxConcepts = Math.random() < 0.3 ? 2 : 1; // 30% chance for 2 concepts
-            
-            for (let i = 0; i < maxConcepts && lorasByType.concept.length > 0; i++) {
-              let conceptLora = null;
+            for (let i = 0; i < numLoras && selected.length < availableLoras.length; i++) {
+              let attempts = 0;
+              let lora = null;
               
-              if (toggles.contextualMode && primaryVibe) {
-                const compatibleConcepts = lorasByType.concept.filter(lora => isLoRACompatible(lora, primaryVibe));
-                conceptLora = compatibleConcepts.length > 0 && Math.random() < 0.6
-                  ? randomChoice(compatibleConcepts)
-                  : randomChoice(lorasByType.concept);
-              } else {
-                conceptLora = randomChoice(lorasByType.concept);
-              }
-              
-              if (conceptLora) {
-                selectedByType.concept.push(conceptLora);
-                // Remove from available list
-                const index = lorasByType.concept.indexOf(conceptLora);
-                if (index > -1) lorasByType.concept.splice(index, 1);
-              }
-            }
-          }
-          
-          // 6. CHARACTER SHEET (if allowed and selected)
-          if (toggles.allowCharacterSheets && lorasByType.character_sheet.length > 0 && Math.random() < 0.1) {
-            selectedByType.character_sheet = rng ? rng.choice(lorasByType.character_sheet) : randomChoice(lorasByType.character_sheet);
-          }
-          
-          // Convert to final array with weights
-          const finalLoras = [];
-          Object.values(selectedByType).forEach(lora => {
-            if (Array.isArray(lora)) {
-              // Handle concept array
-              lora.forEach(conceptLora => {
-                if (conceptLora) {
-                  finalLoras.push({
-                    ...conceptLora,
-                    weight: rng 
-                      ? rng.float(conceptLora.weightRange[0], conceptLora.weightRange[1])
-                      : rngFloat(conceptLora.weightRange[0], conceptLora.weightRange[1])
-                  });
+              // Try to pick an unused LoRA
+              while (attempts < 10 && !lora) {
+                const candidate = rng ? rng.choice(availableLoras) : randomChoice(availableLoras);
+                if (!used.has(candidate.id)) {
+                  lora = candidate;
+                  used.add(candidate.id);
                 }
-              });
-            } else if (lora) {
-              finalLoras.push({
-                ...lora,
-                weight: rng 
-                  ? rng.float(lora.weightRange[0], lora.weightRange[1])
-                  : rngFloat(lora.weightRange[0], lora.weightRange[1])
-              });
+                attempts++;
+              }
+              
+              if (lora) {
+                selected.push({
+                  ...lora,
+                  weight: rng 
+                    ? rng.float(lora.weightRange[0], lora.weightRange[1])
+                    : rngFloat(lora.weightRange[0], lora.weightRange[1])
+                });
+              }
             }
-          });
-          
-          console.log('🎯 Selected LoRAs by type:', {
-            character: selectedByType.character?.name || 'None',
-            style: selectedByType.style?.name || 'None',
-            lighting: selectedByType.lighting?.name || 'None',
-            pose: selectedByType.pose?.name || 'None',
-            concept: selectedByType.concept.map(c => c?.name || 'None'),
-            character_sheet: selectedByType.character_sheet?.name || 'None',
-            totalSelected: finalLoras.length
-          });
-          
-          return finalLoras;
+            
+            console.log('🎯 Simple LoRA selection:', selected.map(l => l.name));
+            return selected;
+          } catch (e) {
+            console.error('❌ Error in LoRA selection:', e);
+            return [];
+          }
         })();
         
         // 3. Check if character LoRAs should override subject
@@ -1544,9 +1436,34 @@
           styleBlendEnabled: toggles.styleBlend
         });
         
-        const prompt = assemblePrompt(selection, selectedLoras, { enabled: toggles.styleBlend });
-        const negative = assembleNegatives(selection, toggles.includeStyleExprNegatives);
-        const settings = formatSettings(toggles.randomizeSettings, toggles.lockSeed ? seedValue : null);
+        let prompt, negative, settings;
+        
+        try {
+          console.log('🔧 Calling assemblePrompt...');
+          prompt = assemblePrompt(selection, selectedLoras, { enabled: toggles.styleBlend });
+          console.log('✅ assemblePrompt completed');
+        } catch (e) {
+          console.error('❌ assemblePrompt failed:', e);
+          throw new Error(`Prompt assembly failed: ${e.message}`);
+        }
+        
+        try {
+          console.log('🔧 Calling assembleNegatives...');
+          negative = assembleNegatives(selection, toggles.includeStyleExprNegatives);
+          console.log('✅ assembleNegatives completed');
+        } catch (e) {
+          console.error('❌ assembleNegatives failed:', e);
+          throw new Error(`Negative assembly failed: ${e.message}`);
+        }
+        
+        try {
+          console.log('🔧 Calling formatSettings...');
+          settings = formatSettings(toggles.randomizeSettings, toggles.lockSeed ? seedValue : null);
+          console.log('✅ formatSettings completed');
+        } catch (e) {
+          console.error('❌ formatSettings failed:', e);
+          throw new Error(`Settings formatting failed: ${e.message}`);
+        }
         
         const generation = {
           prompt,
