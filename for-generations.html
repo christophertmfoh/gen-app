@@ -4,25 +4,101 @@
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
   <title>For Generations — Prompt Generator</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
       theme: {
         extend: {
           colors: {
-            neon: {
-              cyan: '#00ffff',
-              pink: '#ff0080',
-              green: '#00ff00',
-              purple: '#8000ff'
+            primary: {
+              50: '#f0f9ff',
+              100: '#e0f2fe', 
+              500: '#0ea5e9',
+              600: '#0284c7',
+              700: '#0369a1'
+            },
+            surface: {
+              50: '#f8fafc',
+              100: '#f1f5f9',
+              200: '#e2e8f0',
+              700: '#334155',
+              800: '#1e293b',
+              850: '#1a2332',
+              900: '#0f172a',
+              950: '#020617'
             }
+          },
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif']
+          },
+          boxShadow: {
+            'soft': '0 2px 8px 0 rgba(0, 0, 0, 0.12)',
+            'medium': '0 4px 16px 0 rgba(0, 0, 0, 0.16)',
+            'glass': '0 8px 32px 0 rgba(0, 0, 0, 0.37)'
+          },
+          backdropBlur: {
+            'xs': '2px',
           }
         }
       }
     }
   </script>
+  <style>
+    /* Custom slider styles */
+    .slider-thumb::-webkit-slider-thumb {
+      appearance: none;
+      height: 20px;
+      width: 20px;
+      border-radius: 50%;
+      background: #0ea5e9;
+      cursor: pointer;
+      border: 2px solid #1e293b;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+      transition: all 0.2s ease;
+    }
+    .slider-thumb::-webkit-slider-thumb:hover {
+      background: #0284c7;
+      transform: scale(1.1);
+    }
+    .slider-thumb::-moz-range-thumb {
+      height: 20px;
+      width: 20px;
+      border-radius: 50%;
+      background: #0ea5e9;
+      cursor: pointer;
+      border: 2px solid #1e293b;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+    }
+    
+    /* Custom scrollbar styles */
+    .scrollbar-thin::-webkit-scrollbar {
+      width: 6px;
+    }
+    .scrollbar-track-surface-800::-webkit-scrollbar-track {
+      background: #1e293b;
+      border-radius: 3px;
+    }
+    .scrollbar-thumb-surface-600::-webkit-scrollbar-thumb {
+      background: #475569;
+      border-radius: 3px;
+    }
+    .scrollbar-thumb-surface-600::-webkit-scrollbar-thumb:hover {
+      background: #64748b;
+    }
+    
+    /* Focus ring improvements */
+    .focus\:ring-primary-500\/50:focus {
+      --tw-ring-color: rgb(14 165 233 / 0.5);
+    }
+    .focus\:ring-primary-500\/20:focus {
+      --tw-ring-color: rgb(14 165 233 / 0.2);
+    }
+  </style>
 </head>
-<body class="bg-zinc-950 text-zinc-100 min-h-screen">
+<body class="bg-gradient-to-br from-surface-950 via-surface-900 to-surface-950 text-slate-100 min-h-screen font-sans antialiased">
   <div id="root"></div>
 
   <!-- React & Babel -->
@@ -756,171 +832,190 @@
       }, [catalog, toggles, locks, loraCount, seedValue, currentGeneration.selection, noRepeatSets, history]);
 
       return (
-        <div className="min-h-screen bg-zinc-950 text-zinc-100">
+        <div className="min-h-screen">
           {/* Toast Notification */}
           {toast && (
-            <div className={`fixed top-4 right-4 z-50 px-4 py-2 rounded shadow-lg ${
+            <div className={`fixed top-6 right-6 z-50 px-4 py-3 rounded-lg shadow-glass backdrop-blur-sm border transition-all duration-300 ${
               toast.type === 'error' 
-                ? 'bg-red-600 text-white' 
-                : 'bg-neon-cyan text-zinc-950'
+                ? 'bg-red-500/90 border-red-400/50 text-white' 
+                : 'bg-primary-500/90 border-primary-400/50 text-white'
             }`}>
               {toast.message}
             </div>
           )}
           
-          <header className="bg-red-900 text-center py-4 mb-8" role="banner">
-            <h1 className="text-2xl font-bold text-white mb-2">For Generations — Prompt Generator</h1>
-            <div className="bg-red-800 text-yellow-100 p-2 mx-4 rounded font-semibold" role="alert" aria-live="polite">
-              ⚠️ For adult characters only. Do not create harmful or illegal content.
+          <header className="bg-gradient-to-r from-surface-850 to-surface-800 border-b border-surface-700/50 backdrop-blur-sm" role="banner">
+            <div className="container mx-auto px-6 py-8">
+              <h1 className="text-3xl font-bold text-slate-50 mb-3 tracking-tight">For Generations</h1>
+              <p className="text-slate-300 text-lg font-medium mb-4">Pony V6 XL Prompt Generator</p>
+              <div className="bg-amber-500/10 border border-amber-500/20 text-amber-200 px-4 py-3 rounded-lg inline-block" role="alert" aria-live="polite">
+                <span className="font-medium">⚠️ Adult Content Warning:</span> For adult characters only. Do not create harmful or illegal content.
+              </div>
             </div>
           </header>
           
-          <div className="container mx-auto px-4">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <div className="container mx-auto px-6 py-8">
+            <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
               
               {/* Left Panel - Catalog */}
               <div className="space-y-6">
-                <h2 className="text-xl font-bold text-neon-cyan mb-4">Catalog</h2>
+                <div className="flex items-center space-x-3 mb-6">
+                  <div className="w-1 h-8 bg-primary-500 rounded-full"></div>
+                  <h2 className="text-2xl font-bold text-slate-50">Content Catalog</h2>
+                </div>
                 
                 {/* Subjects */}
-                <div className="bg-zinc-900 border border-neon-cyan/20 rounded-lg p-4">
-                  <h3 className="text-lg font-semibold text-neon-pink mb-2">
+                <div className="bg-surface-800/60 backdrop-blur-sm border border-surface-700/50 rounded-xl p-6 shadow-soft">
+                  <h3 className="text-lg font-semibold text-slate-200 mb-4 flex items-center">
+                    <span className="w-2 h-2 bg-primary-500 rounded-full mr-3"></span>
                     Subjects ({catalog.subjects.length})
                   </h3>
-                  <div className="max-h-48 overflow-y-auto space-y-2">
+                  <div className="max-h-52 overflow-y-auto space-y-2 scrollbar-thin scrollbar-track-surface-800 scrollbar-thumb-surface-600">
                     {catalog.subjects.map(subject => (
-                      <div key={subject.id} className="text-sm text-zinc-300 p-2 border border-zinc-700/50 rounded hover:bg-zinc-800/50 cursor-pointer group"
+                      <div key={subject.id} 
+                           className="group p-3 bg-surface-700/30 hover:bg-surface-700/50 border border-surface-600/30 hover:border-primary-500/50 rounded-lg cursor-pointer transition-all duration-200 hover:shadow-soft"
                            onClick={() => copyToClipboard(subject.description, `Subject #${subject.id}`)}>
-                        <div className="font-medium text-xs text-neon-cyan mb-1">Subject #{subject.id}</div>
-                        <div className="text-xs break-words">{subject.description}</div>
-                        <div className="text-xs text-zinc-500 opacity-0 group-hover:opacity-100 transition-opacity mt-1">
-                          Click to copy
+                        <div className="flex items-center justify-between mb-2">
+                          <span className="text-xs font-medium text-primary-400">Subject #{subject.id}</span>
+                          <span className="text-xs text-slate-500 opacity-0 group-hover:opacity-100 transition-opacity">Click to copy</span>
                         </div>
+                        <div className="text-xs text-slate-300 leading-relaxed">{subject.description}</div>
                       </div>
                     ))}
                   </div>
                 </div>
                 
                 {/* Poses */}
-                <div className="bg-zinc-900 border border-neon-cyan/20 rounded-lg p-4">
-                  <h3 className="text-lg font-semibold text-neon-pink mb-2">
+                <div className="bg-surface-800/60 backdrop-blur-sm border border-surface-700/50 rounded-xl p-6 shadow-soft">
+                  <h3 className="text-lg font-semibold text-slate-200 mb-4 flex items-center">
+                    <span className="w-2 h-2 bg-emerald-500 rounded-full mr-3"></span>
                     Poses ({catalog.poses.length})
                   </h3>
-                  <div className="max-h-48 overflow-y-auto space-y-2">
+                  <div className="max-h-52 overflow-y-auto space-y-2 scrollbar-thin scrollbar-track-surface-800 scrollbar-thumb-surface-600">
                     {catalog.poses.map(pose => (
-                      <div key={pose.id} className="text-sm text-zinc-300 p-2 border border-zinc-700/50 rounded hover:bg-zinc-800/50 cursor-pointer group"
+                      <div key={pose.id} 
+                           className="group p-3 bg-surface-700/30 hover:bg-surface-700/50 border border-surface-600/30 hover:border-emerald-500/50 rounded-lg cursor-pointer transition-all duration-200 hover:shadow-soft"
                            onClick={() => copyToClipboard(`${pose.text}, ${pose.angle}`, `Pose #${pose.id}`)}>
-                        <div className="font-medium text-xs text-neon-cyan mb-1">Pose #{pose.id}</div>
-                        <div className="font-medium text-xs">{pose.text}</div>
-                        <div className="text-xs text-zinc-500">{pose.angle}</div>
-                        <div className="text-xs text-zinc-500 opacity-0 group-hover:opacity-100 transition-opacity mt-1">
-                          Click to copy
+                        <div className="flex items-center justify-between mb-2">
+                          <span className="text-xs font-medium text-emerald-400">Pose #{pose.id}</span>
+                          <span className="text-xs text-slate-500 opacity-0 group-hover:opacity-100 transition-opacity">Click to copy</span>
                         </div>
+                        <div className="text-xs font-medium text-slate-200 mb-1">{pose.text}</div>
+                        <div className="text-xs text-slate-400">{pose.angle}</div>
                       </div>
                     ))}
                   </div>
                 </div>
                 
                 {/* Expressions */}
-                <div className="bg-zinc-900 border border-neon-cyan/20 rounded-lg p-4">
-                  <h3 className="text-lg font-semibold text-neon-pink mb-2">
+                <div className="bg-surface-800/60 backdrop-blur-sm border border-surface-700/50 rounded-xl p-6 shadow-soft">
+                  <h3 className="text-lg font-semibold text-slate-200 mb-4 flex items-center">
+                    <span className="w-2 h-2 bg-violet-500 rounded-full mr-3"></span>
                     Expressions ({catalog.expressions.length})
                   </h3>
-                  <div className="max-h-48 overflow-y-auto space-y-2">
+                  <div className="max-h-52 overflow-y-auto space-y-2 scrollbar-thin scrollbar-track-surface-800 scrollbar-thumb-surface-600">
                     {catalog.expressions.map(expression => (
-                      <div key={expression.id} className="text-sm text-zinc-300 p-2 border border-zinc-700/50 rounded hover:bg-zinc-800/50 cursor-pointer group"
+                      <div key={expression.id} 
+                           className="group p-3 bg-surface-700/30 hover:bg-surface-700/50 border border-surface-600/30 hover:border-violet-500/50 rounded-lg cursor-pointer transition-all duration-200 hover:shadow-soft"
                            onClick={() => copyToClipboard(`with ${expression.text.split(':')[0]}`, `Expression #${expression.id}`)}>
-                        <div className="font-medium text-xs text-neon-cyan mb-1">Expression #{expression.id}</div>
-                        <div className="font-medium text-xs">{expression.text.split(':')[0]}</div>
-                        <div className="text-xs text-zinc-500">{expression.text.substring(expression.text.indexOf(':') + 1).trim()}</div>
+                        <div className="flex items-center justify-between mb-2">
+                          <span className="text-xs font-medium text-violet-400">Expression #{expression.id}</span>
+                          <span className="text-xs text-slate-500 opacity-0 group-hover:opacity-100 transition-opacity">Click to copy</span>
+                        </div>
+                        <div className="text-xs font-medium text-slate-200 mb-1">{expression.text.split(':')[0]}</div>
+                        <div className="text-xs text-slate-400 mb-1">{expression.text.substring(expression.text.indexOf(':') + 1).trim()}</div>
                         {expression.weightRange && (
-                          <div className="text-xs text-neon-purple">
+                          <div className="text-xs text-purple-400 font-mono">
                             Weight: {expression.weightRange[0]} - {expression.weightRange[1]}
                           </div>
                         )}
-                        <div className="text-xs text-zinc-500 opacity-0 group-hover:opacity-100 transition-opacity mt-1">
-                          Click to copy
-                        </div>
                       </div>
                     ))}
                   </div>
                 </div>
                 
                 {/* Locations */}
-                <div className="bg-zinc-900 border border-neon-cyan/20 rounded-lg p-4">
-                  <h3 className="text-lg font-semibold text-neon-pink mb-2">
+                <div className="bg-surface-800/60 backdrop-blur-sm border border-surface-700/50 rounded-xl p-6 shadow-soft">
+                  <h3 className="text-lg font-semibold text-slate-200 mb-4 flex items-center">
+                    <span className="w-2 h-2 bg-orange-500 rounded-full mr-3"></span>
                     Locations ({catalog.locations.length})
                   </h3>
-                  <div className="max-h-48 overflow-y-auto space-y-2">
+                  <div className="max-h-52 overflow-y-auto space-y-2 scrollbar-thin scrollbar-track-surface-800 scrollbar-thumb-surface-600">
                     {catalog.locations.map(location => (
-                      <div key={location.id} className="text-sm text-zinc-300 p-2 border border-zinc-700/50 rounded hover:bg-zinc-800/50 cursor-pointer group"
+                      <div key={location.id} 
+                           className="group p-3 bg-surface-700/30 hover:bg-surface-700/50 border border-surface-600/30 hover:border-orange-500/50 rounded-lg cursor-pointer transition-all duration-200 hover:shadow-soft"
                            onClick={() => copyToClipboard(`in ${location.text}`, `Location #${location.id}`)}>
-                        <div className="font-medium text-xs text-neon-cyan mb-1">Location #{location.id}</div>
-                        <div className="text-xs">{location.text}</div>
-                        <div className="text-xs text-zinc-500 opacity-0 group-hover:opacity-100 transition-opacity mt-1">
-                          Click to copy
+                        <div className="flex items-center justify-between mb-2">
+                          <span className="text-xs font-medium text-orange-400">Location #{location.id}</span>
+                          <span className="text-xs text-slate-500 opacity-0 group-hover:opacity-100 transition-opacity">Click to copy</span>
                         </div>
+                        <div className="text-xs text-slate-300 leading-relaxed">{location.text}</div>
                       </div>
                     ))}
                   </div>
                 </div>
                 
                 {/* Styles */}
-                <div className="bg-zinc-900 border border-neon-cyan/20 rounded-lg p-4">
-                  <h3 className="text-lg font-semibold text-neon-pink mb-2">
+                <div className="bg-surface-800/60 backdrop-blur-sm border border-surface-700/50 rounded-xl p-6 shadow-soft">
+                  <h3 className="text-lg font-semibold text-slate-200 mb-4 flex items-center">
+                    <span className="w-2 h-2 bg-pink-500 rounded-full mr-3"></span>
                     Styles ({catalog.styles.length})
                   </h3>
-                  <div className="max-h-48 overflow-y-auto space-y-2">
+                  <div className="max-h-52 overflow-y-auto space-y-2 scrollbar-thin scrollbar-track-surface-800 scrollbar-thumb-surface-600">
                     {catalog.styles.map(style => (
-                      <div key={style.id} className="text-sm text-zinc-300 p-2 border border-zinc-700/50 rounded hover:bg-zinc-800/50 cursor-pointer group"
+                      <div key={style.id} 
+                           className="group p-3 bg-surface-700/30 hover:bg-surface-700/50 border border-surface-600/30 hover:border-pink-500/50 rounded-lg cursor-pointer transition-all duration-200 hover:shadow-soft"
                            onClick={() => copyToClipboard(style.text, `Style #${style.id}`)}>
-                        <div className="font-medium text-xs text-neon-cyan mb-1">Style #{style.id}</div>
-                        <div className="text-xs">{style.text}</div>
-                        <div className="text-xs text-zinc-500 opacity-0 group-hover:opacity-100 transition-opacity mt-1">
-                          Click to copy
+                        <div className="flex items-center justify-between mb-2">
+                          <span className="text-xs font-medium text-pink-400">Style #{style.id}</span>
+                          <span className="text-xs text-slate-500 opacity-0 group-hover:opacity-100 transition-opacity">Click to copy</span>
                         </div>
+                        <div className="text-xs text-slate-300 leading-relaxed">{style.text}</div>
                       </div>
                     ))}
                   </div>
                 </div>
                 
                 {/* LoRAs */}
-                <div className="bg-zinc-900 border border-neon-cyan/20 rounded-lg p-4">
-                  <h3 className="text-lg font-semibold text-neon-pink mb-2">
+                <div className="bg-surface-800/60 backdrop-blur-sm border border-surface-700/50 rounded-xl p-6 shadow-soft">
+                  <h3 className="text-lg font-semibold text-slate-200 mb-4 flex items-center">
+                    <span className="w-2 h-2 bg-blue-500 rounded-full mr-3"></span>
                     LoRAs ({catalog.loras.length})
                   </h3>
-                  <div className="max-h-48 overflow-y-auto space-y-2">
+                  <div className="max-h-52 overflow-y-auto space-y-2 scrollbar-thin scrollbar-track-surface-800 scrollbar-thumb-surface-600">
                     {catalog.loras.map(lora => {
                       const loraType = getLoRAType(lora);
                       const typeColors = {
-                        character: 'text-neon-pink',
-                        style: 'text-neon-cyan',
-                        lighting: 'text-yellow-400',
-                        concept: 'text-neon-green',
-                        pose: 'text-purple-400'
+                        character: 'text-pink-400 bg-pink-500/10 border-pink-500/20',
+                        style: 'text-blue-400 bg-blue-500/10 border-blue-500/20',
+                        lighting: 'text-yellow-400 bg-yellow-500/10 border-yellow-500/20',
+                        concept: 'text-green-400 bg-green-500/10 border-green-500/20',
+                        pose: 'text-purple-400 bg-purple-500/10 border-purple-500/20'
                       };
+                      const typeColor = typeColors[loraType] || 'text-slate-400 bg-slate-500/10 border-slate-500/20';
                       return (
-                        <div key={lora.id} className="text-sm text-zinc-300 p-2 border border-zinc-700/50 rounded hover:bg-zinc-800/50 cursor-pointer group"
+                        <div key={lora.id} 
+                             className="group p-3 bg-surface-700/30 hover:bg-surface-700/50 border border-surface-600/30 hover:border-blue-500/50 rounded-lg cursor-pointer transition-all duration-200 hover:shadow-soft"
                              onClick={() => copyToClipboard(`<lora:${lora.name}:${lora.weightRange[0]}>`, `LoRA #${lora.id}`)}>
-                          <div className="flex justify-between items-start mb-1">
-                            <div className="font-medium text-xs text-neon-cyan">LoRA #{lora.id}</div>
-                            <div className={`text-xs font-bold ${typeColors[loraType] || 'text-zinc-400'}`}>
+                          <div className="flex justify-between items-start mb-2">
+                            <span className="text-xs font-medium text-blue-400">LoRA #{lora.id}</span>
+                            <span className={`text-xs font-bold px-2 py-1 rounded border ${typeColor}`}>
                               {loraType.toUpperCase()}
-                            </div>
+                            </span>
                           </div>
-                          <div className="font-medium text-xs">{lora.name}</div>
-                          <div className="text-xs text-zinc-500">
-                            Triggers: {lora.triggers.join(', ') || 'None'}
+                          <div className="text-xs font-medium text-slate-200 mb-2">{lora.name}</div>
+                          <div className="text-xs text-slate-400 mb-1">
+                            <span className="font-medium">Triggers:</span> {lora.triggers.join(', ') || 'None'}
                           </div>
-                          <div className="text-xs text-neon-purple">
+                          <div className="text-xs text-purple-400 font-mono mb-1">
                             Weight: {lora.weightRange[0]} - {lora.weightRange[1]}
                           </div>
                           {lora.tattooPlacements && (
-                            <div className="text-xs text-neon-green">
-                              Tattoo placements: {lora.tattooPlacements.join(', ')}
+                            <div className="text-xs text-emerald-400">
+                              <span className="font-medium">Tattoo placements:</span> {lora.tattooPlacements.join(', ')}
                             </div>
                           )}
-                          <div className="text-xs text-zinc-500 opacity-0 group-hover:opacity-100 transition-opacity mt-1">
+                          <div className="text-xs text-slate-500 opacity-0 group-hover:opacity-100 transition-opacity mt-2 pt-1 border-t border-surface-600/30">
                             Click to copy LoRA tag
                           </div>
                         </div>
@@ -930,16 +1025,22 @@
                 </div>
                 
                 {/* Add New Items Section */}
-                <div className="bg-zinc-900 border border-neon-purple/20 rounded-lg p-4">
-                  <h3 className="text-lg font-semibold text-neon-purple mb-4">Add New Items</h3>
+                <div className="bg-surface-800/60 backdrop-blur-sm border border-surface-700/50 rounded-xl p-6 shadow-soft">
+                  <h3 className="text-lg font-semibold text-slate-200 mb-6 flex items-center">
+                    <span className="w-2 h-2 bg-indigo-500 rounded-full mr-3"></span>
+                    Add New Items
+                  </h3>
                   
                   {/* Add Subject */}
-                  <div className="mb-4 p-3 bg-zinc-800 rounded border border-neon-cyan/20">
-                    <h4 className="text-sm font-semibold text-neon-cyan mb-2">Add New Subject</h4>
+                  <div className="mb-6 p-4 bg-surface-700/30 border border-surface-600/50 rounded-lg">
+                    <h4 className="text-sm font-semibold text-primary-400 mb-3 flex items-center">
+                      <span className="w-1.5 h-1.5 bg-primary-500 rounded-full mr-2"></span>
+                      Add New Subject
+                    </h4>
                     <textarea
                       id="newSubjectDesc"
                       placeholder="Enter full nude adult woman description (verbatim style)..."
-                      className="w-full bg-zinc-700 border border-zinc-600 rounded p-2 text-xs resize-none h-20"
+                      className="w-full bg-surface-700/50 border border-surface-600/50 focus:border-primary-500/50 rounded-lg p-3 text-sm text-slate-200 placeholder-slate-500 resize-none h-20 transition-colors focus:outline-none focus:ring-2 focus:ring-primary-500/20"
                     />
                     <button
                       onClick={() => {
@@ -959,24 +1060,27 @@
                           showToast('New subject added successfully!');
                         }
                       }}
-                      className="mt-2 bg-neon-cyan text-zinc-950 px-3 py-1 text-xs rounded hover:bg-neon-cyan/80"
+                      className="mt-3 bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 text-sm font-medium rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-primary-500/50"
                     >
                       Add Subject
                     </button>
                   </div>
                   
                   {/* Add Pose */}
-                  <div className="mb-4 p-3 bg-zinc-800 rounded border border-neon-cyan/20">
-                    <h4 className="text-sm font-semibold text-neon-cyan mb-2">Add New Pose</h4>
+                  <div className="mb-6 p-4 bg-surface-700/30 border border-surface-600/50 rounded-lg">
+                    <h4 className="text-sm font-semibold text-emerald-400 mb-3 flex items-center">
+                      <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full mr-2"></span>
+                      Add New Pose
+                    </h4>
                     <input
                       id="newPoseText"
                       placeholder="Pose description..."
-                      className="w-full bg-zinc-700 border border-zinc-600 rounded p-2 text-xs mb-2"
+                      className="w-full bg-surface-700/50 border border-surface-600/50 focus:border-emerald-500/50 rounded-lg p-3 text-sm text-slate-200 placeholder-slate-500 mb-3 transition-colors focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
                     />
                     <input
                       id="newPoseAngle"
                       placeholder="Camera angle/view description..."
-                      className="w-full bg-zinc-700 border border-zinc-600 rounded p-2 text-xs"
+                      className="w-full bg-surface-700/50 border border-surface-600/50 focus:border-emerald-500/50 rounded-lg p-3 text-sm text-slate-200 placeholder-slate-500 transition-colors focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
                     />
                     <button
                       onClick={() => {
@@ -996,9 +1100,10 @@
                           saveUserData(newUserData);
                           document.getElementById('newPoseText').value = '';
                           document.getElementById('newPoseAngle').value = '';
+                          showToast('New pose added successfully!');
                         }
                       }}
-                      className="mt-2 bg-neon-cyan text-zinc-950 px-3 py-1 text-xs rounded hover:bg-neon-cyan/80"
+                      className="mt-3 bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 text-sm font-medium rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-emerald-500/50"
                     >
                       Add Pose
                     </button>
@@ -1217,28 +1322,54 @@
               
               {/* Right Panel - Generator */}
               <div className="space-y-6">
-                <h2 className="text-xl font-bold text-neon-green mb-4">Generator</h2>
+                <div className="flex items-center space-x-3 mb-6">
+                  <div className="w-1 h-8 bg-primary-500 rounded-full"></div>
+                  <h2 className="text-2xl font-bold text-slate-50">Generator</h2>
+                </div>
                 
                 {/* Toggles */}
-                <div className="bg-zinc-900 border border-neon-green/20 rounded-lg p-4 space-y-3">
-                  <h3 className="text-lg font-semibold text-neon-pink mb-2">Settings</h3>
+                <div className="bg-surface-800/60 backdrop-blur-sm border border-surface-700/50 rounded-xl p-6 shadow-soft">
+                  <h3 className="text-lg font-semibold text-slate-200 mb-4 flex items-center">
+                    <span className="w-2 h-2 bg-primary-500 rounded-full mr-3"></span>
+                    Generation Settings
+                  </h3>
                   
-                  {Object.entries(toggles).map(([key, value]) => (
-                    <label key={key} className="flex items-center space-x-2">
-                      <input
-                        type="checkbox"
-                        checked={value}
-                        onChange={(e) => setToggles(prev => ({ ...prev, [key]: e.target.checked }))}
-                        className="rounded bg-zinc-800 border-zinc-600 text-neon-cyan focus:ring-neon-cyan"
-                      />
-                      <span className="text-sm">{key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}</span>
-                    </label>
-                  ))}
+                  <div className="space-y-4">
+                    {Object.entries(toggles).map(([key, value]) => (
+                      <label key={key} className="flex items-center space-x-3 cursor-pointer group">
+                        <div className="relative">
+                          <input
+                            type="checkbox"
+                            checked={value}
+                            onChange={(e) => setToggles(prev => ({ ...prev, [key]: e.target.checked }))}
+                            className="sr-only"
+                          />
+                          <div className={`w-5 h-5 rounded border-2 transition-all duration-200 ${
+                            value 
+                              ? 'bg-primary-500 border-primary-500' 
+                              : 'bg-transparent border-surface-600 group-hover:border-primary-500/50'
+                          }`}>
+                            {value && (
+                              <svg className="w-3 h-3 text-white m-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                              </svg>
+                            )}
+                          </div>
+                        </div>
+                        <span className="text-sm text-slate-200 group-hover:text-slate-100 transition-colors">
+                          {key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}
+                        </span>
+                      </label>
+                    ))}
+                  </div>
                   
                   {/* LoRA Count Slider */}
-                  <div>
-                    <label className="block text-sm font-medium mb-2">
-                      LoRA Count: {loraCount} {loraCount >= 1 && loraCount <= 4 ? "(typical)" : loraCount > 4 ? "(high)" : "(none)"}
+                  <div className="pt-4 border-t border-surface-700/50">
+                    <label className="block text-sm font-medium text-slate-200 mb-3">
+                      LoRA Count: <span className="text-primary-400 font-mono">{loraCount}</span>
+                      <span className="text-slate-500 ml-2">
+                        {loraCount >= 1 && loraCount <= 4 ? "(typical)" : loraCount > 4 ? "(high)" : "(none)"}
+                      </span>
                     </label>
                     <input
                       type="range"
@@ -1246,10 +1377,10 @@
                       max="5"
                       value={loraCount}
                       onChange={(e) => setLoraCount(parseInt(e.target.value))}
-                      className="w-full accent-neon-cyan"
+                      className="w-full h-2 bg-surface-700 rounded-lg appearance-none cursor-pointer slider-thumb"
                     />
                     {loraCount > 5 && (
-                      <div className="text-xs text-red-400 mt-1">
+                      <div className="text-xs text-amber-400 mt-2 p-2 bg-amber-500/10 border border-amber-500/20 rounded">
                         ⚠️ Warning: More than 5 LoRAs may cause degradation
                       </div>
                     )}
@@ -1257,8 +1388,8 @@
 
                   {/* Seed Input (only when Lock Seed is ON) */}
                   {toggles.lockSeed && (
-                    <div>
-                      <label className="block text-sm font-medium mb-2">
+                    <div className="pt-4 border-t border-surface-700/50">
+                      <label className="block text-sm font-medium text-slate-200 mb-3">
                         Seed Value
                       </label>
                       <input
@@ -1266,9 +1397,9 @@
                         value={seedValue || ''}
                         onChange={(e) => setSeedValue(e.target.value ? parseInt(e.target.value) : null)}
                         placeholder="Enter seed (32-bit integer)"
-                        className="w-full bg-zinc-800 border border-zinc-600 rounded p-2 text-sm focus:ring-2 focus:ring-neon-cyan focus:border-transparent"
+                        className="w-full bg-surface-700/50 border border-surface-600/50 focus:border-primary-500/50 rounded-lg p-3 text-sm text-slate-200 placeholder-slate-500 transition-colors focus:outline-none focus:ring-2 focus:ring-primary-500/20"
                       />
-                      <div className="text-xs text-zinc-500 mt-1">
+                      <div className="text-xs text-slate-500 mt-2">
                         Leave empty for random seed
                       </div>
                     </div>
@@ -1276,26 +1407,46 @@
                 </div>
                 
                 {/* Locks */}
-                <div className="bg-zinc-900 border border-neon-green/20 rounded-lg p-4 space-y-3">
-                  <h3 className="text-lg font-semibold text-neon-pink mb-2">Lock Per-Bucket</h3>
+                <div className="bg-surface-800/60 backdrop-blur-sm border border-surface-700/50 rounded-xl p-6 shadow-soft">
+                  <h3 className="text-lg font-semibold text-slate-200 mb-4 flex items-center">
+                    <span className="w-2 h-2 bg-amber-500 rounded-full mr-3"></span>
+                    Lock Per-Bucket
+                  </h3>
                   
-                  {Object.entries(locks).map(([key, value]) => (
-                    <label key={key} className="flex items-center space-x-2">
-                      <input
-                        type="checkbox"
-                        checked={value}
-                        onChange={(e) => setLocks(prev => ({ ...prev, [key]: e.target.checked }))}
-                        className="rounded bg-zinc-800 border-zinc-600 text-neon-pink focus:ring-neon-pink"
-                      />
-                      <span className="text-sm">Lock {key.charAt(0).toUpperCase() + key.slice(1)}</span>
-                    </label>
-                  ))}
+                  <div className="space-y-3">
+                    {Object.entries(locks).map(([key, value]) => (
+                      <label key={key} className="flex items-center space-x-3 cursor-pointer group">
+                        <div className="relative">
+                          <input
+                            type="checkbox"
+                            checked={value}
+                            onChange={(e) => setLocks(prev => ({ ...prev, [key]: e.target.checked }))}
+                            className="sr-only"
+                          />
+                          <div className={`w-5 h-5 rounded border-2 transition-all duration-200 ${
+                            value 
+                              ? 'bg-amber-500 border-amber-500' 
+                              : 'bg-transparent border-surface-600 group-hover:border-amber-500/50'
+                          }`}>
+                            {value && (
+                              <svg className="w-3 h-3 text-white m-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
+                              </svg>
+                            )}
+                          </div>
+                        </div>
+                        <span className="text-sm text-slate-200 group-hover:text-slate-100 transition-colors">
+                          Lock {key.charAt(0).toUpperCase() + key.slice(1)}
+                        </span>
+                      </label>
+                    ))}
+                  </div>
                 </div>
 
                 {/* Generate Button */}
                 <button
                   onClick={generatePrompt}
-                  className="w-full bg-neon-cyan text-zinc-950 font-bold py-3 px-6 rounded-lg hover:bg-neon-cyan/80 transition-colors"
+                  className="w-full bg-gradient-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800 text-white font-semibold py-4 px-8 rounded-xl transition-all duration-200 shadow-soft hover:shadow-medium focus:outline-none focus:ring-2 focus:ring-primary-500/50 focus:ring-offset-2 focus:ring-offset-surface-900"
                 >
                   Generate Prompt
                 </button>
@@ -1339,7 +1490,7 @@
                           
                           setCurrentGeneration(generation);
                         }}
-                        className="bg-zinc-800 text-neon-pink border border-neon-pink/30 py-2 px-3 text-xs rounded hover:bg-neon-pink/10 transition-colors"
+                        className="bg-surface-700/50 hover:bg-surface-700 text-slate-200 border border-surface-600/50 hover:border-primary-500/50 py-2 px-3 text-xs rounded-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-primary-500/50"
                         disabled={locks[bucket]}
                       >
                         Re-roll {bucket.charAt(0).toUpperCase() + bucket.slice(1)}
@@ -1350,13 +1501,16 @@
                 
                 {/* Output */}
                 {currentGeneration.prompt && (
-                  <div className="space-y-4">
-                    <div>
-                      <div className="flex justify-between items-center mb-2">
-                        <label className="text-sm font-medium">Prompt</label>
+                  <div className="space-y-6">
+                    <div className="bg-surface-800/60 backdrop-blur-sm border border-surface-700/50 rounded-xl p-6 shadow-soft">
+                      <div className="flex justify-between items-center mb-4">
+                        <label className="text-lg font-semibold text-slate-200 flex items-center">
+                          <span className="w-2 h-2 bg-primary-500 rounded-full mr-3"></span>
+                          Prompt
+                        </label>
                         <button
                           onClick={() => copyToClipboard(currentGeneration.prompt, 'Prompt')}
-                          className="text-xs bg-neon-cyan text-zinc-950 px-2 py-1 rounded hover:bg-neon-cyan/80 transition-colors"
+                          className="bg-primary-600 hover:bg-primary-700 text-white px-3 py-1.5 text-xs font-medium rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-primary-500/50"
                         >
                           Copy
                         </button>
@@ -1364,16 +1518,19 @@
                       <textarea
                         value={currentGeneration.prompt}
                         readOnly
-                        className="w-full h-32 bg-zinc-800 border border-zinc-600 rounded p-3 text-sm font-mono resize-none"
+                        className="w-full h-32 bg-surface-700/50 border border-surface-600/50 rounded-lg p-4 text-sm font-mono text-slate-200 resize-none focus:outline-none scrollbar-thin scrollbar-track-surface-700 scrollbar-thumb-surface-600"
                       />
                     </div>
                     
-                    <div>
-                      <div className="flex justify-between items-center mb-2">
-                        <label className="text-sm font-medium">Negative Prompt</label>
+                    <div className="bg-surface-800/60 backdrop-blur-sm border border-surface-700/50 rounded-xl p-6 shadow-soft">
+                      <div className="flex justify-between items-center mb-4">
+                        <label className="text-lg font-semibold text-slate-200 flex items-center">
+                          <span className="w-2 h-2 bg-red-500 rounded-full mr-3"></span>
+                          Negative Prompt
+                        </label>
                         <button
                           onClick={() => copyToClipboard(currentGeneration.negative, 'Negative Prompt')}
-                          className="text-xs bg-neon-pink text-zinc-950 px-2 py-1 rounded hover:bg-neon-pink/80 transition-colors"
+                          className="bg-red-600 hover:bg-red-700 text-white px-3 py-1.5 text-xs font-medium rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-red-500/50"
                         >
                           Copy
                         </button>
@@ -1381,16 +1538,19 @@
                       <textarea
                         value={currentGeneration.negative}
                         readOnly
-                        className="w-full h-24 bg-zinc-800 border border-zinc-600 rounded p-3 text-sm font-mono resize-none"
+                        className="w-full h-24 bg-surface-700/50 border border-surface-600/50 rounded-lg p-4 text-sm font-mono text-slate-200 resize-none focus:outline-none scrollbar-thin scrollbar-track-surface-700 scrollbar-thumb-surface-600"
                       />
                     </div>
                     
-                    <div>
-                      <div className="flex justify-between items-center mb-2">
-                        <label className="text-sm font-medium">Settings</label>
+                    <div className="bg-surface-800/60 backdrop-blur-sm border border-surface-700/50 rounded-xl p-6 shadow-soft">
+                      <div className="flex justify-between items-center mb-4">
+                        <label className="text-lg font-semibold text-slate-200 flex items-center">
+                          <span className="w-2 h-2 bg-emerald-500 rounded-full mr-3"></span>
+                          Settings
+                        </label>
                         <button
                           onClick={() => copyToClipboard(currentGeneration.settings, 'Settings')}
-                          className="text-xs bg-neon-green text-zinc-950 px-2 py-1 rounded hover:bg-neon-green/80 transition-colors"
+                          className="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 text-xs font-medium rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-emerald-500/50"
                         >
                           Copy
                         </button>
@@ -1398,12 +1558,12 @@
                       <textarea
                         value={currentGeneration.settings}
                         readOnly
-                        className="w-full h-32 bg-zinc-800 border border-zinc-600 rounded p-3 text-sm font-mono resize-none"
+                        className="w-full h-32 bg-surface-700/50 border border-surface-600/50 rounded-lg p-4 text-sm font-mono text-slate-200 resize-none focus:outline-none scrollbar-thin scrollbar-track-surface-700 scrollbar-thumb-surface-600"
                       />
                     </div>
                     
                     {/* Export Buttons */}
-                    <div className="grid grid-cols-2 gap-2">
+                    <div className="grid grid-cols-2 gap-4">
                       <button
                         onClick={() => {
                           const content = `Prompt:\n${currentGeneration.prompt}\n\nNegative Prompt:\n${currentGeneration.negative}\n\nSettings:\n${currentGeneration.settings}`;
@@ -1415,9 +1575,9 @@
                           a.click();
                           URL.revokeObjectURL(url);
                         }}
-                        className="bg-zinc-800 text-zinc-100 border border-zinc-600 py-2 px-4 text-sm rounded hover:bg-zinc-700 transition-colors"
+                        className="bg-surface-700/50 hover:bg-surface-700 text-slate-200 border border-surface-600/50 hover:border-violet-500/50 py-3 px-4 text-sm font-medium rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-violet-500/50"
                       >
-                        Download .txt
+                        📄 Download .txt
                       </button>
                       <button
                         onClick={() => {
@@ -1430,9 +1590,9 @@
                           a.click();
                           URL.revokeObjectURL(url);
                         }}
-                        className="bg-zinc-800 text-zinc-100 border border-zinc-600 py-2 px-4 text-sm rounded hover:bg-zinc-700 transition-colors"
+                        className="bg-surface-700/50 hover:bg-surface-700 text-slate-200 border border-surface-600/50 hover:border-orange-500/50 py-3 px-4 text-sm font-medium rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-orange-500/50"
                       >
-                        Download .json
+                        📦 Download .json
                       </button>
                     </div>
                   </div>
@@ -1440,15 +1600,16 @@
 
                 {/* History */}
                 {history.length > 0 && (
-                  <div className="bg-zinc-900 border border-neon-purple/20 rounded-lg p-4">
-                    <h3 className="text-lg font-semibold text-neon-purple mb-2">
+                  <div className="bg-surface-800/60 backdrop-blur-sm border border-surface-700/50 rounded-xl p-6 shadow-soft">
+                    <h3 className="text-lg font-semibold text-slate-200 mb-4 flex items-center">
+                      <span className="w-2 h-2 bg-purple-500 rounded-full mr-3"></span>
                       History ({history.length}/20)
                     </h3>
-                    <div className="max-h-48 overflow-y-auto space-y-2">
+                    <div className="max-h-52 overflow-y-auto space-y-3 scrollbar-thin scrollbar-track-surface-800 scrollbar-thumb-surface-600">
                       {history.slice(-5).reverse().map((generation, index) => (
-                        <div key={generation.timestamp} className="text-sm">
-                          <div className="flex justify-between items-center">
-                            <span className="text-zinc-300">
+                        <div key={generation.timestamp} className="p-3 bg-surface-700/30 hover:bg-surface-700/50 border border-surface-600/30 rounded-lg group transition-all duration-200">
+                          <div className="flex justify-between items-center mb-2">
+                            <span className="text-xs font-medium text-slate-300">
                               {new Date(generation.timestamp).toLocaleTimeString()}
                             </span>
                             <button
@@ -1462,18 +1623,18 @@
                                   console.error('Failed to parse settings:', e);
                                 }
                               }}
-                              className="text-xs text-neon-purple hover:text-neon-purple/80 transition-colors"
+                              className="text-xs text-purple-400 hover:text-purple-300 px-2 py-1 rounded border border-purple-500/20 hover:border-purple-500/50 transition-colors focus:outline-none focus:ring-2 focus:ring-purple-500/50"
                             >
                               Restore
                             </button>
                           </div>
-                          <div className="text-xs text-zinc-500 truncate">
-                            {generation.prompt.substring(0, 60)}...
+                          <div className="text-xs text-slate-500 truncate">
+                            {generation.prompt.substring(0, 80)}...
                           </div>
                         </div>
                       ))}
                       {history.length > 5 && (
-                        <div className="text-xs text-neon-purple">
+                        <div className="text-xs text-purple-400 text-center py-2 border-t border-surface-600/30">
                           ...and {history.length - 5} more in history
                         </div>
                       )}
