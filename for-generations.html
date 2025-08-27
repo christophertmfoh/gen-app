@@ -1,0 +1,1168 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>For Generations — Prompt Generator</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .slider::-webkit-slider-thumb {
+      appearance: none;
+      height: 20px;
+      width: 20px;
+      border-radius: 50%;
+      background: #06b6d4;
+      cursor: pointer;
+    }
+    .slider::-moz-range-thumb {
+      height: 20px;
+      width: 20px;
+      border-radius: 50%;
+      background: #06b6d4;
+      cursor: pointer;
+      border: none;
+    }
+  </style>
+</head>
+<body class="bg-zinc-950 text-zinc-100">
+  <div id="root"></div>
+
+  <!-- React & Babel -->
+  <script src="https://cdn.jsdelivr.net/npm/react@18.3.1/umd/react.production.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/react-dom@18.3.1/umd/react-dom.production.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@babel/standalone/babel.min.js"></script>
+
+  <script type="text/babel">
+    /* Embed packetData here (VERBATIM from packet file) */
+    const packetData = {
+      subjects: [
+        { id: 1, description: "Nude adult woman with long straight crimson hair down to hips, curvy hourglass figure (bust 36C, waist 26\", hips 38\"), golden tanned skin, sharp cheekbones, sultry half-lidded eyes with a seductive smirk, full perky breasts with pink erect nipples, narrow waist flaring to wide hips, trimmed pubic hair above prominent labia and clitoris, firm round buttocks, long toned legs with smooth thighs to delicate feet, slutty vibe like a confident femme fatale." },
+        { id: 2, description: "Nude adult woman with short wavy platinum blonde hair, skinny petite build (bust 32A, waist 24\", hips 34\"), pale skin with faint freckles, round innocent eyes, shy blushing cheeks with parted lips, small pert breasts with soft areolas, flat stomach, narrow hips, smooth shaved pubic area revealing vulva details, tight small buttocks, slender legs to petite toes, innocent vibe like a curious schoolgirl." },
+        { id: 3, description: "Nude adult woman with shoulder-length emerald green hair in loose curls, voluptuous curvy body (bust 38D, waist 28\", hips 40\"), sun-kissed skin, high cheekbones, preppy arched brows with a poised smile, large heavy breasts with dark nipples, soft belly with navel piercing, wide childbearing hips, bushy pubic mound over labia, plump buttocks, thick thighs to sturdy feet, preppy vibe like a chic socialite." },
+        { id: 4, description: "Nude adult woman with long black hair in a single braid, athletic toned physique (bust 34B, waist 25\", hips 36\"), olive skin, fierce narrowed eyes, mischievous grin, medium firm breasts with puffy nipples, ripped abs, powerful hips, neat pubic strip over engorged clitoris, sculpted buttocks, strong legs with defined calves to broad feet, dominant vibe like a sporty competitor." },
+        { id: 5, description: "Nude adult woman with curly auburn hair in a high bun, pear-shaped curvy body (bust 34B, waist 27\", hips 42\"), warm medium skin, soft doe eyes, gentle smile with dimples, modest breasts with rosy nipples, slight belly pooch, exaggerated hips, detailed vulva with visible arousal, large soft buttocks, shapely legs to dainty ankles, nurturing vibe like a caring artist." },
+        { id: 6, description: "Nude adult woman with sleek silver hair to waist, skinny slender frame (bust 32A, waist 23\", hips 33\"), dark ebony skin, elegant almond eyes, serene closed-lip expression, flat chest with tiny nipples, lithe waist, subtle hips, bare pubic bone with minimalistic genitalia, flat buttocks, long slim legs to pointed feet, ethereal vibe like a mystical dancer." },
+        { id: 7, description: "Nude adult woman with spiky pink hair in a mohawk, busty athletic build (bust 36D, waist 26\", hips 37\"), freckled fair skin, bold makeup eyes, rebellious sneer, oversized breasts with veiny undersides, chiseled abs, flared hips, wild pubic hair over swollen labia, perky tattooed buttocks, muscular thighs to sturdy feet, punk vibe like a defiant rockstar." },
+        { id: 8, description: "Nude adult woman with long lavender hair in waves, voluptuous full-figured body (bust 38DD, waist 30\", hips 44\"), golden brown skin, plump cheeks, innocent wide eyes with pout, ample sagging breasts with stretch marks, rounded belly, broad hips, thick pubic bush, dimpled buttocks, chubby legs to rounded toes, cozy vibe like a plush romantic." },
+        { id: 9, description: "Nude adult woman with asymmetrical blue hair (short one side, long other), lean skinny build (bust 32B, waist 24\", hips 34\"), porcelain skin, intense gaze, sly wink, small conical breasts with pierced nipples, flat toned stomach, narrow hips, smooth hairless pubic area, tight buttocks, sinewy legs to narrow feet, cunning vibe like a sly trickster." },
+        { id: 10, description: "Nude adult woman with coiled orange hair in an afro, curvy plus-size frame (bust 40D, waist 32\", hips 46\"), deep chocolate skin, full lips, joyful laughing eyes, massive pendulous breasts with wide areolas, layered belly rolls, massive hips, dense pubic curls, enormous jiggling buttocks, thick legs to wide feet, vibrant vibe like a lively performer." },
+        { id: 11, description: "Nude adult woman with sleek brown hair in a low ponytail, athletic inverted triangle body (bust 34C, waist 25\", hips 35\"), warm beige skin, strong jaw, determined eyes with firm expression, athletic breasts with small nipples, v-shaped torso, slim hips, minimal pubic trim, firm angular buttocks, strong legs to athletic feet, sporty vibe like a driven gymnast." },
+        { id: 12, description: "Nude adult woman with frizzy teal hair in pigtails, extreme hourglass body (bust 36C, waist 24\", hips 40\"), ivory skin with rosy flushes, cute button nose, playful tongue-out expression, balloon-like breasts with puffy nipples, dramatic waist, exaggerated hips, shaved pubic mound with arousal drips, heart-shaped buttocks, curvy legs to cute toes, idol vibe like a teasing popstar." },
+        { id: 13, description: "Nude adult woman with straight golden hair to mid-back, curvy apple-shaped body (bust 38C, waist 30\", hips 38\"), sun-kissed skin, elegant features, regal gaze with slight smile, heavy upper breasts with downward nipples, fuller upper belly, moderate hips, light pubic fuzz, rounded buttocks, balanced legs to elegant feet, regal vibe like a noble beauty." },
+        { id: 14, description: "Nude adult woman with choppy indigo hair, muscular athletic build (bust 34B, waist 26\", hips 36\"), caramel skin, bold brows, fierce snarl, compact firm breasts with dark nipples, stocky torso with abs, sturdy hips, bushy pubic area, solid buttocks, strong legs to broad feet, fierce vibe like a determined fighter." },
+        { id: 15, description: "Nude adult woman with layered violet hair in a shag, skinny banana-shaped body (bust 32A, waist 24\", hips 34\"), light olive skin, soft eyes, dreamy distant look, modest sloping breasts with subtle nipples, smooth torso, subtle hips, smooth pubic transition, flat toned buttocks, straight legs to slender feet, poetic vibe like a wistful dreamer." },
+        { id: 16, description: "Nude adult woman with braided white hair in a crown, tall athletic build (bust 36B, waist 27\", hips 38\"), bronze skin, chiseled features, intense stare, large sculpted breasts with erect nipples, powerful core, wide hips, trimmed pubic arrow, massive firm buttocks, long striding legs to large feet, goddess vibe like a commanding warrior." },
+        { id: 17, description: "Nude adult woman with slicked-back red hair, rectangular athletic body (bust 34B, waist 26\", hips 36\"), cool undertone skin, sharp nose, neutral hooded eyes, medium balanced breasts with average nipples, straight waist, even hips, neat pubic strip, rectangular buttocks, uniform legs to standard feet, stoic vibe like a calm guardian." },
+        { id: 18, description: "Nude adult woman with voluminous cyan hair in curls, curvy bottom-heavy build (bust 34B, waist 28\", hips 42\"), honey skin, heart-shaped face, flirtatious wink, small perky breasts with tiny nipples, slim waist, explosive hips, wild pubic curls, oversized plush buttocks, dramatic thigh curves to tapered toes, siren vibe like a seductive temptress." },
+        { id: 19, description: "Nude adult woman with straight ebony hair to ankles, skinny willowy build (bust 32A, waist 23\", hips 33\"), ghostly pale skin, delicate features, melancholic sad smile, barely-there breasts with faint nipples, rib-visible torso, bony hips, sparse pubic hair, bony buttocks, spindly legs to fragile feet, tragic vibe like a sorrowful heroine." },
+        { id: 20, description: "Nude adult woman with spiked magenta hair, hybrid curvy-muscular build (bust 36C, waist 27\", hips 39\"), mocha skin, exotic eyes, ecstatic open-mouthed expression, hybrid firm-full breasts with textured nipples, blended abs and curves, balanced hips, detailed pubic design, toned plump buttocks, hybrid shapely legs to dynamic feet, passionate vibe like a fiery performer." },
+        { id: 21, description: "Nude adult woman with long, sleek navy-blue hair in a high ponytail, skinny athletic build (bust 32B, waist 24\", hips 35\"), caramel skin with a warm glow, angular face with bold brows and a haughty smirk, small firm breasts with dark nipples, toned abs, narrow hips, smooth pubic area revealing detailed vulva, tight angular buttocks, lean legs with defined calves to slender feet, arrogant vibe like a confident runway model strutting her form." },
+        { id: 22, description: "Nude adult woman with shoulder-length rose-pink hair in soft waves, curvy voluptuous build (bust 38D, waist 28\", hips 42\"), ivory skin with rosy undertones, heart-shaped face with wide innocent eyes and a gentle pout, large soft breasts with pink areolas, slight belly curve, wide swaying hips, bushy pubic mound over prominent labia, plump jiggling buttocks, thick thighs to rounded feet, shy vibe like a reserved romantic unveiling herself." },
+        { id: 23, description: "Nude adult woman with choppy lime-green hair in a pixie cut, skinny petite frame (bust 32A, waist 23\", hips 33\"), pale porcelain skin, elfin features with a cheeky grin and freckled cheeks, flat chest with tiny budding nipples, flat stomach, subtle hips, minimalistic pubic slit, small perky buttocks, slender androgynous legs to petite toes, playful vibe like a mischievous sprite teasing with her pose." },
+        { id: 24, description: "Nude adult woman with waist-length golden-blonde hair in loose curls, athletic hourglass build (bust 34C, waist 26\", hips 38\"), sun-kissed tan skin, sharp cheekbones with a sultry half-lidded gaze, full perky breasts with erect nipples, narrow waist flaring to hips, trimmed pubic strip over engorged clitoris, firm round buttocks, toned legs to delicate feet, seductive vibe like a femme fatale in control." },
+        { id: 25, description: "Nude adult woman with long, straight raven-black hair, curvy pear-shaped body (bust 34B, waist 27\", hips 41\"), warm olive skin, soft round face with dreamy eyes and a subtle smile, modest breasts with rosy nipples, gentle belly pooch, exaggerated hips, detailed vulva with arousal cues, large soft buttocks with dimples, shapely legs to dainty ankles, nurturing vibe like a warm artist embracing her curves." },
+        { id: 26, description: "Nude adult woman with spiky coral hair in a short crop, busty athletic build (bust 36C, waist 26\", hips 37\"), freckled fair skin, bold makeup with fierce narrowed eyes and a rebellious sneer, oversized breasts with veiny undersides, chiseled abs, flared hips, wild pubic hair over swollen labia, perky tattooed buttocks, muscular thighs to sturdy feet, punk vibe like a defiant street artist." },
+        { id: 27, description: "Nude adult woman with wavy auburn hair to mid-back, voluptuous full-figured build (bust 38DD, waist 30\", hips 43\"), golden brown skin, plump cheeks with innocent wide eyes and a pout, ample sagging breasts with stretch marks, rounded belly, broad hips, thick pubic bush, dimpled buttocks, chubby legs to rounded toes, cozy vibe like a plush romantic lounging nude." },
+        { id: 28, description: "Nude adult woman with long silver-grey hair in a loose braid, skinny slender frame (bust 32A, waist 23\", hips 34\"), ebony skin with a glossy sheen, elegant almond eyes with a serene closed-lip expression, flat chest with tiny nipples, lithe waist, subtle hips, bare pubic bone with minimalistic genitalia, flat buttocks, long slim legs to pointed feet, ethereal vibe like a mystical dancer in repose." },
+        { id: 29, description: "Nude adult woman with asymmetrical teal hair (long one side, shaved other), lean skinny build (bust 32B, waist 24\", hips 34\"), porcelain skin with faint veins, intense gaze with a sly wink, small conical breasts with pierced nipples, flat toned stomach, narrow hips, smooth hairless pubic area, tight buttocks, sinewy legs to narrow feet, cunning vibe like a clever rogue posing provocatively." },
+        { id: 30, description: "Nude adult woman with coiled amber hair in a tight bun, curvy plus-size frame (bust 40D, waist 31\", hips 45\"), deep mocha skin, full lips with joyful laughing eyes, massive pendulous breasts with wide areolas, layered belly rolls, massive hips, dense pubic curls, enormous jiggling buttocks, thick legs to wide feet, vibrant vibe like a lively performer celebrating her form." },
+        { id: 31, description: "Nude adult woman with sleek chestnut-brown hair in a low bun, athletic inverted triangle body (bust 34B, waist 25\", hips 35\"), warm beige skin, strong jaw with determined eyes and a firm expression, athletic breasts with small nipples, v-shaped torso, slim hips, minimal pubic trim, firm angular buttocks, strong legs to athletic feet, sporty vibe like a driven competitor at rest." },
+        { id: 32, description: "Nude adult woman with frizzy magenta hair in twin tails, extreme hourglass build (bust 36C, waist 24\", hips 40\"), ivory skin with rosy flushes, cute button nose with a playful tongue-out expression, balloon-like breasts with puffy nipples, dramatic waist, exaggerated hips, shaved pubic mound with arousal drips, heart-shaped buttocks, curvy legs to cute toes, idol vibe like a teasing anime star." },
+        { id: 33, description: "Nude adult woman with straight platinum hair to mid-back, curvy apple-shaped body (bust 38C, waist 29\", hips 38\"), sun-kissed skin, elegant features with a regal gaze and slight smile, heavy upper breasts with downward nipples, fuller upper belly, moderate hips, light pubic fuzz, rounded buttocks, balanced legs to elegant feet, regal vibe like a noble beauty commanding attention." },
+        { id: 34, description: "Nude adult woman with choppy violet hair in a bob, muscular athletic build (bust 34B, waist 26\", hips 36\"), caramel skin, bold brows with a fierce snarl, compact firm breasts with dark nipples, stocky torso with abs, sturdy hips, bushy pubic area, solid buttocks, strong legs to broad feet, fierce vibe like a determined fighter ready to strike." },
+        { id: 35, description: "Nude adult woman with layered indigo hair in a shag, skinny banana-shaped body (bust 32A, waist 24\", hips 34\"), light olive skin, soft eyes with a dreamy distant look, modest sloping breasts with subtle nipples, smooth torso, subtle hips, smooth pubic transition, flat toned buttocks, straight legs to slender feet, poetic vibe like a wistful dreamer in contemplation." },
+        { id: 36, description: "Nude adult woman with braided white-blonde hair in a crown, tall athletic build (bust 36B, waist 27\", hips 38\"), bronze skin, chiseled features with an intense stare, large sculpted breasts with erect nipples, powerful core, wide hips, trimmed pubic arrow, massive firm buttocks, long striding legs to large feet, goddess vibe like a commanding warrior." },
+        { id: 37, description: "Nude adult woman with slicked-back burgundy hair, rectangular athletic body (bust 34B, waist 26\", hips 36\"), cool undertone skin, sharp nose with neutral hooded eyes, medium balanced breasts with average nipples, straight waist, even hips, neat pubic strip, rectangular buttocks, uniform legs to standard feet, stoic vibe like a calm guardian." },
+        { id: 38, description: "Nude adult woman with voluminous cyan hair in curls, curvy bottom-heavy build (bust 34B, waist 28\", hips 42\"), honey skin, heart-shaped face with a flirtatious wink, small perky breasts with tiny nipples, slim waist, explosive hips, wild pubic curls, oversized plush buttocks, dramatic thigh curves to tapered toes, siren vibe like a seductive temptress." },
+        { id: 39, description: "Nude adult woman with straight onyx hair to ankles, skinny willowy build (bust 32A, waist 23\", hips 33\"), ghostly pale skin, delicate features with a melancholic sad smile, barely-there breasts with faint nipples, rib-visible torso, bony hips, sparse pubic hair, bony buttocks, spindly legs to fragile feet, tragic vibe like a sorrowful heroine." },
+        { id: 40, description: "Nude adult woman with spiked tangerine hair, hybrid curvy-muscular build (bust 36C, waist 27\", hips 39\"), mocha skin with a sheen, exotic eyes with an ecstatic open-mouthed expression, hybrid firm-full breasts with textured nipples, blended abs and curves, balanced hips, detailed pubic design, toned plump buttocks, hybrid shapely legs to dynamic feet, passionate vibe like a fiery performer in climax." }
+      ],
+      poses: [
+        { id: 1, text: "Reverse Cowboy Grind: Straddling an imaginary surface, leaning forward with arched back", angle: "low-angle view from behind emphasizes exposed rear and grinding motion" },
+        { id: 2, text: "Face-to-Face Embrace: Kneeling with arms wrapped around herself, legs bent", angle: "close-up frontal angle highlights intertwined limbs and intense gaze" },
+        { id: 3, text: "Over-the-Shoulder Lift: Standing with one leg raised high, arms balancing", angle: "side profile angle focuses on lifted leg's curves and exposed groin" },
+        { id: 4, text: "Bent-Back Arch: Lying back with spine dramatically arched, legs spread wide", angle: "top-down view showcases the arch and open hips" },
+        { id: 5, text: "Sideways Scissor Lock: On her side, legs scissored and twisted", angle: "side angle captures hip alignment and skin contours" },
+        { id: 6, text: "Standing Wall Press: Pinned against an imaginary wall, one leg raised", angle: "frontal view on pressed body, arched back, and intense expression" },
+        { id: 7, text: "Lying Back Spread: Flat on back, legs wide apart", angle: "low-angle from below highlights exposed genitals and arched torso" },
+        { id: 8, text: "Seated Thigh Ride: Straddling an invisible seat, grinding thighs", angle: "side view on motion, exposed thighs, and teasing smirk" },
+        { id: 9, text: "Over-the-Edge Hang: Upper body hanging off an edge, legs raised", angle: "dynamic side angle on hanging pose and lifted hips" },
+        { id: 10, text: "Kneeling Back Bend: Kneeling bent backward, hands on floor", angle: "rear view emphasizes arched back and spread legs" },
+        { id: 11, text: "Face-Down Lift: Face down, hips lifted high", angle: "low rear angle on elevated ass and exposed rear" },
+        { id: 12, text: "Crossed Leg Lock: Sitting with legs crossed tightly", angle: "frontal close-up on exposed chest and locked eyes" },
+        { id: 13, text: "Standing Rear Entry: Bent forward standing, hands on knees", angle: "side/rear angle on bent pose and exposed back" },
+        { id: 14, text: "Lying Side Spoon: Side-lying, body curved", angle: "curved side view on hip curve and relaxed pose" },
+        { id: 15, text: "Seated Face Sit: Sitting with hips raised, facing away", angle: "top-down on exposed rear and confident stance" },
+        { id: 16, text: "Inverted V Spread: Bent at waist in a V, legs spread", angle: "rear view on spread stance and hanging torso" },
+        { id: 17, text: "Chest-to-Chest Grind: Lying flat, arms pressing chest", angle: "close-up on skin-on-skin friction and passionate expression" },
+        { id: 18, text: "Raised Leg Lift: Back-lying, one leg high", angle: "side angle on lifted leg, open groin, and stretched form" },
+        { id: 19, text: "Kneeling Face-Off: Kneeling with one leaning back, hands supporting", angle: "frontal on grind pose and exposed body" },
+        { id: 20, text: "Back-to-Chest Hug: Standing with arms wrapped around herself, rear entry pose", angle: "side angle on curves and thrusting motion" },
+        { id: 21, text: "Graceful Contrapposto Stand: Standing with weight on one leg, hips shifted, arms relaxed at sides", angle: "three-quarter angle highlights natural curves and serene expression" },
+        { id: 22, text: "Elegant Reclining Side: Lying on side, one arm supporting head, legs gently bent", angle: "side view captures flowing lines of the body and contemplative gaze" },
+        { id: 23, text: "Seated Lotus Fold: Sitting cross-legged, hands resting on knees", angle: "frontal angle emphasizes balanced symmetry and peaceful introspection" },
+        { id: 24, text: "Arched Back Kneel: Kneeling with back slightly arched, hands on thighs", angle: "low frontal view showcases elongated torso and subtle poise" },
+        { id: 25, text: "Arms-Over-Head Stretch: Standing with arms raised overhead, body elongated", angle: "profile angle focuses on stretched form and soft lighting on skin" },
+        { id: 26, text: "Curled Fetal Pose: Curled on side, knees to chest, arms hugging legs", angle: "overhead view highlights vulnerability and intimate curves" },
+        { id: 27, text: "Seated Forward Lean: Sitting with torso leaning forward, arms draped over knees", angle: "three-quarter angle captures thoughtful expression and gentle contours" },
+        { id: 28, text: "Standing Hip Tilt: Standing with one hand on hip, slight tilt", angle: "full-frontal view emphasizes confident stance and natural proportions" },
+        { id: 29, text: "Lying Back Gaze: Flat on back, arms at sides, head turned", angle: "top-down angle showcases relaxed body and dreamy upward gaze" },
+        { id: 30, text: "Kneeling Arms Crossed: Kneeling with arms crossed over chest", angle: "side angle highlights modest coverage and elegant lines" },
+        { id: 31, text: "Twisted Torso Turn: Standing with torso twisted, one arm behind", angle: "profile view captures dynamic yet graceful rotation and skin highlights" },
+        { id: 32, text: "Seated Leg Extend: Sitting with one leg extended, arms supporting", angle: "low angle emphasizes leg length and balanced composition" },
+        { id: 33, text: "Reclining Elbow Prop: Reclining on elbows, legs crossed", angle: "three-quarter view focuses on supported pose and subtle shadows" },
+        { id: 34, text: "Standing Arms Behind: Standing with arms clasped behind back", angle: "rear three-quarter angle showcases posture and flowing hair" },
+        { id: 35, text: "Curved Spine Sit: Sitting with spine curved forward, hands on floor", angle: "side view highlights arched form and introspective mood" },
+        { id: 36, text: "Lying Prone Arch: Lying on stomach, upper body arched up", angle: "overhead angle captures lifted torso and serene expression" },
+        { id: 37, text: "Kneeling Side Glance: Kneeling with body turned slightly, glancing over shoulder", angle: "profile angle emphasizes neck curve and soft lighting" },
+        { id: 38, text: "Seated Hug Knees: Sitting hugging knees to chest", angle: "frontal view showcases compact form and gentle vulnerability" },
+        { id: 39, text: "Standing Leg Cross: Standing with legs crossed, arms relaxed", angle: "full-body angle highlights poise and natural stance" },
+        { id: 40, text: "Reclining Hand Rest: Reclining with one hand under head, legs extended", angle: "side angle captures relaxed elegance and subtle contours" }
+      ],
+      expressions: [
+        { id: 1, text: "with innocent wide-eyed gaze, large sparkling eyes gazing upward, slightly parted lips, raised brows with a gentle curve, faint blush on cheeks", weightRange: [0.8, 1.2] },
+        { id: 2, text: "with shy blush, half-lidded eyes looking downward, pursed lips with a timid smile, furrowed brows, deep rosy blush across cheeks and nose", weightRange: [0.8, 1.2] },
+        { id: 3, text: "with dreamy gaze, soft unfocused eyes staring into the distance, relaxed mouth with a subtle smile, smooth brows, faint flush", weightRange: [0.8, 1.2] },
+        { id: 4, text: "with coy glance, sideways glance with one eye partially covered by hair, small smirk, arched brow, light blush", weightRange: [0.8, 1.2] },
+        { id: 5, text: "with gentle smile, closed lips with a warm upward curve, slightly squinted eyes, relaxed brows, soft cheek flush", weightRange: [0.8, 1.2] },
+        { id: 6, text: "with nervous bite, teeth gently biting lower lip, wide eyes with raised brows, flushed cheeks, tense expression", weightRange: [0.8, 1.2] },
+        { id: 7, text: "with pouting sulk, puffed-out lips, furrowed brows, narrowed eyes looking aside, light blush", weightRange: [0.8, 1.2] },
+        { id: 8, text: "with curious tilt, head tilted, one brow raised, wide curious eyes, slightly open mouth with a hint of smile", weightRange: [0.8, 1.2] },
+        { id: 9, text: "with flirtatious wink, one eye closed in a wink, sly smirk, arched brow, glowing cheeks", weightRange: [0.8, 1.2] },
+        { id: 10, text: "with smoldering stare, half-lidded eyes with intense focus, parted lips with a seductive curve, raised brow, subtle blush", weightRange: [0.8, 1.2] },
+        { id: 11, text: "with ecstatic moan, eyes rolled back slightly, open mouth with a gasp, flushed cheeks, furrowed brows in pleasure", weightRange: [0.8, 1.2] },
+        { id: 12, text: "with mischievous grin, wide cheeky grin with bared teeth, squinted eyes, raised brows, light flush", weightRange: [0.8, 1.2] },
+        { id: 13, text: "with haughty sneer, lifted chin, narrowed eyes with a scornful gaze, pursed lips with a slight smirk, no blush", weightRange: [0.8, 1.2] },
+        { id: 14, text: "with passionate cry, wide open mouth in a moan, eyes clenched shut, furrowed brows, heavy blush across face", weightRange: [0.8, 1.2] },
+        { id: 15, text: "with seductive smirk, crooked smile with parted lips, half-lidded eyes with a knowing look, arched brow, glowing blush", weightRange: [0.8, 1.2] },
+        { id: 16, text: "with defiant glare, narrowed eyes with a fierce stare, clenched jaw, furrowed brows, no blush", weightRange: [0.8, 1.2] },
+        { id: 17, text: "with blissful sigh, relaxed eyes half-closed, soft open-mouthed smile, smooth brows, faint blush", weightRange: [0.8, 1.2] },
+        { id: 18, text: "with lustful gaze, heavy-lidded eyes with dilated pupils, parted lips with tongue slightly out, flushed cheeks, intense brow arch", weightRange: [0.8, 1.2] },
+        { id: 19, text: "with teasing tongue, tongue sticking out playfully, squinted eyes, raised brows, rosy cheeks", weightRange: [0.8, 1.2] },
+        { id: 20, text: "with orgasmic ecstasy, eyes rolled back, wide open mouth in a loud moan, flushed face, tensed brows", weightRange: [0.8, 1.2] }
+      ],
+      locations: [
+        { id: 1, text: "Cozy Master Bedroom with king-size bed, soft white sheets, warm lamp glow" },
+        { id: 2, text: "Minimalist Guest Room with gray linens, clean white walls, soft overhead lighting" },
+        { id: 3, text: "Vintage Boudoir with ornate vanity mirror, satin pillows, lace curtains" },
+        { id: 4, text: "Modern Loft Bedroom with exposed beams, platform bed, floor-to-ceiling windows" },
+        { id: 5, text: "Rustic Cabin Bedroom with wooden walls, quilted bedspread, stone fireplace" },
+        { id: 6, text: "Elegant Study Nook with bookshelves, leather armchair, reading lamp" },
+        { id: 7, text: "Sunny Sunroom with glass walls, potted plants, natural sunlight" },
+        { id: 8, text: "Attic Hideaway with slanted ceiling, mattress on floor, string lights" },
+        { id: 9, text: "Luxurious En Suite Bathroom with marble countertops, freestanding bathtub, ambient lighting" },
+        { id: 10, text: "Cozy Living Room Corner with plush sofa, throw pillows, bay window" },
+        { id: 11, text: "Kitchen Island Setup with granite countertop, pendant lights, stainless steel appliances" },
+        { id: 12, text: "Home Office Den with wooden desk, swivel chair, organized bookshelves" },
+        { id: 13, text: "Balcony Adjoined Bedroom with sliding glass doors, potted flowers, city view" },
+        { id: 14, text: "Hallway Alcove with wall sconces, small bench, framed artwork" },
+        { id: 15, text: "Basement Lounge with sectional sofa, entertainment center, recessed lights" },
+        { id: 16, text: "Formal Dining Room with wooden table, chandelier overhead, large windows" },
+        { id: 17, text: "Nursery Turned Retreat with pastel walls, converted daybed, gentle lighting" },
+        { id: 18, text: "Walk-In Closet with mirrored doors, clothing racks, bright overhead lights" },
+        { id: 19, text: "Home Gym Corner with yoga mat, mirror wall, exercise equipment" },
+        { id: 20, text: "Conservatory Extension with glass roof, indoor plants, natural light filtering" }
+      ],
+      styles: [
+        { id: 1, text: "Studio Trigger Neon, bold high-contrast line art with exaggerated proportions, vibrant neon colors, dynamic angular shading" },
+        { id: 2, text: "Retro 90s Cel Animation, clean thick black outlines with flat vibrant color fills, soft cel-shading for depth" },
+        { id: 3, text: "Pop Art Anime, comic book-inspired with bold outlines, halftone dot shading, vivid primary colors" },
+        { id: 4, text: "Ghibli-Inspired Soft Anime, delicate line art with subtle hand-painted textures, muted yet rich colors" },
+        { id: 5, text: "Cyberpunk Anime, neon-lit high-tech aesthetic with glowing accents, thin line art, reflective surfaces" },
+        { id: 6, text: "Shigenori Soejima Stylized, angular expressive line work with vibrant color blocks, dramatic poses" },
+        { id: 7, text: "CLAMP Ornate Anime, intricate flowing line art with elegant details, vivid jewel tones" },
+        { id: 8, text: "90s OVA Grit, rough sketch-like line art with muted grainy colors, textured shading" },
+        { id: 9, text: "Hentai Line Art, ultra-clean thin lines with minimal shading, hyper-detailed anatomy, bright colors" },
+        { id: 10, text: "Tetsuya Nomura Fantasy Anime, sleek angular lines with glossy highlights, dark and vibrant color palettes" },
+        { id: 11, text: "Mecha Anime Chrome, metallic reflective textures with sharp lines, cool blue-gray tones" },
+        { id: 12, text: "Shigenobu Matsumoto Bold, thick expressive outlines with flat saturated colors" },
+        { id: 13, text: "Magical Girl Sparkle, glittery highlights, pastel gradients, soft outlines" },
+        { id: 14, text: "Retro Sci-Fi Anime, clean lines with bold retro-futuristic colors, dynamic lighting" },
+        { id: 15, text: "Gothic Anime Elegance, dark moody palettes with intricate line work, crimson and violet accents" },
+        { id: 16, text: "Y2K Anime Flash, bright glossy colors with metallic highlights, chunky outlines" },
+        { id: 17, text: "Neo-Traditional Anime, blend of 90s clean lines with modern smooth gradients" },
+        { id: 18, text: "Watercolor Anime, soft translucent color washes with delicate lines" },
+        { id: 19, text: "Street Art Anime, graffiti-inspired with bold spray-paint textures, vibrant urban colors" },
+        { id: 20, text: "Classic Shojo Glow, thin elegant lines with soft pastel shading, sparkling highlights" }
+      ],
+      loras: [
+        { id: 1, name: "90s-anime", triggers: ["90s4n1m3"], weightRange: [0.7, 0.7], notes: "90s anime style" },
+        { id: 2, name: "gothic-retro", triggers: ["gothicretroanime"], weightRange: [0.8, 0.8], notes: "Gothic retro anime" },
+        { id: 3, name: "bestfootpose", triggers: ["bestfootpose", "barefoot", "toes"], weightRange: [0.7, 1.0], notes: "Foot poses" },
+        { id: 4, name: "expressiveh", triggers: ["expressiveh"], weightRange: [0.7, 0.8], notes: "Expressive hentai style" },
+        { id: 5, name: "rebecca-cyberpunk", triggers: ["ERRebecca", "green hair", "twin tails"], weightRange: [1.0, 1.0], notes: "Rebecca character" },
+        { id: 6, name: "s1-dramatic", triggers: ["s1_dram"], weightRange: [0.2, 1.0], notes: "Dramatic lighting" },
+        { id: 7, name: "egirls", triggers: ["egirl"], weightRange: [0.7, 0.8], notes: "E-girl aesthetic" },
+        { id: 8, name: "archie-comic", triggers: ["4RCH13"], weightRange: [0.8, 0.8], notes: "Archie comic style" },
+        { id: 9, name: "pop-art", triggers: ["p0p4rt", "colorful"], weightRange: [0.8, 0.8], notes: "Pop art anime style" },
+        { id: 10, name: "vintage-cartoon", triggers: ["vintoons", "cartoon style", "pin-up"], weightRange: [0.7, 1.1], notes: "Vintage cartoon style" },
+        { id: 11, name: "incase", triggers: [], weightRange: [1.0, 1.0], notes: "InCase artist style" },
+        { id: 12, name: "commix", triggers: ["commix style"], weightRange: [0.8, 1.0], notes: "Comic mix style" },
+        { id: 13, name: "kiwi-cyberpunk", triggers: ["cpkiwi"], weightRange: [0.8, 0.8], notes: "Kiwi character" },
+        { id: 14, name: "character-sheet", triggers: ["cut3ch4r", "multiple views"], weightRange: [0.8, 0.8], notes: "Character sheets" },
+        { id: 15, name: "neon-city", triggers: ["NeonCity_PDXL"], weightRange: [1.0, 1.0], notes: "Neon city backgrounds" },
+        { id: 16, name: "noir-detective", triggers: ["p4int3dn0ir art style"], weightRange: [1.0, 1.0], notes: "Noir detective style" },
+        { id: 17, name: "lucy-cyberpunk", triggers: ["lucy", "blue hair", "blue eyes"], weightRange: [1.0, 1.0], notes: "Lucy character" },
+        { id: 18, name: "smoking", triggers: ["cigarette", "smoking"], weightRange: [0.7, 0.7], notes: "Smoking concepts" },
+        { id: 19, name: "expression-sheet", triggers: ["character sheet", "expressions"], weightRange: [0.7, 1.0], notes: "Expression sheets" },
+        { id: 20, name: "rogue-marvel", triggers: ["rogueSDXL", "brown hair", "green eyes"], weightRange: [0.8, 1.0], notes: "Rogue Marvel character" },
+        { id: 21, name: "vampira-outfit", triggers: ["latex panties", "latex halterneck"], weightRange: [0.7, 0.7], notes: "Gothic clothing" },
+        { id: 22, name: "v-over-face", triggers: ["v over face", "tongue out"], weightRange: [0.8, 0.8], notes: "V gesture pose" },
+        { id: 23, name: "prone-feet", triggers: ["prone", "on stomach", "lying"], weightRange: [0.8, 0.8], notes: "Prone with feet up" },
+        { id: 24, name: "blowing-kisses", triggers: ["blowing kiss", "k1ss3s"], weightRange: [0.6, 0.6], notes: "Blowing kisses gesture" },
+        { id: 25, name: "gothic-neon", triggers: ["g0th1c", "glowing", "neon lights"], weightRange: [0.8, 0.8], notes: "Gothic neon style" },
+        { id: 26, name: "ghibli", triggers: ["ghibli"], weightRange: [0.8, 0.8], notes: "Ghibli art style" },
+        { id: 27, name: "gothic-details", triggers: ["gd", "gothic", "spikes"], weightRange: [0.8, 0.8], notes: "Gothic detail elements" },
+        { id: 28, name: "junji-ito", triggers: ["junj11t0", "junji ito", "monochrome"], weightRange: [0.8, 0.8], notes: "Horror manga style" },
+        { id: 29, name: "tattoos", triggers: ["t4ts", "tattoos"], weightRange: [0.7, 0.7], notes: "Tattoo concepts", tattooPlacements: ["hips", "thighs", "shoulders", "lower back", "chest", "upper arms"] },
+        { id: 30, name: "fangs", triggers: ["f4ng", "small fangs"], weightRange: [0.7, 0.7], notes: "Fang helper" },
+        { id: 31, name: "vintage-90s", triggers: ["Vintage", "1990s (style)"], weightRange: [0.5, 0.75], notes: "Vintage 90s anime style" }
+      ],
+      negatives: {
+        standard: ["<TI:FFSD51AB6>", "<TI:5D619863AC>", "<TI:5FDAD45040BA>", "<TI:8A94867251>", "low-res", "bad anatomy", "bad hands", "text", "error", "missing fingers", "extra digit", "fewer digits", "cropped", "worst quality", "low quality", "normal quality", "jpeg artifacts", "signature", "watermark", "username", "blurry", "artist name", "(deformed, distorted, disfigured:1.3)", "poorly drawn", "bad anatomy", "wrong anatomy", "extra limb", "missing limb", "floating limbs", "(mutated hands and fingers:1.4)", "disconnected limbs", "mutation", "mutated", "ugly", "disgusting", "blurry", "amputation", "source_pony", "source_furry", "source_cartoon", "sketch", "painting", "monochrome", "rating_safe", "rating_questionable", "two people", "multiple characters", "couple", "male"],
+        byStyle: {
+          "Hentai Line Art": ["no blurry textures"],
+          "Retro 90s Cel Animation": ["no excessive gradients"],
+          "Gothic Anime Elegance": ["no bright colors"],
+          "Cyberpunk Anime": ["no warm lighting"]
+        },
+        byExpression: {
+          "Ecstatic Moan": ["no distorted face", "no blurry eyes"],
+          "Orgasmic Ecstasy": ["no distorted face", "no blurry eyes"],
+          "Passionate Cry": ["no distorted face", "no blurry eyes"]
+        }
+      }
+    };
+
+    /* RNG & Utility Functions */
+    function rngFloat(min, max, precision = 2) {
+      const random = crypto?.getRandomValues ? 
+        crypto.getRandomValues(new Uint32Array(1))[0] / (2**32) : 
+        Math.random();
+      return parseFloat((random * (max - min) + min).toFixed(precision));
+    }
+
+    function rngInt(min, max) {
+      const random = crypto?.getRandomValues ? 
+        crypto.getRandomValues(new Uint32Array(1))[0] / (2**32) : 
+        Math.random();
+      return Math.floor(random * (max - min + 1)) + min;
+    }
+
+    function randomChoice(list) {
+      return list[rngInt(0, list.length - 1)];
+    }
+
+    // Seeded PRNG for locked seed (xorshift32)
+    class SeededRNG {
+      constructor(seed) {
+        this.state = seed || 1;
+      }
+      
+      next() {
+        this.state ^= this.state << 13;
+        this.state ^= this.state >>> 17;
+        this.state ^= this.state << 5;
+        return (this.state >>> 0) / (2**32);
+      }
+      
+      float(min, max, precision = 2) {
+        return parseFloat((this.next() * (max - min) + min).toFixed(precision));
+      }
+      
+      int(min, max) {
+        return Math.floor(this.next() * (max - min + 1)) + min;
+      }
+      
+      choice(list) {
+        return list[this.int(0, list.length - 1)];
+      }
+    }
+
+    /* Local Storage Functions */
+    function loadUserData() {
+      try {
+        const stored = localStorage.getItem('fg.userData.v1');
+        return stored ? JSON.parse(stored) : { subjects: [], poses: [], expressions: [], locations: [], styles: [], loras: [] };
+      } catch {
+        return { subjects: [], poses: [], expressions: [], locations: [], styles: [], loras: [] };
+      }
+    }
+
+    function saveUserData(userData) {
+      localStorage.setItem('fg.userData.v1', JSON.stringify(userData));
+    }
+
+    function loadHistory() {
+      try {
+        const stored = localStorage.getItem('fg.history.v1');
+        return stored ? JSON.parse(stored) : [];
+      } catch {
+        return [];
+      }
+    }
+
+    function saveHistory(history) {
+      localStorage.setItem('fg.history.v1', JSON.stringify(history.slice(-20)));
+    }
+
+    /* Generation Logic */
+    function pickLoRAs(allLoRAs, desiredCount, cap = 5) {
+      const clampedCount = Math.max(0, Math.min(desiredCount, cap));
+      if (clampedCount === 0) return [];
+      
+      const availableLoRAs = [...allLoRAs];
+      const selected = [];
+      
+      for (let i = 0; i < clampedCount && availableLoRAs.length > 0; i++) {
+        const randomIndex = rngInt(0, availableLoRAs.length - 1);
+        const lora = availableLoRAs.splice(randomIndex, 1)[0];
+        const weight = rngFloat(lora.weightRange[0], lora.weightRange[1]);
+        selected.push({ ...lora, selectedWeight: weight });
+      }
+      
+      return selected;
+    }
+
+    function applyNoRepeat(bucketName, list, usedSets, noRepeat) {
+      if (!noRepeat) return randomChoice(list);
+      
+      if (!usedSets[bucketName]) usedSets[bucketName] = new Set();
+      const used = usedSets[bucketName];
+      
+      const available = list.filter(item => !used.has(item.id));
+      if (available.length === 0) {
+        used.clear();
+        return randomChoice(list);
+      }
+      
+      const chosen = randomChoice(available);
+      used.add(chosen.id);
+      return chosen;
+    }
+
+    function assemblePrompt(selection, selectedLoRAs, blendStyles) {
+      const basePrompt = "1girl, score_9, score_8_up, score_7_up, score_6_up, score_5_up, score_4_up, source_anime, rating_explicit, (1girl:1.3)";
+      
+      let parts = [basePrompt];
+      
+      // Subject
+      if (selection.subject) {
+        parts.push(selection.subject.description);
+      }
+      
+      // Expression (after subject, before pose)
+      if (selection.expression) {
+        const shouldWeight = Math.random() < 0.5;
+        if (shouldWeight && selection.expression.weightRange) {
+          const weight = rngFloat(selection.expression.weightRange[0], selection.expression.weightRange[1]);
+          parts.push(`(${selection.expression.text.replace('with ', '')}:${weight})`);
+        } else {
+          parts.push(selection.expression.text);
+        }
+      }
+      
+      // Pose
+      if (selection.pose) {
+        parts.push(`${selection.pose.text}, ${selection.pose.angle}`);
+      }
+      
+      // Location
+      if (selection.location) {
+        parts.push(`in ${selection.location.text}`);
+      }
+      
+      // Style(s)
+      if (selection.styles && selection.styles.length > 0) {
+        if (blendStyles && selection.styles.length > 1) {
+          // Blend styles with weights
+          const styleTexts = selection.styles.map((style, index) => {
+            if (index === 0) {
+              return `${style.text}:1.2`;
+            } else {
+              return `${style.text}:0.8`;
+            }
+          });
+          parts.push(styleTexts.join(', '));
+        } else {
+          parts.push(selection.styles[0].text);
+        }
+      }
+      
+      // LoRAs
+      const loraStrings = selectedLoRAs.map(lora => {
+        const loraTag = `<lora:${lora.name}:${lora.selectedWeight}>`;
+        let triggerText = '';
+        
+        if (lora.triggers && lora.triggers.length > 0) {
+          triggerText = lora.triggers.join(', ');
+        }
+        
+        // Special handling for tattoo LoRA
+        if (lora.name.toLowerCase().includes('tattoo') && lora.tattooPlacements) {
+          const placement = randomChoice(lora.tattooPlacements);
+          triggerText += `, tattoos on ${placement}`;
+        }
+        
+        return triggerText ? `${loraTag}, ${triggerText}` : loraTag;
+      });
+      
+      if (loraStrings.length > 0) {
+        parts.push(loraStrings.join(', '));
+      }
+      
+      return parts.join(', ');
+    }
+
+    function assembleNegatives(selection, includeStyleExpr) {
+      let negatives = [...packetData.negatives.standard];
+      
+      if (includeStyleExpr) {
+        // Add style-specific negatives
+        if (selection.styles && selection.styles.length > 0) {
+          selection.styles.forEach(style => {
+            const styleKey = style.text.split(',')[0].trim();
+            const styleNegatives = packetData.negatives.byStyle[styleKey];
+            if (styleNegatives && Math.random() < 0.5) {
+              negatives.push(...styleNegatives);
+            }
+          });
+        }
+        
+        // Add expression-specific negatives
+        if (selection.expression) {
+          const exprKey = selection.expression.text.split(',')[0].replace('with ', '').trim();
+          const exprNegatives = packetData.negatives.byExpression[exprKey];
+          if (exprNegatives && Math.random() < 0.5) {
+            negatives.push(...exprNegatives);
+          }
+        }
+      }
+      
+      return negatives.join(', ');
+    }
+
+    function formatSettings(randomizeSettings, lockedSeed) {
+      const settings = {
+        "Model": "Perfect Pony XL V6",
+        "Sampler": randomizeSettings ? randomChoice(["Euler a", "DPM++ 2M"]) : "Euler a",
+        "Steps": randomizeSettings ? rngInt(25, 40) : 25,
+        "CFG": randomizeSettings ? rngFloat(7, 9, 1) : 7,
+        "Hires Strength": randomizeSettings ? rngFloat(0.3, 0.5, 1) : 0.3,
+        "Aspect Ratio": randomizeSettings ? randomChoice(["512×768", "1024×1536"]) : "512×768",
+        "CLIP Skip": -2,
+        "Prompt Enhance": true,
+        "Prompt Behavior": "V2 Unlimited",
+        "Upscaler": "REAL-ESRGAN-X4-ANIME-CFORMER",
+        "Seed": lockedSeed !== null ? lockedSeed : rngInt(1, 2147483647)
+      };
+      
+      return JSON.stringify(settings, null, 2);
+    }
+
+    /* React Components */
+    const { useState, useEffect, useMemo } = React;
+
+    function App() {
+      const [userData, setUserData] = useState(loadUserData());
+      const [history, setHistory] = useState(loadHistory());
+      const [usedSets, setUsedSets] = useState({});
+      
+      // Generator state
+      const [locks, setLocks] = useState({
+        subject: false,
+        pose: false,
+        expression: false,
+        location: false,
+        style: false
+      });
+      
+      const [toggles, setToggles] = useState({
+        noRepeat: true,
+        styleBlend: false,
+        includeNegatives: true,
+        randomizeSettings: false,
+        lockSeed: false
+      });
+      
+      const [loraCount, setLoraCount] = useState(2);
+      const [lockedSeed, setLockedSeed] = useState(null);
+      const [currentSelection, setCurrentSelection] = useState({});
+      const [currentPrompt, setCurrentPrompt] = useState('');
+      const [currentNegative, setCurrentNegative] = useState('');
+      const [currentSettings, setCurrentSettings] = useState('');
+      const [activeTab, setActiveTab] = useState('subjects');
+      
+      // Add item state
+      const [addItemData, setAddItemData] = useState({});
+
+      // Merge data
+      const mergedData = useMemo(() => {
+        const merged = {};
+        Object.keys(packetData).forEach(key => {
+          if (key === 'negatives') {
+            merged[key] = packetData[key];
+          } else {
+            merged[key] = [...packetData[key], ...(userData[key] || [])];
+          }
+        });
+        return merged;
+      }, [userData]);
+
+      const generatePrompt = () => {
+        const selection = {};
+        
+        // Select items (respecting locks)
+        if (!locks.subject || !currentSelection.subject) {
+          selection.subject = applyNoRepeat('subjects', mergedData.subjects, usedSets, toggles.noRepeat);
+        } else {
+          selection.subject = currentSelection.subject;
+        }
+        
+        if (!locks.pose || !currentSelection.pose) {
+          selection.pose = applyNoRepeat('poses', mergedData.poses, usedSets, toggles.noRepeat);
+        } else {
+          selection.pose = currentSelection.pose;
+        }
+        
+        if (!locks.expression || !currentSelection.expression) {
+          selection.expression = applyNoRepeat('expressions', mergedData.expressions, usedSets, toggles.noRepeat);
+        } else {
+          selection.expression = currentSelection.expression;
+        }
+        
+        if (!locks.location || !currentSelection.location) {
+          selection.location = applyNoRepeat('locations', mergedData.locations, usedSets, toggles.noRepeat);
+        } else {
+          selection.location = currentSelection.location;
+        }
+        
+        if (!locks.style || !currentSelection.styles) {
+          if (toggles.styleBlend) {
+            const styleCount = Math.random() < 0.1 ? 3 : 2; // 10% chance for 3 styles
+            selection.styles = [];
+            for (let i = 0; i < styleCount && i < mergedData.styles.length; i++) {
+              const style = applyNoRepeat(`styles_${i}`, mergedData.styles.filter(s => !selection.styles.includes(s)), usedSets, toggles.noRepeat);
+              if (style) selection.styles.push(style);
+            }
+          } else {
+            selection.styles = [applyNoRepeat('styles', mergedData.styles, usedSets, toggles.noRepeat)];
+          }
+        } else {
+          selection.styles = currentSelection.styles;
+        }
+        
+        // Select LoRAs
+        const selectedLoRAs = pickLoRAs(mergedData.loras, loraCount);
+        
+        // Generate outputs
+        const prompt = assemblePrompt(selection, selectedLoRAs, toggles.styleBlend);
+        const negative = assembleNegatives(selection, toggles.includeNegatives);
+        const settings = formatSettings(toggles.randomizeSettings, toggles.lockSeed ? lockedSeed : null);
+        
+        // Update state
+        setCurrentSelection(selection);
+        setCurrentPrompt(prompt);
+        setCurrentNegative(negative);
+        setCurrentSettings(settings);
+        
+        // Add to history
+        const historyEntry = {
+          id: Date.now(),
+          timestamp: new Date().toISOString(),
+          prompt,
+          negative,
+          settings,
+          selection,
+          selectedLoRAs
+        };
+        
+        const newHistory = [historyEntry, ...history].slice(0, 20);
+        setHistory(newHistory);
+        saveHistory(newHistory);
+        
+        // Update locked seed if not set
+        if (toggles.lockSeed && !lockedSeed) {
+          const seedMatch = settings.match(/"Seed":\s*(\d+)/);
+          if (seedMatch) {
+            setLockedSeed(parseInt(seedMatch[1]));
+          }
+        }
+
+        setUsedSets({...usedSets});
+      };
+
+      const rerollBucket = (bucketName) => {
+        const newSelection = { ...currentSelection };
+        
+        switch (bucketName) {
+          case 'subject':
+            newSelection.subject = applyNoRepeat('subjects', mergedData.subjects, usedSets, toggles.noRepeat);
+            break;
+          case 'pose':
+            newSelection.pose = applyNoRepeat('poses', mergedData.poses, usedSets, toggles.noRepeat);
+            break;
+          case 'expression':
+            newSelection.expression = applyNoRepeat('expressions', mergedData.expressions, usedSets, toggles.noRepeat);
+            break;
+          case 'location':
+            newSelection.location = applyNoRepeat('locations', mergedData.locations, usedSets, toggles.noRepeat);
+            break;
+          case 'style':
+            if (toggles.styleBlend) {
+              const styleCount = Math.random() < 0.1 ? 3 : 2;
+              newSelection.styles = [];
+              for (let i = 0; i < styleCount && i < mergedData.styles.length; i++) {
+                const style = applyNoRepeat(`styles_${i}`, mergedData.styles.filter(s => !newSelection.styles.includes(s)), usedSets, toggles.noRepeat);
+                if (style) newSelection.styles.push(style);
+              }
+            } else {
+              newSelection.styles = [applyNoRepeat('styles', mergedData.styles, usedSets, toggles.noRepeat)];
+            }
+            break;
+          case 'loras':
+            const selectedLoRAs = pickLoRAs(mergedData.loras, loraCount);
+            const prompt = assemblePrompt(newSelection, selectedLoRAs, toggles.styleBlend);
+            setCurrentPrompt(prompt);
+            return;
+        }
+        
+        const selectedLoRAs = pickLoRAs(mergedData.loras, loraCount);
+        const prompt = assemblePrompt(newSelection, selectedLoRAs, toggles.styleBlend);
+        const negative = assembleNegatives(newSelection, toggles.includeNegatives);
+        
+        setCurrentSelection(newSelection);
+        setCurrentPrompt(prompt);
+        setCurrentNegative(negative);
+      };
+
+      const copyToClipboard = async (text) => {
+        try {
+          await navigator.clipboard.writeText(text);
+        } catch (err) {
+          // Fallback for older browsers
+          const textArea = document.createElement('textarea');
+          textArea.value = text;
+          document.body.appendChild(textArea);
+          textArea.select();
+          document.execCommand('copy');
+          document.body.removeChild(textArea);
+        }
+      };
+
+      const addItem = (bucket) => {
+        const data = addItemData[bucket];
+        if (!data) return;
+        
+        let newItem;
+        const newId = Math.max(...mergedData[bucket].map(item => item.id), 0) + 1;
+        
+        switch (bucket) {
+          case 'subjects':
+            if (!data.description) return;
+            newItem = { id: newId, description: data.description };
+            break;
+          case 'poses':
+            if (!data.text || !data.angle) return;
+            newItem = { id: newId, text: data.text, angle: data.angle };
+            break;
+          case 'expressions':
+            if (!data.text) return;
+            newItem = { 
+              id: newId, 
+              text: data.text,
+              weightRange: data.weightMin && data.weightMax ? [parseFloat(data.weightMin), parseFloat(data.weightMax)] : [0.8, 1.2]
+            };
+            break;
+          case 'locations':
+            if (!data.text) return;
+            newItem = { id: newId, text: data.text };
+            break;
+          case 'styles':
+            if (!data.text) return;
+            newItem = { id: newId, text: data.text };
+            break;
+          case 'loras':
+            if (!data.name || !data.triggers || !data.weightMin || !data.weightMax) return;
+            newItem = {
+              id: newId,
+              name: data.name,
+              triggers: data.triggers.split(',').map(t => t.trim()),
+              weightRange: [parseFloat(data.weightMin), parseFloat(data.weightMax)],
+              notes: data.notes || '',
+              tattooPlacements: data.tattooPlacements ? data.tattooPlacements.split(',').map(t => t.trim()) : undefined
+            };
+            break;
+          default:
+            return;
+        }
+        
+        const newUserData = { ...userData };
+        newUserData[bucket] = [...(newUserData[bucket] || []), newItem];
+        setUserData(newUserData);
+        saveUserData(newUserData);
+        
+        // Clear form
+        setAddItemData({ ...addItemData, [bucket]: {} });
+      };
+
+      const restoreFromHistory = (entry) => {
+        setCurrentSelection(entry.selection);
+        setCurrentPrompt(entry.prompt);
+        setCurrentNegative(entry.negative);
+        setCurrentSettings(entry.settings);
+      };
+
+      const exportData = (type) => {
+        if (type === 'txt') {
+          const content = `Prompt:\n${currentPrompt}\n\nNegative Prompt:\n${currentNegative}\n\nSettings:\n${currentSettings}`;
+          const blob = new Blob([content], { type: 'text/plain' });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = 'for-generations-prompt.txt';
+          a.click();
+          URL.revokeObjectURL(url);
+        } else if (type === 'json') {
+          const content = JSON.stringify(mergedData, null, 2);
+          const blob = new Blob([content], { type: 'application/json' });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = 'for-generations-catalog.json';
+          a.click();
+          URL.revokeObjectURL(url);
+        }
+      };
+
+      return React.createElement('div', { className: 'min-h-screen bg-zinc-950 text-zinc-100' },
+        // Header
+        React.createElement('div', { className: 'border-b border-zinc-800 bg-zinc-900' },
+          React.createElement('div', { className: 'container mx-auto px-4 py-6' },
+            React.createElement('div', { className: 'text-center' },
+              React.createElement('h1', { className: 'text-4xl font-bold text-cyan-400 mb-2' }, 'For Generations'),
+              React.createElement('p', { className: 'text-xl text-zinc-300 mb-4' }, 'Pony V6 XL Prompt Generator'),
+              React.createElement('div', { className: 'bg-red-900 border border-red-700 rounded-lg p-3 max-w-2xl mx-auto' },
+                React.createElement('p', { className: 'text-red-200 font-semibold text-sm' }, 
+                  '⚠️ For adult characters only. Do not create harmful or illegal content.')
+              )
+            )
+          )
+        ),
+        
+        // Main content
+        React.createElement('div', { className: 'container mx-auto px-4 py-6' },
+          React.createElement('div', { className: 'grid lg:grid-cols-2 gap-8' },
+            
+            // Left column: Catalog
+            React.createElement('div', { className: 'space-y-6' },
+              React.createElement('h2', { className: 'text-2xl font-bold text-cyan-400' }, 'Catalog'),
+              
+              // Tab navigation
+              React.createElement('div', { className: 'flex flex-wrap gap-2' },
+                ['subjects', 'poses', 'expressions', 'locations', 'styles', 'loras'].map(tab =>
+                  React.createElement('button', {
+                    key: tab,
+                    className: `px-4 py-2 rounded-lg transition-colors capitalize ${
+                      activeTab === tab 
+                        ? 'bg-cyan-600 text-white focus:ring-2 focus:ring-cyan-400' 
+                        : 'bg-zinc-800 text-zinc-300 hover:bg-zinc-700 focus:ring-2 focus:ring-zinc-600'
+                    }`,
+                    onClick: () => setActiveTab(tab),
+                    'aria-label': `View ${tab} catalog`
+                  }, `${tab} (${mergedData[tab].length})`)
+                )
+              ),
+              
+              // Tab content
+              React.createElement('div', { className: 'bg-zinc-900 rounded-lg p-4 max-h-96 overflow-y-auto' },
+                React.createElement('div', { className: 'space-y-2' },
+                  mergedData[activeTab].map(item =>
+                    React.createElement('div', { 
+                      key: item.id, 
+                      className: 'p-2 bg-zinc-800 rounded text-sm border-l-2 border-cyan-500'
+                    }, 
+                      React.createElement('div', { className: 'font-medium text-cyan-300' }, 
+                        `${activeTab.slice(0, -1).toUpperCase()} ${item.id}`
+                      ),
+                      React.createElement('div', { className: 'text-zinc-300 mt-1' },
+                        item.description || item.text || item.name || ''
+                      ),
+                      activeTab === 'loras' && React.createElement('div', { className: 'text-xs text-zinc-400 mt-1' },
+                        `Triggers: ${item.triggers?.join(', ') || 'None'} | Weight: ${item.weightRange?.join('-') || 'N/A'}`
+                      )
+                    )
+                  )
+                )
+              ),
+              
+              // Add item section
+              React.createElement('div', { className: 'bg-zinc-900 rounded-lg p-4' },
+                React.createElement('h3', { className: 'text-lg font-semibold text-cyan-400 mb-3' }, `Add ${activeTab.slice(0, -1)}`),
+                React.createElement('div', { className: 'space-y-3' },
+                  // Dynamic form fields based on activeTab
+                  (() => {
+                    const data = addItemData[activeTab] || {};
+                    const updateField = (field, value) => {
+                      setAddItemData({
+                        ...addItemData,
+                        [activeTab]: { ...data, [field]: value }
+                      });
+                    };
+                    
+                    switch (activeTab) {
+                      case 'subjects':
+                        return React.createElement('div', null,
+                          React.createElement('textarea', {
+                            className: 'w-full bg-zinc-800 border border-zinc-700 rounded px-3 py-2 text-zinc-100 resize-none focus:ring-2 focus:ring-cyan-400',
+                            placeholder: 'Enter subject description...',
+                            rows: 3,
+                            value: data.description || '',
+                            onChange: (e) => updateField('description', e.target.value),
+                            'aria-label': 'Subject description'
+                          })
+                        );
+                      case 'poses':
+                        return React.createElement('div', { className: 'space-y-2' },
+                          React.createElement('input', {
+                            className: 'w-full bg-zinc-800 border border-zinc-700 rounded px-3 py-2 text-zinc-100 focus:ring-2 focus:ring-cyan-400',
+                            placeholder: 'Pose description...',
+                            value: data.text || '',
+                            onChange: (e) => updateField('text', e.target.value),
+                            'aria-label': 'Pose description'
+                          }),
+                          React.createElement('input', {
+                            className: 'w-full bg-zinc-800 border border-zinc-700 rounded px-3 py-2 text-zinc-100 focus:ring-2 focus:ring-cyan-400',
+                            placeholder: 'Camera angle...',
+                            value: data.angle || '',
+                            onChange: (e) => updateField('angle', e.target.value),
+                            'aria-label': 'Camera angle'
+                          })
+                        );
+                      case 'expressions':
+                        return React.createElement('div', { className: 'space-y-2' },
+                          React.createElement('input', {
+                            className: 'w-full bg-zinc-800 border border-zinc-700 rounded px-3 py-2 text-zinc-100 focus:ring-2 focus:ring-cyan-400',
+                            placeholder: 'Expression description...',
+                            value: data.text || '',
+                            onChange: (e) => updateField('text', e.target.value),
+                            'aria-label': 'Expression description'
+                          }),
+                          React.createElement('div', { className: 'grid grid-cols-2 gap-2' },
+                            React.createElement('input', {
+                              className: 'bg-zinc-800 border border-zinc-700 rounded px-3 py-2 text-zinc-100 focus:ring-2 focus:ring-cyan-400',
+                              type: 'number',
+                              step: '0.1',
+                              placeholder: 'Min weight',
+                              value: data.weightMin || '',
+                              onChange: (e) => updateField('weightMin', e.target.value),
+                              'aria-label': 'Minimum weight'
+                            }),
+                            React.createElement('input', {
+                              className: 'bg-zinc-800 border border-zinc-700 rounded px-3 py-2 text-zinc-100 focus:ring-2 focus:ring-cyan-400',
+                              type: 'number',
+                              step: '0.1',
+                              placeholder: 'Max weight',
+                              value: data.weightMax || '',
+                              onChange: (e) => updateField('weightMax', e.target.value),
+                              'aria-label': 'Maximum weight'
+                            })
+                          )
+                        );
+                      case 'locations':
+                        return React.createElement('textarea', {
+                          className: 'w-full bg-zinc-800 border border-zinc-700 rounded px-3 py-2 text-zinc-100 resize-none focus:ring-2 focus:ring-cyan-400',
+                          placeholder: 'Location description (2-3 details max)...',
+                          rows: 2,
+                          value: data.text || '',
+                          onChange: (e) => updateField('text', e.target.value),
+                          'aria-label': 'Location description'
+                        });
+                      case 'styles':
+                        return React.createElement('textarea', {
+                          className: 'w-full bg-zinc-800 border border-zinc-700 rounded px-3 py-2 text-zinc-100 resize-none focus:ring-2 focus:ring-cyan-400',
+                          placeholder: 'Style description...',
+                          rows: 2,
+                          value: data.text || '',
+                          onChange: (e) => updateField('text', e.target.value),
+                          'aria-label': 'Style description'
+                        });
+                      case 'loras':
+                        return React.createElement('div', { className: 'space-y-2' },
+                          React.createElement('input', {
+                            className: 'w-full bg-zinc-800 border border-zinc-700 rounded px-3 py-2 text-zinc-100 focus:ring-2 focus:ring-cyan-400',
+                            placeholder: 'LoRA name...',
+                            value: data.name || '',
+                            onChange: (e) => updateField('name', e.target.value),
+                            'aria-label': 'LoRA name'
+                          }),
+                          React.createElement('input', {
+                            className: 'w-full bg-zinc-800 border border-zinc-700 rounded px-3 py-2 text-zinc-100 focus:ring-2 focus:ring-cyan-400',
+                            placeholder: 'Triggers (comma-separated)...',
+                            value: data.triggers || '',
+                            onChange: (e) => updateField('triggers', e.target.value),
+                            'aria-label': 'LoRA triggers'
+                          }),
+                          React.createElement('div', { className: 'grid grid-cols-2 gap-2' },
+                            React.createElement('input', {
+                              className: 'bg-zinc-800 border border-zinc-700 rounded px-3 py-2 text-zinc-100 focus:ring-2 focus:ring-cyan-400',
+                              type: 'number',
+                              step: '0.1',
+                              placeholder: 'Min weight',
+                              value: data.weightMin || '',
+                              onChange: (e) => updateField('weightMin', e.target.value),
+                              'aria-label': 'Minimum weight'
+                            }),
+                            React.createElement('input', {
+                              className: 'bg-zinc-800 border border-zinc-700 rounded px-3 py-2 text-zinc-100 focus:ring-2 focus:ring-cyan-400',
+                              type: 'number',
+                              step: '0.1',
+                              placeholder: 'Max weight',
+                              value: data.weightMax || '',
+                              onChange: (e) => updateField('weightMax', e.target.value),
+                              'aria-label': 'Maximum weight'
+                            })
+                          ),
+                          React.createElement('input', {
+                            className: 'w-full bg-zinc-800 border border-zinc-700 rounded px-3 py-2 text-zinc-100 focus:ring-2 focus:ring-cyan-400',
+                            placeholder: 'Notes (optional)...',
+                            value: data.notes || '',
+                            onChange: (e) => updateField('notes', e.target.value),
+                            'aria-label': 'Notes'
+                          }),
+                          React.createElement('input', {
+                            className: 'w-full bg-zinc-800 border border-zinc-700 rounded px-3 py-2 text-zinc-100 focus:ring-2 focus:ring-cyan-400',
+                            placeholder: 'Tattoo placements (comma-separated, optional)...',
+                            value: data.tattooPlacements || '',
+                            onChange: (e) => updateField('tattooPlacements', e.target.value),
+                            'aria-label': 'Tattoo placements'
+                          })
+                        );
+                      default:
+                        return null;
+                    }
+                  })(),
+                  
+                  React.createElement('div', { className: 'flex gap-2' },
+                    React.createElement('button', {
+                      className: 'px-4 py-2 bg-cyan-600 hover:bg-cyan-700 rounded-lg transition-colors focus:ring-2 focus:ring-cyan-400',
+                      onClick: () => addItem(activeTab)
+                    }, 'Add'),
+                    React.createElement('button', {
+                      className: 'px-4 py-2 bg-amber-600 hover:bg-amber-700 rounded-lg transition-colors focus:ring-2 focus:ring-amber-400',
+                      onClick: () => {
+                        // Simple validation - just check for empty required fields
+                        const errors = [];
+                        if (mergedData[activeTab].length === 0) {
+                          errors.push(`No ${activeTab} found`);
+                        }
+                        alert(errors.length ? `Issues:\n${errors.join('\n')}` : 'Basic validation passed!');
+                      }
+                    }, 'Validate')
+                  )
+                )
+              )
+            ),
+            
+            // Right column: Generator
+            React.createElement('div', { className: 'space-y-6' },
+              React.createElement('h2', { className: 'text-2xl font-bold text-cyan-400' }, 'Generator'),
+              
+              // Controls
+              React.createElement('div', { className: 'bg-zinc-900 rounded-lg p-4 space-y-4' },
+                React.createElement('h3', { className: 'text-lg font-semibold text-cyan-400' }, 'Controls'),
+                
+                // Toggles
+                React.createElement('div', { className: 'grid grid-cols-1 gap-3' },
+                  Object.entries({
+                    'No-repeat per bucket': 'noRepeat',
+                    'Blend up to 2 styles': 'styleBlend',
+                    'Include style/expression negatives': 'includeNegatives',
+                    'Randomize settings': 'randomizeSettings',
+                    'Lock seed': 'lockSeed'
+                  }).map(([label, key]) =>
+                    React.createElement('label', { 
+                      key: key,
+                      className: 'flex items-center space-x-2 text-sm cursor-pointer'
+                    },
+                      React.createElement('input', {
+                        type: 'checkbox',
+                        checked: toggles[key],
+                        onChange: (e) => setToggles({ ...toggles, [key]: e.target.checked }),
+                        className: 'rounded bg-zinc-700 border-zinc-600 text-cyan-500 focus:ring-cyan-500'
+                      }),
+                      React.createElement('span', null, label)
+                    )
+                  )
+                ),
+                
+                // LoRA count slider
+                React.createElement('div', null,
+                  React.createElement('label', { className: 'block text-sm font-medium mb-2' }, 
+                    `LoRA count: ${loraCount} (typical 1-4)`
+                  ),
+                  React.createElement('input', {
+                    type: 'range',
+                    min: 0,
+                    max: 5,
+                    value: loraCount,
+                    onChange: (e) => setLoraCount(parseInt(e.target.value)),
+                    className: 'w-full h-2 bg-zinc-700 rounded-lg appearance-none cursor-pointer slider focus:ring-2 focus:ring-cyan-400'
+                  })
+                ),
+                
+                // Locks
+                React.createElement('div', null,
+                  React.createElement('h4', { className: 'text-sm font-medium mb-2' }, 'Lock per-bucket:'),
+                  React.createElement('div', { className: 'grid grid-cols-3 gap-2' },
+                    Object.entries({
+                      'Subject': 'subject',
+                      'Pose': 'pose', 
+                      'Expression': 'expression',
+                      'Location': 'location',
+                      'Style': 'style'
+                    }).map(([label, key]) =>
+                      React.createElement('label', { 
+                        key: key,
+                        className: 'flex items-center space-x-1 text-xs cursor-pointer'
+                      },
+                        React.createElement('input', {
+                          type: 'checkbox',
+                          checked: locks[key],
+                          onChange: (e) => setLocks({ ...locks, [key]: e.target.checked }),
+                          className: 'rounded bg-zinc-700 border-zinc-600 text-cyan-500 focus:ring-cyan-500'
+                        }),
+                        React.createElement('span', null, label)
+                      )
+                    )
+                  )
+                ),
+                
+                // Main buttons
+                React.createElement('div', { className: 'flex flex-wrap gap-2' },
+                  React.createElement('button', {
+                    className: 'px-6 py-3 bg-cyan-600 hover:bg-cyan-700 rounded-lg font-semibold transition-colors focus:ring-2 focus:ring-cyan-400',
+                    onClick: generatePrompt
+                  }, 'Generate Prompt'),
+                  
+                  // Re-roll buttons
+                  ['Subject', 'Pose', 'Expression', 'Location', 'Style', 'LoRAs'].map(bucket =>
+                    React.createElement('button', {
+                      key: bucket,
+                      className: `px-3 py-2 rounded text-xs transition-colors focus:ring-2 ${
+                        bucket !== 'LoRAs' && locks[bucket.toLowerCase()] 
+                          ? 'bg-zinc-800 text-zinc-500 cursor-not-allowed focus:ring-zinc-600' 
+                          : 'bg-zinc-700 hover:bg-zinc-600 text-zinc-200 focus:ring-zinc-500'
+                      }`,
+                      onClick: () => rerollBucket(bucket.toLowerCase()),
+                      disabled: bucket !== 'LoRAs' && locks[bucket.toLowerCase()]
+                    }, `Re-roll ${bucket}`)
+                  )
+                )
+              ),
+              
+              // Outputs
+              React.createElement('div', { className: 'space-y-4' },
+                React.createElement('h3', { className: 'text-lg font-semibold text-cyan-400' }, 'Outputs'),
+                
+                // Prompt
+                React.createElement('div', null,
+                  React.createElement('div', { className: 'flex justify-between items-center mb-2' },
+                    React.createElement('label', { className: 'text-sm font-medium' }, 'Prompt'),
+                    React.createElement('button', {
+                      className: 'px-2 py-1 bg-zinc-700 hover:bg-zinc-600 rounded text-xs transition-colors focus:ring-2 focus:ring-zinc-500',
+                      onClick: () => copyToClipboard(currentPrompt)
+                    }, 'Copy')
+                  ),
+                  React.createElement('textarea', {
+                    className: 'w-full bg-zinc-800 border border-zinc-700 rounded px-3 py-2 text-zinc-100 font-mono text-sm resize-none focus:ring-2 focus:ring-cyan-400',
+                    rows: 4,
+                    value: currentPrompt,
+                    readOnly: true
+                  })
+                ),
+                
+                // Negative Prompt
+                React.createElement('div', null,
+                  React.createElement('div', { className: 'flex justify-between items-center mb-2' },
+                    React.createElement('label', { className: 'text-sm font-medium' }, 'Negative Prompt'),
+                    React.createElement('button', {
+                      className: 'px-2 py-1 bg-zinc-700 hover:bg-zinc-600 rounded text-xs transition-colors focus:ring-2 focus:ring-zinc-500',
+                      onClick: () => copyToClipboard(currentNegative)
+                    }, 'Copy')
+                  ),
+                  React.createElement('textarea', {
+                    className: 'w-full bg-zinc-800 border border-zinc-700 rounded px-3 py-2 text-zinc-100 font-mono text-sm resize-none focus:ring-2 focus:ring-cyan-400',
+                    rows: 3,
+                    value: currentNegative,
+                    readOnly: true
+                  })
+                ),
+                
+                // Settings
+                React.createElement('div', null,
+                  React.createElement('div', { className: 'flex justify-between items-center mb-2' },
+                    React.createElement('label', { className: 'text-sm font-medium' }, 'Settings'),
+                    React.createElement('button', {
+                      className: 'px-2 py-1 bg-zinc-700 hover:bg-zinc-600 rounded text-xs transition-colors focus:ring-2 focus:ring-zinc-500',
+                      onClick: () => copyToClipboard(currentSettings)
+                    }, 'Copy')
+                  ),
+                  React.createElement('textarea', {
+                    className: 'w-full bg-zinc-800 border border-zinc-700 rounded px-3 py-2 text-zinc-100 font-mono text-sm resize-none focus:ring-2 focus:ring-cyan-400',
+                    rows: 6,
+                    value: currentSettings,
+                    readOnly: true
+                  })
+                )
+              ),
+              
+              // Export buttons
+              React.createElement('div', { className: 'flex gap-2' },
+                React.createElement('button', {
+                  className: 'px-4 py-2 bg-green-600 hover:bg-green-700 rounded-lg transition-colors focus:ring-2 focus:ring-green-400',
+                  onClick: () => exportData('txt')
+                }, 'Download .txt'),
+                React.createElement('button', {
+                  className: 'px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors focus:ring-2 focus:ring-blue-400',
+                  onClick: () => exportData('json')
+                }, 'Download .json')
+              ),
+              
+              // History
+              React.createElement('div', { className: 'bg-zinc-900 rounded-lg p-4' },
+                React.createElement('h3', { className: 'text-lg font-semibold text-cyan-400 mb-3' }, 
+                  `History (${history.length})`
+                ),
+                React.createElement('div', { className: 'max-h-64 overflow-y-auto space-y-2' },
+                  history.map(entry =>
+                    React.createElement('div', { 
+                      key: entry.id,
+                      className: 'p-2 bg-zinc-800 rounded text-sm'
+                    },
+                      React.createElement('div', { className: 'flex justify-between items-start mb-1' },
+                        React.createElement('span', { className: 'text-xs text-zinc-400' },
+                          new Date(entry.timestamp).toLocaleString()
+                        ),
+                        React.createElement('button', {
+                          className: 'px-2 py-1 bg-cyan-600 hover:bg-cyan-700 rounded text-xs transition-colors focus:ring-2 focus:ring-cyan-400',
+                          onClick: () => restoreFromHistory(entry)
+                        }, 'Restore')
+                      ),
+                      React.createElement('div', { className: 'text-zinc-300 truncate' },
+                        entry.prompt.slice(0, 100) + '...'
+                      )
+                    )
+                  )
+                )
+              )
+            )
+          )
+        )
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById('root')).render(React.createElement(App));
+  </script>
+</body>
+</html>
