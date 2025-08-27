@@ -596,7 +596,135 @@
       return baseSettings;
     }
 
-    // LoRA type classification
+    // CONTEXTUAL INTELLIGENCE SYSTEM
+    
+    // Subject vibe analysis based on actual packet data
+    const subjectVibes = {
+      // Sultry/Seductive vibes (femme fatales, confident)
+      sultry: [1, 24], // "sultry vibe like a confident femme fatale", "seductive vibe like a femme fatale"
+      
+      // Innocent/Shy vibes (schoolgirls, romantic)
+      innocent: [2, 22], // "innocent vibe like a curious schoolgirl", "shy vibe like a reserved romantic"
+      
+      // Preppy/Elegant vibes (socialites, nobles)
+      preppy: [3, 13, 33], // "preppy vibe like a chic socialite", "regal vibe like a noble beauty"
+      
+      // Athletic/Dominant vibes (competitors, fighters)
+      athletic: [4, 11, 14, 16, 31, 34, 36], // "dominant vibe like a sporty competitor", "goddess vibe like a commanding warrior"
+      
+      // Nurturing/Cozy vibes (artists, romantics)
+      nurturing: [5, 8, 25, 27, 30], // "nurturing vibe like a caring artist", "cozy vibe like a plush romantic"
+      
+      // Ethereal/Mystical vibes (dancers, dreamers)  
+      ethereal: [6, 15, 28, 35, 39], // "ethereal vibe like a mystical dancer", "poetic vibe like a wistful dreamer"
+      
+      // Punk/Rebellious vibes (rockstars, street artists)
+      punk: [7, 26], // "punk vibe like a defiant rockstar", "punk vibe like a defiant street artist"
+      
+      // Cunning/Sly vibes (tricksters, rogues)
+      cunning: [9, 29], // "cunning vibe like a sly trickster", "cunning vibe like a clever rogue"
+      
+      // Vibrant/Performer vibes (lively performers)
+      vibrant: [10, 30], // "vibrant vibe like a lively performer"
+      
+      // Teasing/Idol vibes (popstars, anime stars)
+      teasing: [12, 32], // "idol vibe like a teasing popstar", "idol vibe like a teasing anime star"
+      
+      // Stoic/Guardian vibes (calm guardians)
+      stoic: [17, 37], // "stoic vibe like a calm guardian"
+      
+      // Siren/Seductive vibes (temptresses) 
+      siren: [18, 38], // "siren vibe like a seductive temptress"
+      
+      // Tragic/Sorrowful vibes (melancholic heroines)
+      tragic: [19, 39], // "tragic vibe like a sorrowful heroine"
+      
+      // Passionate/Fiery vibes (fiery performers)
+      passionate: [20, 40], // "passionate vibe like a fiery performer"
+      
+      // Arrogant/Model vibes (confident runway models)
+      arrogant: [21], // "arrogant vibe like a confident runway model"
+      
+      // Playful/Sprite vibes (mischievous sprites)
+      playful: [23] // "playful vibe like a mischievous sprite"
+    };
+
+    // Pose compatibility with vibes
+    const poseVibeCompatibility = {
+      // Sultry/Seductive poses work with sultry, siren, passionate vibes
+      sultry_poses: [1, 2, 6, 8, 13, 15, 17, 19, 20], // Sexual poses
+      
+      // Elegant/Graceful poses work with preppy, ethereal, nurturing vibes
+      elegant_poses: [21, 22, 23, 24, 25, 27, 28, 30, 31, 32, 33, 34, 36, 37, 40], // Graceful poses
+      
+      // Athletic/Dynamic poses work with athletic, punk, vibrant vibes
+      athletic_poses: [3, 4, 5, 9, 10, 11, 16, 18], // Dynamic poses
+      
+      // Intimate/Vulnerable poses work with innocent, nurturing, tragic vibes
+      intimate_poses: [26, 35, 38], // Curled, vulnerable poses
+      
+      // Playful poses work with teasing, playful, cunning vibes
+      playful_poses: [7, 14, 39], // Spread, crossed, relaxed poses
+      
+      // Confident poses work with arrogant, stoic, dominant vibes
+      confident_poses: [12, 29] // Sitting confident, lying back
+    };
+
+    // Expression compatibility with vibes
+    const expressionVibeCompatibility = {
+      // Innocent expressions
+      innocent_expressions: [1, 2, 5, 6, 8], // wide-eyed, shy blush, gentle smile, nervous bite, curious tilt
+      
+      // Seductive expressions
+      seductive_expressions: [9, 10, 15, 18], // flirtatious wink, smoldering stare, seductive smirk, lustful gaze
+      
+      // Intense expressions
+      intense_expressions: [11, 13, 14, 16, 20], // ecstatic moan, haughty sneer, passionate cry, defiant glare, orgasmic ecstasy
+      
+      // Playful expressions
+      playful_expressions: [4, 7, 12, 19], // coy glance, pouting sulks, mischievous grin, teasing tongue
+      
+      // Dreamy expressions
+      dreamy_expressions: [3, 17], // dreamy gaze, blissful sigh
+    };
+
+    // Location compatibility with vibes
+    const locationVibeCompatibility = {
+      // Luxurious/Elegant locations
+      luxurious_locations: [1, 3, 6, 9, 16, 20], // master bedroom, vintage boudoir, study nook, bathroom, dining room, conservatory
+      
+      // Cozy/Intimate locations
+      cozy_locations: [2, 5, 7, 10, 17], // guest room, rustic cabin, sunroom, living room, nursery
+      
+      // Modern/Sleek locations
+      modern_locations: [4, 11, 12, 15, 18, 19], // modern loft, kitchen island, office, basement, walk-in closet, gym
+      
+      // Private/Secluded locations
+      private_locations: [8, 13, 14], // attic hideaway, balcony bedroom, hallway alcove
+    };
+
+    // Style compatibility with vibes
+    const styleVibeCompatibility = {
+      // Innocent/Soft styles
+      innocent_styles: [4, 13, 18, 20], // Ghibli, magical girl, watercolor, classic shojo
+      
+      // Seductive/Bold styles
+      seductive_styles: [1, 3, 9, 12, 16, 19], // neon trigger, pop art, hentai line art, bold matsumoto, Y2K flash, street art
+      
+      // Gothic/Dark styles
+      gothic_styles: [15], // gothic anime elegance
+      
+      // Retro/Vintage styles
+      retro_styles: [2, 8], // 90s cel animation, 90s OVA grit
+      
+      // Cyberpunk/Modern styles
+      cyberpunk_styles: [5, 11, 14], // cyberpunk anime, mecha chrome, retro sci-fi
+      
+      // Elegant/Sophisticated styles
+      elegant_styles: [6, 7, 10, 17], // stylized soejima, CLAMP ornate, nomura fantasy, neo-traditional
+    };
+
+    // LoRA type classification with contextual awareness
     function getLoRAType(lora) {
       const name = lora.name.toLowerCase();
       const triggers = lora.triggers.join(' ').toLowerCase();
@@ -629,6 +757,169 @@
       
       // Concept LoRAs (everything else)
       return 'concept';
+    }
+
+    // LoRA vibe compatibility
+    const loraVibeCompatibility = {
+      // Character LoRAs have specific vibes
+      5: ['punk', 'cyberpunk'], // Rebecca - punk/cyberpunk
+      13: ['cyberpunk'], // Kiwi - cyberpunk  
+      17: ['cyberpunk'], // Lucy - cyberpunk
+      20: ['sultry', 'passionate'], // Rogue - sultry/passionate
+      
+      // Style LoRAs
+      1: ['innocent', 'retro'], // 90s Anime
+      2: ['gothic', 'dark'], // Gothic Retro Anime
+      4: ['seductive', 'intense'], // ExpressiveH
+      7: ['teasing', 'playful'], // E-Girls
+      9: ['vibrant', 'playful'], // Pop Art
+      10: ['retro', 'sultry'], // Vintage Cartoon
+      15: ['cyberpunk', 'modern'], // Neon City
+      16: ['dark', 'mysterious'], // Noir Detective
+      25: ['gothic', 'dark'], // Gothic Neon
+      26: ['innocent', 'dreamy'], // Ghibli
+      27: ['gothic', 'dark'], // Gothic Details
+      28: ['dark', 'horror'], // Junji Ito
+      31: ['retro', 'innocent'], // Vintage 1990s
+      
+      // Pose/Concept LoRAs
+      3: ['playful', 'teasing'], // Foot poses
+      22: ['playful', 'teasing'], // V over face
+      23: ['sultry', 'seductive'], // Prone with feet up
+      24: ['playful', 'flirty'], // Blowing kisses
+      29: ['rebellious', 'edgy'], // Tattoos
+      30: ['playful', 'cute'] // Fang helper
+    };
+
+    // Get subject's primary vibe
+    function getSubjectVibe(subject) {
+      if (!subject) return null;
+      
+      for (const [vibe, ids] of Object.entries(subjectVibes)) {
+        if (ids.includes(subject.id)) {
+          return vibe;
+        }
+      }
+      return null;
+    }
+
+    // Check pose compatibility with vibe
+    function isPoseCompatible(pose, vibe) {
+      if (!pose || !vibe) return true; // default to compatible
+      
+      for (const [category, poses] of Object.entries(poseVibeCompatibility)) {
+        if (poses.includes(pose.id)) {
+          const compatibleVibes = {
+            sultry_poses: ['sultry', 'siren', 'passionate'],
+            elegant_poses: ['preppy', 'ethereal', 'nurturing', 'arrogant'],
+            athletic_poses: ['athletic', 'punk', 'vibrant'],
+            intimate_poses: ['innocent', 'nurturing', 'tragic', 'ethereal'],
+            playful_poses: ['teasing', 'playful', 'cunning'],
+            confident_poses: ['arrogant', 'stoic', 'athletic']
+          };
+          
+          return compatibleVibes[category]?.includes(vibe) || false;
+        }
+      }
+      
+      return true; // If pose not categorized, assume compatible
+    }
+
+    // Check expression compatibility with vibe
+    function isExpressionCompatible(expression, vibe) {
+      if (!expression || !vibe) return true;
+      
+      for (const [category, expressions] of Object.entries(expressionVibeCompatibility)) {
+        if (expressions.includes(expression.id)) {
+          const compatibleVibes = {
+            innocent_expressions: ['innocent', 'nurturing', 'playful', 'ethereal'],
+            seductive_expressions: ['sultry', 'siren', 'passionate', 'arrogant'],
+            intense_expressions: ['passionate', 'punk', 'athletic', 'vibrant'],
+            playful_expressions: ['teasing', 'playful', 'cunning'],
+            dreamy_expressions: ['ethereal', 'tragic', 'nurturing']
+          };
+          
+          return compatibleVibes[category]?.includes(vibe) || false;
+        }
+      }
+      
+      return true;
+    }
+
+    // Check location compatibility with vibe
+    function isLocationCompatible(location, vibe) {
+      if (!location || !vibe) return true;
+      
+      for (const [category, locations] of Object.entries(locationVibeCompatibility)) {
+        if (locations.includes(location.id)) {
+          const compatibleVibes = {
+            luxurious_locations: ['preppy', 'sultry', 'arrogant', 'siren'],
+            cozy_locations: ['innocent', 'nurturing', 'ethereal', 'tragic'],
+            modern_locations: ['athletic', 'cyberpunk', 'vibrant', 'arrogant'],
+            private_locations: ['cunning', 'ethereal', 'tragic']
+          };
+          
+          return compatibleVibes[category]?.includes(vibe) || false;
+        }
+      }
+      
+      return true;
+    }
+
+    // Check style compatibility with vibe
+    function isStyleCompatible(style, vibe) {
+      if (!style || !vibe) return true;
+      
+      for (const [category, styles] of Object.entries(styleVibeCompatibility)) {
+        if (styles.includes(style.id)) {
+          const compatibleVibes = {
+            innocent_styles: ['innocent', 'nurturing', 'ethereal'],
+            seductive_styles: ['sultry', 'siren', 'passionate', 'vibrant'],
+            gothic_styles: ['gothic', 'punk', 'tragic'],
+            retro_styles: ['retro', 'playful', 'nurturing'],
+            cyberpunk_styles: ['cyberpunk', 'punk', 'athletic'],
+            elegant_styles: ['preppy', 'arrogant', 'ethereal']
+          };
+          
+          return compatibleVibes[category]?.includes(vibe) || false;
+        }
+      }
+      
+      return true;
+    }
+
+    // Check LoRA compatibility with vibe
+    function isLoRACompatible(lora, vibe) {
+      if (!lora || !vibe) return true;
+      
+      const compatibleVibes = loraVibeCompatibility[lora.id];
+      if (compatibleVibes) {
+        return compatibleVibes.some(loraVibe => 
+          vibe.includes(loraVibe) || loraVibe.includes(vibe)
+        );
+      }
+      
+      return true; // If not categorized, assume compatible
+    }
+
+    // Contextual selection with fallback to random
+    function contextualChoice(items, vibe, compatibilityFunc, rng = null) {
+      if (!vibe || !items || items.length === 0) {
+        return rng ? rng.choice(items) : randomChoice(items);
+      }
+      
+      // Get compatible items
+      const compatible = items.filter(item => compatibilityFunc(item, vibe));
+      
+      // If no compatible items found, fall back to all items
+      const candidates = compatible.length > 0 ? compatible : items;
+      
+      // Weight compatible items higher (70% chance) vs random (30% chance)  
+      if (compatible.length > 0 && Math.random() < 0.7) {
+        return rng ? rng.choice(compatible) : randomChoice(compatible);
+      } else {
+        return rng ? rng.choice(items) : randomChoice(items);
+      }
     }
 
     // Validation function
@@ -696,6 +987,7 @@
       
       // Generator state
       const [toggles, setToggles] = useState({
+        contextualMode: true,
         noRepeat: true,
         styleBlend: false,
         includeStyleExprNegatives: true,
@@ -754,30 +1046,128 @@
       const generatePrompt = useCallback(() => {
         const rng = toggles.lockSeed && seedValue ? new XorShift32(seedValue) : null;
         
+        // CONTEXTUAL INTELLIGENCE: Start with subject/character to determine vibe
+        let baseSubject = null;
+        let primaryVibe = null;
+        
+        // 1. Select subject/character first (or use locked)
+        if (locks.subject && currentGeneration.selection?.subject) {
+          baseSubject = currentGeneration.selection.subject;
+        } else if (toggles.noRepeat) {
+          baseSubject = applyNoRepeat('subjects', catalog.subjects, noRepeatSets.subjects, rng);
+        } else {
+          baseSubject = rng ? rng.choice(catalog.subjects) : randomChoice(catalog.subjects);
+        }
+        
+        // Get the primary vibe from subject (only if contextual mode is enabled)
+        primaryVibe = toggles.contextualMode ? getSubjectVibe(baseSubject) : null;
+        
+        // 2. Select contextually aware LoRAs first (they might override subject)
+        const selectedLoras = (() => {
+          const availableLoras = [...catalog.loras];
+          const contextualLoras = [];
+          
+          // If we have a primary vibe and contextual mode is on, try to get compatible LoRAs
+          if (toggles.contextualMode && primaryVibe && loraCount > 0) {
+            const compatibleLoras = availableLoras.filter(lora => 
+              isLoRACompatible(lora, primaryVibe)
+            );
+            
+            // Mix of compatible (70%) and random (30%) LoRAs
+            for (let i = 0; i < loraCount; i++) {
+              let selectedLora = null;
+              
+              if (compatibleLoras.length > 0 && Math.random() < 0.7) {
+                selectedLora = rng ? rng.choice(compatibleLoras) : randomChoice(compatibleLoras);
+                compatibleLoras.splice(compatibleLoras.indexOf(selectedLora), 1);
+              } else if (availableLoras.length > 0) {
+                selectedLora = rng ? rng.choice(availableLoras) : randomChoice(availableLoras);
+              }
+              
+              if (selectedLora) {
+                contextualLoras.push({
+                  ...selectedLora,
+                  weight: rng 
+                    ? rng.float(selectedLora.weightRange[0], selectedLora.weightRange[1])
+                    : rngFloat(selectedLora.weightRange[0], selectedLora.weightRange[1])
+                });
+                
+                // Remove from available list to avoid duplicates
+                const index = availableLoras.indexOf(selectedLora);
+                if (index > -1) availableLoras.splice(index, 1);
+              }
+            }
+          } else {
+            // Fallback to old LoRA selection if no vibe context
+            return pickLoRAs(catalog.loras, loraCount, 5, rng);
+          }
+          
+          return contextualLoras;
+        })();
+        
+        // 3. Check if character LoRAs should override subject
+        const characterLoras = selectedLoras.filter(lora => getLoRAType(lora) === 'character');
+        let finalSubject = baseSubject;
+        
+        // If character LoRA selected, it might change the vibe
+        if (characterLoras.length > 0) {
+          const characterLora = characterLoras[0];
+          const characterVibes = loraVibeCompatibility[characterLora.id];
+          if (characterVibes && characterVibes.length > 0) {
+            // Use character's vibe instead of subject's
+            primaryVibe = characterVibes[0];
+            // Subject will be overridden in prompt assembly, but we keep it for reference
+          }
+        }
+        
+        // 4. Now select other elements contextually based on final vibe
         const selection = {
-          subject: locks.subject && currentGeneration.selection?.subject 
-            ? currentGeneration.selection.subject
-            : toggles.noRepeat 
-              ? applyNoRepeat('subjects', catalog.subjects, noRepeatSets.subjects, rng)
-              : rng ? rng.choice(catalog.subjects) : randomChoice(catalog.subjects),
+          subject: finalSubject,
           
           pose: locks.pose && currentGeneration.selection?.pose
             ? currentGeneration.selection.pose  
             : toggles.noRepeat
-              ? applyNoRepeat('poses', catalog.poses, noRepeatSets.poses, rng)
-              : rng ? rng.choice(catalog.poses) : randomChoice(catalog.poses),
+              ? (() => {
+                  const available = catalog.poses.filter(item => !noRepeatSets.poses.has(item.id));
+                  const candidates = available.length > 0 ? available : [...catalog.poses];
+                  if (available.length === 0) noRepeatSets.poses.clear();
+                  return toggles.contextualMode 
+                    ? contextualChoice(candidates, primaryVibe, isPoseCompatible, rng)
+                    : rng ? rng.choice(candidates) : randomChoice(candidates);
+                })()
+              : toggles.contextualMode 
+                ? contextualChoice(catalog.poses, primaryVibe, isPoseCompatible, rng)
+                : rng ? rng.choice(catalog.poses) : randomChoice(catalog.poses),
               
           expression: locks.expression && currentGeneration.selection?.expression
             ? currentGeneration.selection.expression
             : toggles.noRepeat
-              ? applyNoRepeat('expressions', catalog.expressions, noRepeatSets.expressions, rng) 
-              : rng ? rng.choice(catalog.expressions) : randomChoice(catalog.expressions),
+              ? (() => {
+                  const available = catalog.expressions.filter(item => !noRepeatSets.expressions.has(item.id));
+                  const candidates = available.length > 0 ? available : [...catalog.expressions];
+                  if (available.length === 0) noRepeatSets.expressions.clear();
+                  return toggles.contextualMode 
+                    ? contextualChoice(candidates, primaryVibe, isExpressionCompatible, rng)
+                    : rng ? rng.choice(candidates) : randomChoice(candidates);
+                })()
+              : toggles.contextualMode 
+                ? contextualChoice(catalog.expressions, primaryVibe, isExpressionCompatible, rng)
+                : rng ? rng.choice(catalog.expressions) : randomChoice(catalog.expressions),
               
           location: locks.location && currentGeneration.selection?.location
             ? currentGeneration.selection.location
             : toggles.noRepeat
-              ? applyNoRepeat('locations', catalog.locations, noRepeatSets.locations, rng)
-              : rng ? rng.choice(catalog.locations) : randomChoice(catalog.locations),
+              ? (() => {
+                  const available = catalog.locations.filter(item => !noRepeatSets.locations.has(item.id));
+                  const candidates = available.length > 0 ? available : [...catalog.locations];
+                  if (available.length === 0) noRepeatSets.locations.clear();
+                  return toggles.contextualMode 
+                    ? contextualChoice(candidates, primaryVibe, isLocationCompatible, rng)
+                    : rng ? rng.choice(candidates) : randomChoice(candidates);
+                })()
+              : toggles.contextualMode 
+                ? contextualChoice(catalog.locations, primaryVibe, isLocationCompatible, rng)
+                : rng ? rng.choice(catalog.locations) : randomChoice(catalog.locations),
               
           styles: locks.style && currentGeneration.selection?.styles
             ? currentGeneration.selection.styles
@@ -788,10 +1178,26 @@
                 const selectedStyles = [];
                 const availableStyles = [...catalog.styles];
                 
+                // Get compatible styles first (only in contextual mode)
+                const compatibleStyles = toggles.contextualMode && primaryVibe 
+                  ? availableStyles.filter(style => isStyleCompatible(style, primaryVibe))
+                  : [];
+                
                 for (let i = 0; i < numStyles && availableStyles.length > 0; i++) {
-                  const style = rng ? rng.choice(availableStyles) : randomChoice(availableStyles);
-                  selectedStyles.push(style);
-                  availableStyles.splice(availableStyles.indexOf(style), 1);
+                  let selectedStyle = null;
+                  
+                  // 70% chance to use compatible style, 30% random (only in contextual mode)
+                  if (toggles.contextualMode && compatibleStyles.length > 0 && Math.random() < 0.7) {
+                    selectedStyle = rng ? rng.choice(compatibleStyles) : randomChoice(compatibleStyles);
+                    compatibleStyles.splice(compatibleStyles.indexOf(selectedStyle), 1);
+                  } else {
+                    selectedStyle = rng ? rng.choice(availableStyles) : randomChoice(availableStyles);
+                  }
+                  
+                  if (selectedStyle) {
+                    selectedStyles.push(selectedStyle);
+                    availableStyles.splice(availableStyles.indexOf(selectedStyle), 1);
+                  }
                 }
                 
                 return selectedStyles;
@@ -804,12 +1210,26 @@
           if (selection.pose) noRepeatSets.poses.add(selection.pose.id);
           if (selection.expression) noRepeatSets.expressions.add(selection.expression.id);
           if (selection.location) noRepeatSets.locations.add(selection.location.id);
-          if (selection.styles) selection.styles.forEach(style => noRepeatSets.styles.add(style.id));
+          if (selection.styles) {
+            selection.styles.forEach(style => noRepeatSets.styles.add(style.id));
+          }
         }
         
-        const selectedLoRAs = pickLoRAs(catalog.loras, loraCount, 5, rng);
+        // Debug: Log contextual info
+        console.log('🧠 Contextual Generation:', {
+          primaryVibe,
+          subject: baseSubject?.description?.substring(0, 50) + '...',
+          characterOverride: characterLoras.length > 0 ? characterLoras[0].name : null,
+          selectedElements: {
+            pose: selection.pose?.text?.substring(0, 30) + '...',
+            expression: selection.expression?.text?.substring(0, 30) + '...',
+            location: selection.location?.text?.substring(0, 30) + '...',
+            styles: selection.styles?.map(s => s.text?.substring(0, 20) + '...'),
+            loras: selectedLoras?.map(l => l.name?.substring(0, 20) + '...')
+          }
+        });
         
-        const prompt = assemblePrompt(selection, selectedLoRAs, { enabled: toggles.styleBlend });
+        const prompt = assemblePrompt(selection, selectedLoras, { enabled: toggles.styleBlend });
         const negative = assembleNegatives(selection, toggles.includeStyleExprNegatives);
         const settings = formatSettings(toggles.randomizeSettings, toggles.lockSeed ? seedValue : null);
         
@@ -1356,9 +1776,17 @@
                             )}
                           </div>
                         </div>
-                        <span className="text-sm text-slate-200 group-hover:text-slate-100 transition-colors">
-                          {key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}
-                        </span>
+                        <div className="flex-1">
+                          <span className="text-sm text-slate-200 group-hover:text-slate-100 transition-colors">
+                            {key === 'contextualMode' ? '🧠 Smart Contextual Generation' : 
+                             key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}
+                          </span>
+                          {key === 'contextualMode' && (
+                            <div className="text-xs text-slate-500 mt-1">
+                              AI picks compatible poses, expressions, locations & styles based on subject vibe
+                            </div>
+                          )}
+                        </div>
                       </label>
                     ))}
                   </div>
