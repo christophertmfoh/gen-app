@@ -507,25 +507,66 @@
         }
       }
       
-      // Add LoRA triggers to prompt (but not the LoRA tags themselves)
+      // Add LoRA triggers and CONCEPT INTEGRATION to prompt
       if (loras && loras.length > 0) {
         const allTriggers = [];
+        const conceptModifications = [];
+        
         loras.forEach(lora => {
+          const loraType = getLoRAType(lora);
+          
+          // CONCEPT LoRAs: Add actual concept to prompt, not just triggers
+          if (loraType === 'concept') {
+            if (lora.id === 23) { // "Prone with Feet Up"
+              conceptModifications.push("lying prone on stomach with feet up in the air");
+            } else if (lora.id === 18) { // "Cigarette - Smoking"
+              conceptModifications.push("smoking a cigarette");
+            } else if (lora.id === 22) { // "V Over Face"
+              conceptModifications.push("making a peace sign over face");
+            } else if (lora.id === 24) { // "Blowing Kisses"
+              conceptModifications.push("blowing a kiss");
+            } else if (lora.id === 29) { // "Tattoos"
+              if (lora.tattooPlacements) {
+                const placement = randomChoice(lora.tattooPlacements);
+                conceptModifications.push(`tattoos on ${placement}`);
+              } else {
+                conceptModifications.push("tattoos");
+              }
+            } else if (lora.id === 30) { // "Fang Helper"
+              conceptModifications.push("small fangs");
+            }
+            
+            // For other concept LoRAs, add their main triggers as concepts
+            if (conceptModifications.length === 0 && lora.triggers && lora.triggers.length > 0) {
+              const mainConcept = lora.triggers[0]; // Use first trigger as main concept
+              if (!['1girl', 'solo'].includes(mainConcept.toLowerCase())) {
+                conceptModifications.push(mainConcept);
+              }
+            }
+          }
+          
+          // Regular triggers (non-concept LoRAs or additional triggers)
           if (lora.triggers && lora.triggers.length > 0) {
             // Skip character LoRA triggers if already used for subject
             if (getLoRAType(lora) !== 'character' || characterLoras.length === 0) {
-              allTriggers.push(...lora.triggers.filter(trigger => 
+              // For concept LoRAs, skip the main trigger if we added it as a concept
+              const triggersToAdd = loraType === 'concept' 
+                ? lora.triggers.slice(1) // Skip first trigger for concepts
+                : lora.triggers;
+                
+              allTriggers.push(...triggersToAdd.filter(trigger => 
                 !['1girl', 'solo'].includes(trigger.toLowerCase())
               ));
             }
           }
-          // Special case for t4ts tattoos
-          if (lora.triggers.includes("t4ts") && lora.tattooPlacements) {
-            const placement = randomChoice(lora.tattooPlacements);
-            allTriggers.push(`tattoos on ${placement}`);
-          }
         });
         
+        // Add concept modifications to prompt (high priority)
+        if (conceptModifications.length > 0) {
+          prompt += `, ${conceptModifications.join(', ')}`;
+        }
+        
+        // Add remaining triggers
         if (allTriggers.length > 0) {
           prompt += `, ${allTriggers.join(', ')}`;
         }
@@ -1012,7 +1053,6 @@
         style: false
       });
       
-      const [loraCount, setLoraCount] = useState(2);
       const [seedValue, setSeedValue] = useState(null);
       
       // Current generation state
@@ -1065,7 +1105,7 @@
       
       const generatePrompt = useCallback(() => {
         console.log('🚀 Generate Prompt button clicked!');
-        console.log('📊 Current state:', { toggles, locks, loraCount, seedValue });
+        console.log('📊 Current state:', { toggles, locks, seedValue });
         console.log('📚 Catalog size:', {
           subjects: catalog.subjects?.length || 0,
           poses: catalog.poses?.length || 0, 
@@ -1094,51 +1134,170 @@
         // Get the primary vibe from subject (only if contextual mode is enabled)
         primaryVibe = toggles.contextualMode ? getSubjectVibe(baseSubject) : null;
         
-        // 2. Select contextually aware LoRAs first (they might override subject)
+        // 2. SMART LoRA selection by type with limits
         const selectedLoras = (() => {
           // Filter out character sheet LoRAs unless explicitly allowed
           let availableLoras = catalog.loras.filter(lora => 
             toggles.allowCharacterSheets || !isCharacterSheetLoRA(lora)
           );
           
-          const contextualLoras = [];
+          const selectedByType = {
+            character: null,
+            character_sheet: null,
+            style: null,
+            lighting: null,
+            pose: null,
+            concept: [] // Can have 1-2 concepts
+          };
           
-          // If we have a primary vibe and contextual mode is on, try to get compatible LoRAs
-          if (toggles.contextualMode && primaryVibe && loraCount > 0) {
-            const compatibleLoras = availableLoras.filter(lora => 
-              isLoRACompatible(lora, primaryVibe)
-            );
-            
-            // Mix of compatible (70%) and random (30%) LoRAs
-            for (let i = 0; i < loraCount; i++) {
-              let selectedLora = null;
-              
-              if (compatibleLoras.length > 0 && Math.random() < 0.7) {
-                selectedLora = rng ? rng.choice(compatibleLoras) : randomChoice(compatibleLoras);
-                compatibleLoras.splice(compatibleLoras.indexOf(selectedLora), 1);
-              } else if (availableLoras.length > 0) {
-                selectedLora = rng ? rng.choice(availableLoras) : randomChoice(availableLoras);
-              }
-              
-              if (selectedLora) {
-                contextualLoras.push({
-                  ...selectedLora,
-                  weight: rng 
-                    ? rng.float(selectedLora.weightRange[0], selectedLora.weightRange[1])
-                    : rngFloat(selectedLora.weightRange[0], selectedLora.weightRange[1])
-                });
-                
-                // Remove from available list to avoid duplicates
-                const index = availableLoras.indexOf(selectedLora);
-                if (index > -1) availableLoras.splice(index, 1);
-              }
+          // Categorize available LoRAs by type
+          const lorasByType = {
+            character: [],
+            character_sheet: [],
+            style: [],
+            lighting: [],
+            pose: [],
+            concept: []
+          };
+          
+          availableLoras.forEach(lora => {
+            const type = getLoRAType(lora);
+            if (lorasByType[type]) {
+              lorasByType[type].push(lora);
             }
-          } else {
-            // Fallback to old LoRA selection if no vibe context
-            return pickLoRAs(availableLoras, loraCount, 5, rng);
+          });
+          
+          console.log('📊 LoRAs by type:', {
+            character: lorasByType.character.length,
+            style: lorasByType.style.length,
+            lighting: lorasByType.lighting.length,
+            pose: lorasByType.pose.length,
+            concept: lorasByType.concept.length,
+            character_sheet: lorasByType.character_sheet.length
+          });
+          
+          // SMART SELECTION: Pick one per type based on context
+          
+          // 1. CHARACTER LoRA (overrides subject if selected)
+          if (lorasByType.character.length > 0 && Math.random() < 0.3) { // 30% chance
+            const compatibleCharacters = toggles.contextualMode && primaryVibe 
+              ? lorasByType.character.filter(lora => isLoRACompatible(lora, primaryVibe))
+              : [];
+            
+            selectedByType.character = compatibleCharacters.length > 0 && Math.random() < 0.7
+              ? rng ? rng.choice(compatibleCharacters) : randomChoice(compatibleCharacters)
+              : rng ? rng.choice(lorasByType.character) : randomChoice(lorasByType.character);
           }
           
-          return contextualLoras;
+          // 2. STYLE LoRA (should match selected style)
+          if (lorasByType.style.length > 0 && selection.styles && selection.styles.length > 0) {
+            // Try to find a style LoRA that matches the chosen style
+            const chosenStyleText = selection.styles[0].text.toLowerCase();
+            const matchingStyleLora = lorasByType.style.find(lora => {
+              const loraName = lora.name.toLowerCase();
+              // Check for style matches
+              if (chosenStyleText.includes('gothic') && (loraName.includes('gothic') || lora.id === 2 || lora.id === 25 || lora.id === 27)) return true;
+              if (chosenStyleText.includes('pop art') && lora.id === 9) return true;
+              if (chosenStyleText.includes('ghibli') && lora.id === 26) return true;
+              if (chosenStyleText.includes('vintage') && (lora.id === 10 || lora.id === 31)) return true;
+              if (chosenStyleText.includes('90s') && lora.id === 1) return true;
+              if (chosenStyleText.includes('cyberpunk') && lora.id === 15) return true;
+              if (chosenStyleText.includes('noir') && lora.id === 16) return true;
+              return false;
+            });
+            
+            selectedByType.style = matchingStyleLora || 
+              (Math.random() < 0.4 ? // 40% chance for random style LoRA
+                (rng ? rng.choice(lorasByType.style) : randomChoice(lorasByType.style)) : null);
+          }
+          
+          // 3. LIGHTING LoRA (25% chance)
+          if (lorasByType.lighting.length > 0 && Math.random() < 0.25) {
+            selectedByType.lighting = rng ? rng.choice(lorasByType.lighting) : randomChoice(lorasByType.lighting);
+          }
+          
+          // 4. POSE LoRA (contextual to selected pose, 20% chance)
+          if (lorasByType.pose.length > 0 && Math.random() < 0.2 && selection.pose) {
+            const poseText = selection.pose.text.toLowerCase();
+            let relevantPoseLoRAs = [];
+            
+            if (poseText.includes('foot') || poseText.includes('barefoot')) relevantPoseLoRAs.push(lorasByType.pose.find(l => l.id === 3));
+            if (poseText.includes('prone') || poseText.includes('lying')) relevantPoseLoRAs.push(lorasByType.pose.find(l => l.id === 23));
+            if (poseText.includes('kiss')) relevantPoseLoRAs.push(lorasByType.pose.find(l => l.id === 24));
+            
+            relevantPoseLoRAs = relevantPoseLoRAs.filter(l => l); // Remove nulls
+            
+            selectedByType.pose = relevantPoseLoRAs.length > 0 
+              ? randomChoice(relevantPoseLoRAs)
+              : (rng ? rng.choice(lorasByType.pose) : randomChoice(lorasByType.pose));
+          }
+          
+          // 5. CONCEPT LoRAs (1-2 max, contextually smart)
+          if (lorasByType.concept.length > 0) {
+            const maxConcepts = Math.random() < 0.3 ? 2 : 1; // 30% chance for 2 concepts
+            
+            for (let i = 0; i < maxConcepts && lorasByType.concept.length > 0; i++) {
+              let conceptLora = null;
+              
+              if (toggles.contextualMode && primaryVibe) {
+                const compatibleConcepts = lorasByType.concept.filter(lora => isLoRACompatible(lora, primaryVibe));
+                conceptLora = compatibleConcepts.length > 0 && Math.random() < 0.6
+                  ? randomChoice(compatibleConcepts)
+                  : randomChoice(lorasByType.concept);
+              } else {
+                conceptLora = randomChoice(lorasByType.concept);
+              }
+              
+              if (conceptLora) {
+                selectedByType.concept.push(conceptLora);
+                // Remove from available list
+                const index = lorasByType.concept.indexOf(conceptLora);
+                if (index > -1) lorasByType.concept.splice(index, 1);
+              }
+            }
+          }
+          
+          // 6. CHARACTER SHEET (if allowed and selected)
+          if (toggles.allowCharacterSheets && lorasByType.character_sheet.length > 0 && Math.random() < 0.1) {
+            selectedByType.character_sheet = rng ? rng.choice(lorasByType.character_sheet) : randomChoice(lorasByType.character_sheet);
+          }
+          
+          // Convert to final array with weights
+          const finalLoras = [];
+          Object.values(selectedByType).forEach(lora => {
+            if (Array.isArray(lora)) {
+              // Handle concept array
+              lora.forEach(conceptLora => {
+                if (conceptLora) {
+                  finalLoras.push({
+                    ...conceptLora,
+                    weight: rng 
+                      ? rng.float(conceptLora.weightRange[0], conceptLora.weightRange[1])
+                      : rngFloat(conceptLora.weightRange[0], conceptLora.weightRange[1])
+                  });
+                }
+              });
+            } else if (lora) {
+              finalLoras.push({
+                ...lora,
+                weight: rng 
+                  ? rng.float(lora.weightRange[0], lora.weightRange[1])
+                  : rngFloat(lora.weightRange[0], lora.weightRange[1])
+              });
+            }
+          });
+          
+          console.log('🎯 Selected LoRAs by type:', {
+            character: selectedByType.character?.name || 'None',
+            style: selectedByType.style?.name || 'None',
+            lighting: selectedByType.lighting?.name || 'None',
+            pose: selectedByType.pose?.name || 'None',
+            concept: selectedByType.concept.map(c => c?.name || 'None'),
+            character_sheet: selectedByType.character_sheet?.name || 'None',
+            totalSelected: finalLoras.length
+          });
+          
+          return finalLoras;
         })();
         
         // 3. Check if character LoRAs should override subject
@@ -1308,7 +1467,7 @@
           showToast('Generation failed: ' + error.message, 'error');
         }
         
-      }, [catalog, toggles, locks, loraCount, seedValue, currentGeneration.selection, noRepeatSets, history, showToast]);
+      }, [catalog, toggles, locks, seedValue, currentGeneration.selection, noRepeatSets, history, showToast]);
 
       return (
         <div className="min-h-screen">
@@ -1857,27 +2016,25 @@
                     ))}
                   </div>
                   
-                  {/* LoRA Count Slider */}
+                  {/* Smart LoRA Selection Info */}
                   <div className="pt-4 border-t border-surface-700/50">
-                    <label className="block text-sm font-medium text-slate-200 mb-3">
-                      LoRA Count: <span className="text-primary-400 font-mono">{loraCount}</span>
-                      <span className="text-slate-500 ml-2">
-                        {loraCount >= 1 && loraCount <= 4 ? "(typical)" : loraCount > 4 ? "(high)" : "(none)"}
-                      </span>
-                    </label>
-                    <input
-                      type="range"
-                      min="0"
-                      max="5"
-                      value={loraCount}
-                      onChange={(e) => setLoraCount(parseInt(e.target.value))}
-                      className="w-full h-2 bg-surface-700 rounded-lg appearance-none cursor-pointer slider-thumb"
-                    />
-                    {loraCount > 5 && (
-                      <div className="text-xs text-amber-400 mt-2 p-2 bg-amber-500/10 border border-amber-500/20 rounded">
-                        ⚠️ Warning: More than 5 LoRAs may cause degradation
+                    <div className="bg-surface-700/30 rounded-lg p-4">
+                      <h4 className="text-sm font-medium text-slate-200 mb-2 flex items-center">
+                        <span className="w-1.5 h-1.5 bg-blue-500 rounded-full mr-2"></span>
+                        Smart LoRA Selection
+                      </h4>
+                      <div className="text-xs text-slate-400 space-y-1">
+                        <div>• <strong>Max 1 Character</strong> LoRA (30% chance)</div>
+                        <div>• <strong>Max 1 Style</strong> LoRA - matches chosen style (40% chance)</div>
+                        <div>• <strong>Max 1 Lighting</strong> LoRA (25% chance)</div>
+                        <div>• <strong>Max 1 Pose</strong> LoRA - contextual to selected pose (20% chance)</div>
+                        <div>• <strong>Max 1-2 Concept</strong> LoRAs - integrated into prompt text (60% chance)</div>
+                        <div>• <strong>Max 1 Character Sheet</strong> - only if enabled (10% chance)</div>
                       </div>
-                    )}
+                      <div className="text-xs text-blue-400 mt-3 font-medium">
+                        🎯 No more LoRA stacking conflicts!
+                      </div>
+                    </div>
                   </div>
 
                   {/* Seed Input (only when Lock Seed is ON) */}
@@ -1968,11 +2125,37 @@
                             newSelection.styles = [rng ? rng.choice(catalog.styles) : randomChoice(catalog.styles)];
                           }
                           
-                          // Filter out character sheet LoRAs unless explicitly allowed
-                          const filteredLoras = catalog.loras.filter(lora => 
+                          // Use same smart LoRA selection for re-rolls (simplified version)
+                          const availableLoras = catalog.loras.filter(lora => 
                             toggles.allowCharacterSheets || !isCharacterSheetLoRA(lora)
                           );
-                          const selectedLoras = pickLoRAs(filteredLoras, loraCount, 5, rng);
+                          
+                          // Simplified smart selection for re-rolls
+                          const selectedLoras = [];
+                          const lorasByType = { character: [], style: [], lighting: [], pose: [], concept: [] };
+                          availableLoras.forEach(lora => {
+                            const type = getLoRAType(lora);
+                            if (lorasByType[type]) lorasByType[type].push(lora);
+                          });
+                          
+                          // Pick one of each type randomly (simplified)
+                          if (lorasByType.character.length > 0 && Math.random() < 0.3) {
+                            selectedLoras.push({ ...randomChoice(lorasByType.character), weight: rngFloat(0.6, 1.0) });
+                          }
+                          if (lorasByType.style.length > 0 && Math.random() < 0.4) {
+                            selectedLoras.push({ ...randomChoice(lorasByType.style), weight: rngFloat(0.6, 1.0) });
+                          }
+                          if (lorasByType.lighting.length > 0 && Math.random() < 0.25) {
+                            selectedLoras.push({ ...randomChoice(lorasByType.lighting), weight: rngFloat(0.2, 1.0) });
+                          }
+                          if (lorasByType.concept.length > 0 && Math.random() < 0.6) {
+                            const conceptCount = Math.random() < 0.3 ? 2 : 1;
+                            for (let i = 0; i < conceptCount && lorasByType.concept.length > 0; i++) {
+                              const concept = randomChoice(lorasByType.concept);
+                              selectedLoras.push({ ...concept, weight: rngFloat(concept.weightRange[0], concept.weightRange[1]) });
+                              lorasByType.concept.splice(lorasByType.concept.indexOf(concept), 1);
+                            }
+                          }
                           const prompt = assemblePrompt(newSelection, selectedLoras, { enabled: toggles.styleBlend });
                           const negative = assembleNegatives(newSelection, toggles.includeStyleExprNegatives);
                           const settings = formatSettings(toggles.randomizeSettings, toggles.lockSeed ? seedValue : null);
