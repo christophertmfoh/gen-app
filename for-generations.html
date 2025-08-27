@@ -507,15 +507,14 @@
         }
       }
       
-      // Add LoRA triggers and CONCEPT INTEGRATION to prompt
+      // Add ONLY CONCEPT INTEGRATION to prompt (NO trigger words)
       if (loras && loras.length > 0) {
-        const allTriggers = [];
         const conceptModifications = [];
         
         loras.forEach(lora => {
           const loraType = getLoRAType(lora);
           
-          // CONCEPT LoRAs: Add actual concept to prompt, not just triggers
+          // CONCEPT LoRAs: Add actual concept to prompt, NO triggers
           if (loraType === 'concept') {
             if (lora.id === 23) { // "Prone with Feet Up"
               conceptModifications.push("lying prone on stomach with feet up in the air");
@@ -534,41 +533,15 @@
               }
             } else if (lora.id === 30) { // "Fang Helper"
               conceptModifications.push("small fangs");
-            }
-            
-            // For other concept LoRAs, add their main triggers as concepts
-            if (conceptModifications.length === 0 && lora.triggers && lora.triggers.length > 0) {
-              const mainConcept = lora.triggers[0]; // Use first trigger as main concept
-              if (!['1girl', 'solo'].includes(mainConcept.toLowerCase())) {
-                conceptModifications.push(mainConcept);
-              }
-            }
-          }
-          
-          // Regular triggers (non-concept LoRAs or additional triggers)
-          if (lora.triggers && lora.triggers.length > 0) {
-            // Skip character LoRA triggers if already used for subject
-            if (getLoRAType(lora) !== 'character' || characterLoras.length === 0) {
-              // For concept LoRAs, skip the main trigger if we added it as a concept
-              const triggersToAdd = loraType === 'concept' 
-                ? lora.triggers.slice(1) // Skip first trigger for concepts
-                : lora.triggers;
-                
-              allTriggers.push(...triggersToAdd.filter(trigger => 
-                !['1girl', 'solo'].includes(trigger.toLowerCase())
-              ));
+            } else if (lora.id === 4) { // "ExpressiveH" - enhance facial expressions
+              conceptModifications.push("highly detailed facial expression");
             }
           }
         });
         
-        // Add concept modifications to prompt (high priority)
+        // Add concept modifications to prompt (NO trigger words at all)
         if (conceptModifications.length > 0) {
           prompt += `, ${conceptModifications.join(', ')}`;
-        }
-        
-        // Add remaining triggers
-        if (allTriggers.length > 0) {
-          prompt += `, ${allTriggers.join(', ')}`;
         }
       }
       
