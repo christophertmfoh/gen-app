@@ -1011,8 +1011,19 @@
         prompt: '',
         negative: '',
         settings: '',
-        selection: null
+        selection: null,
+        loras: []
       });
+      
+      // Debug: Log state changes
+      useEffect(() => {
+        console.log('🔄 Current generation updated:', {
+          hasPrompt: !!currentGeneration.prompt,
+          hasNegative: !!currentGeneration.negative,
+          hasSettings: !!currentGeneration.settings,
+          hasSelection: !!currentGeneration.selection
+        });
+      }, [currentGeneration]);
       
       const [noRepeatSets, setNoRepeatSets] = useState({
         subjects: new Set(),
@@ -1044,11 +1055,23 @@
       const catalog = useMemo(() => getMergedCatalog(userData), [userData]);
       
       const generatePrompt = useCallback(() => {
-        const rng = toggles.lockSeed && seedValue ? new XorShift32(seedValue) : null;
+        console.log('🚀 Generate Prompt button clicked!');
+        console.log('📊 Current state:', { toggles, locks, loraCount, seedValue });
+        console.log('📚 Catalog size:', {
+          subjects: catalog.subjects?.length || 0,
+          poses: catalog.poses?.length || 0, 
+          expressions: catalog.expressions?.length || 0,
+          locations: catalog.locations?.length || 0,
+          styles: catalog.styles?.length || 0,
+          loras: catalog.loras?.length || 0
+        });
         
-        // CONTEXTUAL INTELLIGENCE: Start with subject/character to determine vibe
-        let baseSubject = null;
-        let primaryVibe = null;
+        try {
+          const rng = toggles.lockSeed && seedValue ? new XorShift32(seedValue) : null;
+          
+          // CONTEXTUAL INTELLIGENCE: Start with subject/character to determine vibe
+          let baseSubject = null;
+          let primaryVibe = null;
         
         // 1. Select subject/character first (or use locked)
         if (locks.subject && currentGeneration.selection?.subject) {
@@ -1238,10 +1261,11 @@
           negative,
           settings: JSON.stringify(settings, null, 2),
           selection,
-          loras: selectedLoRAs,
+          loras: selectedLoras,
           timestamp: new Date().toISOString()
         };
         
+        console.log('✅ Generation completed successfully:', generation);
         setCurrentGeneration(generation);
         
         // Add to history
@@ -1249,7 +1273,13 @@
         setHistory(newHistory);
         saveHistory(newHistory);
         
-      }, [catalog, toggles, locks, loraCount, seedValue, currentGeneration.selection, noRepeatSets, history]);
+        } catch (error) {
+          console.error('❌ Error during generation:', error);
+          console.error('Error stack:', error.stack);
+          showToast('Generation failed: ' + error.message, 'error');
+        }
+        
+      }, [catalog, toggles, locks, loraCount, seedValue, currentGeneration.selection, noRepeatSets, history, showToast]);
 
       return (
         <div className="min-h-screen">
@@ -1902,8 +1932,8 @@
                             newSelection.styles = [rng ? rng.choice(catalog.styles) : randomChoice(catalog.styles)];
                           }
                           
-                          const selectedLoRAs = pickLoRAs(catalog.loras, loraCount, 5, rng);
-                          const prompt = assemblePrompt(newSelection, selectedLoRAs, { enabled: toggles.styleBlend });
+                          const selectedLoras = pickLoRAs(catalog.loras, loraCount, 5, rng);
+                          const prompt = assemblePrompt(newSelection, selectedLoras, { enabled: toggles.styleBlend });
                           const negative = assembleNegatives(newSelection, toggles.includeStyleExprNegatives);
                           const settings = formatSettings(toggles.randomizeSettings, toggles.lockSeed ? seedValue : null);
                           
@@ -1912,7 +1942,7 @@
                             negative,
                             settings: JSON.stringify(settings, null, 2),
                             selection: newSelection,
-                            loras: selectedLoRAs,
+                            loras: selectedLoras,
                             timestamp: new Date().toISOString()
                           };
                           
