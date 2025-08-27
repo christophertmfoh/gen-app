@@ -1,0 +1,500 @@
+	Tags: style, anime, retro, 90s. No examples provided.
+	pony gothic styles
+	Vixon's Anime/Manga Styles - Gothic Retro Anime
+	LoRA
+	(Insufficient info; infer: gothicretroanime)
+	(Insufficient; try 0.8)
+	Pony
+	Use as style LoRA; combine with details LoRAs.
+	Limited details; tags: gothic, retro, anime.
+	bestfootpose
+	Bestfootpose
+	LoRA
+	bestfootpose, barefoot, toes
+	(Not specified; try 0.7-1.0)
+	Pony
+	"lora:bestfootpose:0.8, bestfootpose, pose focus". Use Hires. fix. Clip Skip: 2.
+	For foot poses; stable but use high-res fixes. Tags: poses, feet.
+	expressivehentai
+	ExpressiveH Hentai LoRA Style
+	LoRA
+	(Access restricted; insufficient)
+	(Insufficient; try 0.8)
+	Pony
+	(Limited; assume standard integration with hentai tags).
+	UK access issue; tags: hentai, expressive. Specific version: 382152.
+	Rebecca from Cyberpunk: Edgerunners [Pony]
+	Rebecca from Cyberpunk: Edgerunners [Pony]
+	LoRA
+	ERRebecca, 1girl, green hair, twin tails, red pupils, colored sclera, white skin, red tattoo
+	(Not specified; try 1.0)
+	Pony
+	"lora:rebecca-pony:1.0, ERRebecca, cyberpunk scene". Use ADetailer/Hires. fix (0.25-0.35)/ControlNet.
+	Character LoRA; try example prompts.
+	s1 dramatic lihting
+	S1 Dramatic Lighting
+	LoRA
+	s1_dram
+	(Not specified; try 0.8-1.0)
+	Pony
+	"lora:s1-dramatic:0.8, s1_dram, dappled light". Optional neg: 3d. Clip Skip: 2.
+	Lighting effect; flexible for styles. Training: 3,600 steps. Specific version: 761452.
+	egirls
+	E-Girls
+	LoRA
+	egirl
+	(Not specified; try 0.7)
+	Pony
+	"lora:e-girls:0.7, egirl, punk outfit".
+	Concept LoRA; tags: punk, goth, scene. Specific version: 620647.
+	vixons comic styles archie
+	Vixon's Comic Styles - Shubina & Archie Comic
+	LoRA
+	4RCH13
+	(Not specified; try 0.8)
+	Pony
+	"lora:archie-comic:0.8, 4RCH13, comic panel".
+	Comic style; multiple versions listed. Specific version: 939754.
+	popartanimestyle
+	Pop Art Anime Style
+	LoRA
+	p0p4rt, colorful
+	0.8
+	Pony
+	"lora:pop-art-anime:0.8, p0p4rt, vibrant scene".
+	Style LoRA; works best at 0.8.
+	vintage cartoon style
+	Vintage Cartoon Style
+	LoRA
+	vintoons, cartoon style, pin-up
+	0.9 (range 0.7-1.1)
+	Pony
+	"lora:vintage-cartoon:0.9, vintoons, retro art". Optional: retro, film grain. Clip Skip: 2.
+	1950-70s comic/illustration style.
+	incase style
+	Incase Style
+	LoRA
+	(None explicit)
+	1.0
+	Pony
+	"lora:incase-style:1.0, artist style prompt". Clip Skip: 2.
+	Artist style (InCase). Training: 3 epochs. Specific version: 378950.
+	Commix - Style Lora For Autismmix Sdxl
+	COMMIX - Style LORA for AutismMix SDXL
+	LoRA
+	commix style
+	0.8-1.0
+	Pony, best with AutismMix SDXL
+	"lora:commix-style:0.9, commix style, comic art". Clip Skip: 2. Sampler: Euler a. Hires. fix: Res 512x768->1024x1536, Denoise 5. ADetailer for faces.
+	Comic style; use with embeds like zPDXL3. Pos: detailxl; Neg: negativeXL_D. Training: 2,500 steps.
+	kiwi
+	Cyberpunk: Edgerunners - Kiwi
+	LoRA
+	cpkiwi
+	0.8
+	Pony
+	"lora:kiwi:0.8, cpkiwi, blonde hair, mouth mask". Add "cyborg" for naked/jawless. Clip Skip: 1.
+	Character (outfit/naked); add "body markings" if missing details. Training: 10 epochs.
+	vixons pony styles character sheet
+	Vixon's Pony Styles - character sheet
+	LoRA
+	cut3ch4r, multiple views
+	0.8
+	Pony
+	"lora:character-sheet:0.8, cut3ch4r, reference sheet".
+	For character sheets; tags: style, horror, neon.
+	neon city
+	Neon City Pony XL
+	Embedding (Textual Inversion, use like LoRA)
+	NeonCity_PDXL
+	(Not specified; try 1.0)
+	Pony
+	"lora:neon-city:1.0, NeonCity_PDXL, background only". Clip Skip: 2.
+	Background only; struggles with "no humans". Not ideal for pure backgrounds.
+	Watercoloured Noir Detective Style - Artstyle
+	Pdxl
+	Watercoloured Noir Detective Style - Artstyle
+	PDXL
+	LoRA
+	p4int3dn0ir art style
+	(Not specified; try 1.0)
+	Pony
+	Lucy "Lucyna Kushinada" (ルーシー) - Cyberpunk: Edge Runners (サイバーパンク エッジランナーズ)
+	Lucy "Lucyna Kushinada" - Cyberpunk: Edge Runners
+	LoRA
+	lucy, short hair, bangs, blue eyes, blue hair, multicolored hair, makeup, multicolored eyes; Outfit: bare hips, bodysuit, etc.
+	1.0
+	Pony
+	"lora:lucy-cyberpunk:1.0, lucy, monowire".
+	Character LoRA; include lora:cyberpunk-lucy-s1-ponyxl-lora-nochekaiser:1.
+	cig smoking
+	Cigarette - Smoking
+	LoRA
+	cigarette, smoking, mouth hold, fire, lighter, holding
+	(Not specified; try 0.7)
+	Pony
+	"lora:smoking:0.7, cigarette, smoking pose".
+	For smoking concepts.
+	expression sheet
+	Expression Anime Character Sheet / PONY DIFFUSION
+	LoRA
+	character sheet, multiple views, reference sheet, expressions
+	0.8 (0.7-1.0)
+	Pony, best on 4th tail (Hentai model)
+	"lora:expression-sheet:0.8, character sheet, emotions like blush, smile". Clip Skip: 1. Use booru tags for emotions.
+	Heads/emotions only; reduce weight for full-body. Retro: 1990s (style). Training: 30 epochs.
+	rogue
+	Rogue / Marvel / (NSFW/SFW) SDXL LORA PONY
+	LoRA
+	rogueSDXL, 1girl, solo, long hair, brown hair, gloves, green eyes, etc.
+	0.8 or 1.0
+	Pony
+	"lora:rogue-marvel:0.8, rogueSDXL, superhero pose". Clip Skip: 2. Use ADetailer.
+	Marvel character; NSFW/SFW. Training: 10 epochs.
+	thong and top
+	Chained Vampira Thong & Sinner Top
+	LoRA
+	latex panties, latex halterneck, fishnets, sinner top, english text, clothes writing, thighhighs over pantyhose
+	0.7
+	Illustrious (Pony-compatible)
+	"lora:chained-vampira:0.7, latex panties, gothic outfit".
+	Clothing LoRA; do not reupload.
+	voverface
+	V Over Face
+	LoRA
+	v over face, tongue out, oral invitation
+	(Not specified; try 0.8)
+	Pony
+	"lora:v-over-face:0.8, v over face, pose".
+	Pose LoRA; tags: poses, v.
+	prone with feet up
+	Prone with Feet Up
+	LoRA
+	prone, on stomach, lying, the pose
+	(Not specified; try 0.8)
+	Pony
+	"lora:prone-feet-up:0.8, prone, feet up".
+	Pose LoRA.
+	blowing kisses
+	Blowing Kisses
+	LoRA
+	blowing kiss, k1ss3s, looking at viewer, heart, one eye closed, blush
+	0.6
+	Pony
+	"lora:blowing-kisses:0.6, blowing kiss".
+	Pose/expression; best at 0.6.
+	gothic neon
+	Vixon's Pony Styles - gothic neon
+	LoRA
+	g0th1c, glowing, neon lights, glowing eyes
+	0.8
+	Pony
+	"lora:gothic-neon:0.8, g0th1c, neon scene".
+	Style LoRA.
+	ghibli
+	Vixon's Anime/Manga Styles - Ghibli v2
+	LoRA
+	ghibli
+	(Not specified; try 0.8)
+	Pony
+	"lora:ghibli-v2:0.8, ghibli, fantasy landscape".
+	Ghibli style. Specific version: 661440.
+	goth details
+	Vixon's Pony Styles - Gothic Details
+	LoRA
+	gd, gothic, spikes, fishnet pantyhose, latex
+	(Not specified; try 0.8)
+	Pony
+	"lora:gothic-details:0.8, gd, gothic outfit".
+	Details LoRA. Specific version: 973511.
+	junji ito
+	Vixon's Anime/Manga Styles - Junji Ito
+	LoRA
+	junj11t0, junji ito, monochrome, creepy, manga
+	(Not specified; try 0.8)
+	Pony
+	"lora:junji-ito:0.8, junj11t0, horror scene".
+	Horror manga style. Specific version: 562610.
+	tattoos
+	Tattoos
+	LoRA
+	t4ts, tattoos, tattoo
+	0.7
+	Pony
+	"lora:tattoos:0.7, t4ts, body art".
+	Concept LoRA. Specific version: 637541.
+	fangs
+	Fang Helper
+	LoRA
+	f4ng, small fangs, fangs
+	0.7
+	Pony
+	"lora:fang-helper:0.7, f4ng, teeth focus".
+	Teeth/fang helper. Specific version: 603705.
+	vintage 90s sdxl
+	Vintage 1990s Anime SDXL LoRA (Style) Pony
+	LoRA
+	Vintage, 1990s (style)
+	0.5-0.75 (under 1)
+	Pony
+	"lora:vintage-90s:0.6, Vintage, 1990s (style), faded colors". Clip Skip: 1.
+	Retro anime; add triggers for effect. Training: 20,000 steps.
+	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Pony Prompting
+
+Best Prompting Methods for Pony Diffusion V6 XL (as of August 2025)
+Pony Diffusion V6 XL (often abbreviated as Pony V6 or PDV6XL) is a highly versatile SDXL-based model fine-tuned for generating SFW and NSFW content in styles like anime, furry, cartoon, and pony-themed art. It's trained on ~2.6 million images with balanced datasets (anime/cartoon/furry/pony) and captions, enabling strong prompt adherence through natural language, tags, or a mix. Unlike many models, it doesn't require negative prompts or generic quality boosters like "masterpiece" or "HD"—it relies on specific tags for optimization.
+Based on community guides, forums (e.g., Reddit's r/StableDiffusion), blogs, and official resources updated through mid-2025, the key to maximizing results is structured prompting, strategic tag use, and compatible settings. In 2025, users emphasize ethical generation (e.g., avoiding inappropriate content), experimenting with merges like AutismMix for better coherence, and leveraging community resources like tag spreadsheets. Prompt adherence has improved with updates, but issues like pseudo-signatures persist—use inpainting or V5.5 as workarounds. Below, I'll break down methods, with examples and tips.
+1. Basic Prompt Structure: Get the Most Out of Your Prompt
+The model's opinionated template ensures high-quality outputs without negatives. Start prompts with quality tags, followed by a natural language description, then optional booru-style tags (comma-separated) for emphasis. This structure leverages the training data's ranking system, where images were scored from 9 (best) to 1 (worst).
+                                 * Recommended Template:
+text
+                                 * score_9, score_8_up, score_7_up, score_6_up, score_5_up, score_4_up, [natural language description], [tag1, tag2, ...]
+                                    * Why this? The full "score_X_up" string is a training artifact—using just "score_9" weakens the effect. Include most or all for optimal quality. Shorter versions (e.g., "score_9, score_8_up, score_7_up") work but may reduce sharpness.
+                                    * Natural language: Describe what you want in plain English (e.g., "a cute anthro pony in a neon city"). The model understands complex sentences due to caption training.
+                                    * Tags: Add Danbooru-style tags (e.g., "1girl, green hair, cyberpunk") to boost specifics. Order matters—put important elements first.
+                                    * Source Tags for Style Guidance: Use these to filter datasets and steer aesthetics:
+                                    * source_pony: Pony/My Little Pony style (e.g., colorful, magical).
+                                    * source_furry: Anthropomorphic animals.
+                                    * source_cartoon: General cartoons.
+                                    * source_anime: Anime/manga vibes. Example: Add "source_anime" for more stylized, less realistic outputs. Negate with negatives if needed (e.g., "negative prompt: source_cartoon").
+                                    * Rating Tags for Content Control:
+                                    * rating_safe: SFW, clean.
+                                    * rating_questionable: Mild NSFW (e.g., suggestive).
+                                    * rating_explicit: Full NSFW. Include in positives for desired level; use negatives to block (e.g., "negative prompt: rating_explicit").
+                                    * Example Prompts:
+                                    * Basic: "score_9, score_8_up, score_7_up, score_6_up, score_5_up, score_4_up, a feral pony in a forest, source_pony, colorful mane, big eyes"
+                                    * Advanced (multi-subject): "score_9, score_8_up, score_7_up, 2girls, anthro fox and wolf hugging, seductive pose, bedroom, source_furry, rating_questionable"
+                                    * Realistic: "score_9, score_8_up, score_7_up, 1boy standing on a building, short black hair, long sleeves, source_cartoon, realistic, fantasy"
+Tips to Maximize: Keep prompts concise (under 75 tokens) for better adherence—long prompts can cause "schizo" results. Use parentheses for emphasis: "(gothic neon:1.2)". Experiment with tag order: Subject > Style > Details > Background.
+2. Advanced Prompting Techniques
+To push beyond basics and achieve mind-blowing results in 2025:
+                                    * Danbooru Tags for Precision: Pony excels with booru tags (from sites like Danbooru). Use 99% tags over natural language for consistency—e.g., "1girl, solo, long hair, brown hair, gloves, green eyes" instead of sentences. Resources like this Google Sheet list thousands of compatible tags.
+                                    * Multi-Subject Prompts: Use "BREAK" or parentheses for separation: "score_9, score_8_up, 1girl, (blue hair:1.1), BREAK, 1boy, (interaction: hugging)". For realism, try merges like Goddess of Realism.
+                                    * Embeddings and LoRAs: Enhance with Pony-specific add-ons (from CivitAI):
+                                    * Embeddings: For faces/hands (e.g., "pony-pdxl-negative-embeddings").
+                                    * LoRAs: Styles like "Sinfully Stylish" for lighting (weight 0.8). Syntax: "lora:style-lora:0.7". Limit to 3-5 LoRAs; train custom ones on 105+ images for characters.
+                                    * Negative Prompts (If Needed): Rarely required, but for artifacts: "score_3, score_2, score_1, blurry, deformed, 3d". Use embeddings like negativeXL_D.
+                                    * Consistency Tricks: For series (e.g., graphic novels), use detailed tags + inpainting/ADetailer for faces/hands. 3D posing software for backgrounds. Merges like AutismMix_Confetti reduce "style swings".
+                                    * Ethical/2025-Specific: Avoid biases; use rating tags responsibly. New tools like OneTrainer for LoRA training (presets in 2025 updates).
+3. Settings for Best Results
+                                    * Sampler/Steps: Euler a, 20-25 steps. CFG Scale: 5-7 (higher for adherence).
+                                    * Resolution: 1024x1024 base; use Hires. fix (upscaler: 4x-UltraSharp, denoise 0.3-0.5).
+                                    * Clip Skip: 2 (or -2 in some UIs) to avoid blobs.
+                                    * VAE: Baked-in, but try sdxl_vae.safetensors for vibrancy.
+                                    * UI Tips: In A1111, set Emphasis to "No Norm" for long prompts. Fooocus: Higher guidance (5+); styles for shortcuts (e.g., anime_safe). ComfyUI: Custom workflows for sources.
+                                    * Hardware: Runs on standard GPUs; use merges for efficiency.
+4. Common Pitfalls and 2025 Optimizations
+                                    * Lackluster Images: Add full score tags; use short, tag-heavy prompts. In 2025, Flux merges improve adherence but may censor—stick to Pony for uncensored.
+                                    * Artifacts (e.g., Signatures): Inpaint; future models (e.g., Astra) address this.
+                                    * Hands/Backgrounds: Pony is strong on hands/feet (1/9 mutation rate), but use ADetailer. Backgrounds need manual fixes.
+                                    * Updates in 2025: Community focuses on ethical AI (e.g., no underage filters built-in). New resources: Hugging Face/Github for optimized versions; CivitAI for 2025 LoRAs. Experiment with CLIP for clarity.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Example Prompts
+
+# Prompt 1: Sultry Cyberpunk Siren
+**Prompt**: 1girl, score_9, score_8_up, score_7_up, score_6_up, score_5_up, score_4_up, source_anime, rating_explicit, nude adult woman with long sleek navy-blue hair in a high ponytail, skinny athletic build (bust 32B, waist 24", hips 35"), caramel skin with a warm glow, angular face with bold brows, with smoldering stare, half-lidded eyes with intense focus, parted lips with a seductive curve, straddling an imaginary surface with arched back, low-angle view emphasizing exposed rear and grinding motion, in a modern loft bedroom with high ceilings, exposed beams, and large floor-to-ceiling windows with a neon city glow, Cyberpunk Anime, neon-lit aesthetic, glowing cyan and magenta accents, thin line art, reflective surfaces, <lora:s1-dramatic:0.8>, <lora:neon-city:1.0>, <lora:expressiveh:0.8>, <lora:popartanimestyle:0.6>, expressiveh, e-girl aesthetic
+
+
+**Negative Prompt**: <TI:FFSD51AB6>, <TI:5D619863AC>, <TI:5FDAD45040BA>, <TI:8A94867251>, low-res, bad anatomy, bad hands, text, error, missing fingers, extra digit, fewer digits, cropped, worst quality, low quality, normal quality, jpeg artifacts, signature, watermark, username, blurry, artist name, (deformed, distorted, disfigured:1.3), poorly drawn, bad anatomy, wrong anatomy, extra limb, missing limb, floating limbs, (mutated hands and fingers:1.4), disconnected limbs, mutation, mutated, ugly, disgusting, blurry, amputation, source_pony, source_furry, source_cartoon, sketch, painting, monochrome, rating_safe, rating_questionable, two people, multiple characters, couple, male, no distorted face, no blurry eyes
+
+
+**Settings**:
+- Model: Perfect Pony XL V6
+- Sampler: Euler a
+- Steps: 25
+- Guidance Scale: 7
+- Prompt Enhance: On
+- Prompt Behavior: V2 Unlimited
+- Hires: On (Strength 0.4)
+- Upscaler: REAL-ESRGAN-X4-ANIME-CFORMER
+- Aspect Ratio: Portrait (512x768)
+- CLIP Skip: -2
+- **LoRAs and Weights**:
+  - S1 Dramatic Lighting: 0.8
+  - Neon City Pony XL: 1.0
+  - ExpressiveH Hentai LoRA Style: 0.8
+  - Pop Art Anime Style: 0.6
+
+
+---
+
+
+
+
+# Prompt 2: Innocent Retro Schoolgirl
+**Prompt**: 1girl, score_9, score_8_up, score_7_up, score_6_up, score_5_up, score_4_up, source_anime, rating_explicit, nude adult woman with short wavy platinum blonde hair, skinny petite build (bust 32A, waist 24", hips 34"), pale skin with faint freckles, round innocent eyes, with shy blush, half-lidded eyes looking downward, pursed lips with a timid smile, deep rosy blush across cheeks and nose, seated hugging knees to chest, frontal view showcasing compact form and gentle vulnerability, in a minimalist guest room with simple bed, gray linens, and soft overhead lighting, Retro 90s Cel Animation, clean thick black outlines, flat vibrant color fills, soft cel-shading, <lora:pony-anime-90s:0.7>, <lora:expressiveh:0.7>, <lora:vintage-90s:0.6>, expressiveh
+
+
+**Negative Prompt**: <TI:FFSD51AB6>, <TI:5D619863AC>, <TI:5FDAD45040BA>, <TI:8A94867251>, low-res, bad anatomy, bad hands, text, error, missing fingers, extra digit, fewer digits, cropped, worst quality, low quality, normal quality, jpeg artifacts, signature, watermark, username, blurry, artist name, (deformed, distorted, disfigured:1.3), poorly drawn, bad anatomy, wrong anatomy, extra limb, missing limb, floating limbs, (mutated hands and fingers:1.4), disconnected limbs, mutation, mutated, ugly, disgusting, blurry, amputation, source_pony, source_furry, source_cartoon, sketch, painting, monochrome, rating_safe, rating_questionable, two people, multiple characters, couple, male, no distorted face, no blurry eyes
+
+
+**Settings**:
+- Model: Perfect Pony XL V6
+- Sampler: Euler a
+- Steps: 25
+- Guidance Scale: 7
+- Prompt Enhance: On
+- Prompt Behavior: V2 Unlimited
+- Hires: On (Strength 0.4)
+- Upscaler: REAL-ESRGAN-X4-ANIME-CFORMER
+- Aspect Ratio: Portrait (512x768)
+- CLIP Skip: -2
+- **LoRAs and Weights**:
+  - Vixon's Anime/Manga Styles - 90's Anime: 0.7
+  - ExpressiveH Hentai LoRA Style: 0.7
+  - Vintage 1990s Anime SDXL LoRA: 0.6
+
+
+---
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# Prompt 3: Gothic Warrior Goddess
+**Prompt**: 1girl, score_9, score_8_up, score_7_up, score_6_up, score_5_up, score_4_up, source_anime, rating_explicit, nude adult woman with braided white-blonde hair in a crown, tall athletic build (bust 36B, waist 27", hips 38"), bronze skin, chiseled features, with defiant glare, narrowed eyes with a fierce stare, clenched jaw, furrowed brows, standing with arms clasped behind back, rear three-quarter angle showcasing posture and flowing hair, in a rustic cabin bedroom with wooden walls, quilted bedspread, and gentle ember glow from a stone fireplace, Gothic Anime Elegance, dark moody palettes, intricate line work, crimson and violet accents, <lora:s1-dramatic:0.8>, <lora:gothic-neon:0.8>, <lora:expressiveh:0.7>, <lora:goth-details:0.8>, expressiveh
+
+
+**Negative Prompt**: <TI:FFSD51AB6>, <TI:5D619863AC>, <TI:5FDAD45040BA>, <TI:8A94867251>, low-res, bad anatomy, bad hands, text, error, missing fingers, extra digit, fewer digits, cropped, worst quality, low quality, normal quality, jpeg artifacts, signature, watermark, username, blurry, artist name, (deformed, distorted, disfigured:1.3), poorly drawn, bad anatomy, wrong anatomy, extra limb, missing limb, floating limbs, (mutated hands and fingers:1.4), disconnected limbs, mutation, mutated, ugly, disgusting, blurry, amputation, source_pony, source_furry, source_cartoon, sketch, painting, monochrome, rating_safe, rating_questionable, two people, multiple characters, couple, male, no distorted face, no blurry eyes
+
+
+**Settings**:
+- Model: Perfect Pony XL V6
+- Sampler: Euler a
+- Steps: 30
+- Guidance Scale: 8
+- Prompt Enhance: On
+- Prompt Behavior: V2 Unlimited
+- Hires: On (Strength 0.5)
+- Upscaler: REAL-ESRGAN-X4-ANIME-CFORMER
+- Aspect Ratio: Portrait (1024x1536)
+- CLIP Skip: -2
+- **LoRAs and Weights**:
+  - S1 Dramatic Lighting: 0.8
+  - Vixon's Pony Styles - Gothic Neon: 0.8
+  - ExpressiveH Hentai LoRA Style: 0.7
+  - Vixon's Pony Styles - Gothic Details: 0.8
+
+
+---
+
+
+
+
+
+
+
+
+# Prompt 4: Playful Pop Idol
+**Prompt**: 1girl, score_9, score_8_up, score_7_up, score_6_up, score_5_up, score_4_up, source_anime, rating_explicit, nude adult woman with frizzy magenta hair in twin tails, extreme hourglass build (bust 36C, waist 24", hips 40"), ivory skin with rosy flushes, cute button nose, with teasing tongue, tongue sticking out playfully, squinted eyes, raised brows, rosy cheeks, seated with one leg extended, arms supporting, low angle emphasizing leg length and balanced composition, in a conservatory extension with glass roof, indoor plants, and natural light filtering through, Magical Girl Sparkle, glittery highlights, pastel gradients, soft outlines, <lora:expressiveh:0.8>, <lora:blowing-kisses:0.6>, <lora:popartanimestyle:0.8>, expressiveh, e-girl aesthetic
+
+
+**Negative Prompt**: <TI:FFSD51AB6>, <TI:5D619863AC>, <TI:5FDAD45040BA>, <TI:8A94867251>, low-res, bad anatomy, bad hands, text, error, missing fingers, extra digit, fewer digits, cropped, worst quality, low quality, normal quality, jpeg artifacts, signature, watermark, username, blurry, artist name, (deformed, distorted, disfigured:1.3), poorly drawn, bad anatomy, wrong anatomy, extra limb, missing limb, floating limbs, (mutated hands and fingers:1.4), disconnected limbs, mutation, mutated, ugly, disgusting, blurry, amputation, source_pony, source_furry, source_cartoon, sketch, painting, monochrome, rating_safe, rating_questionable, two people, multiple characters, couple, male, no distorted face, no blurry eyes
+
+
+**Settings**:
+- Model: Perfect Pony XL V6
+- Sampler: Euler a
+- Steps: 25
+- Guidance Scale: 7
+- Prompt Enhance: On
+- Prompt Behavior: V2 Unlimited
+- Hires: On (Strength 0.4)
+- Upscaler: REAL-ESRGAN-X4-ANIME-CFORMER
+- Aspect Ratio: Portrait (512x768)
+- CLIP Skip: -2
+- **LoRAs and Weights**:
+  - ExpressiveH Hentai LoRA Style: 0.8
+  - Blowing Kisses: 0.6
+  - Pop Art Anime Style: 0.8
+
+
+---
+
+
+
+
+
+
+
+
+
+

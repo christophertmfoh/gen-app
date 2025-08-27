@@ -1,0 +1,500 @@
+﻿Introduction
+For Generations is a modular, production-ready prompting kit for Pony Diffusion V6 XL and compatible Pony-based checkpoints. It consolidates practical settings, negative prompts, LoRA guidance, and interchangeable catalogs of subjects (women), poses, facial expressions, backgrounds, and styles so you—or future AI agents—can assemble consistent SFW/NSFW anime outputs with minimal guesswork. The packet draws from hands-on testing and public guidance (e.g., Civitai/Pixiv/Reddit) and is written to be machine-parsable and creator-friendly.
+What’s inside (at a glance)
+* Subjects / Women: Two 20-item batches describing distinct adult characters (hair, build, skin tone, facial features, “vibe”). These are written deliberately “prompt-ready” (qualitative anatomy terms) to drop straight into your base string.
+
+* Positions (40): A balanced set—20 explicit poses for erotic framing and 20 artful poses for softer compositions—each specified with camera angle and emphasis so they pair cleanly with your subject.
+
+* Expressions (20): Face library (from Innocent Wide-Eyed to Orgasmic Ecstasy) plus a mini-guide on where to place expression tags in the prompt, how to weight them, and how to amplify with the Expressiveh LoRA.
+
+* Locations / Backgrounds (20): Clean, modular room/set descriptions (e.g., Cozy Master Bedroom, Modern Loft Bedroom) with notes on keeping backgrounds supportive—not dominant—and how to block clutter via negatives.
+
+* Styles (20): From Retro 90s Cel and Studio Trigger Neon to Ghibli-Inspired Soft and Pop Art Anime, including directions for blending 2–3 styles safely and when to add style-specific negatives.
+
+* LoRAs & Models:
+
+   * Base models: Perfect/“Prefect” Pony XL, AutismMix SDXL, Pony Diffusion V6 XL—each with recommended samplers/steps/clip-skip and usage notes.
+
+   * LoRA catalog & rules: Triggers, suggested weights, and the critical rule to keep active LoRAs ≤ 5 per generation to avoid degradation.
+
+      * Core settings & guardrails: A complete Mage.space preset (model, sampler, steps, guidance, Prompt Enhance/Behavior, Hires, upscaler, aspect ratios, optional CLIP Skip) and a standard negative prompt (including TI codes) to suppress artifacts, extra characters, and off-style drift.
+
+      * Troubleshooting & tips: What to tweak if faces blur, anatomy warps, extra characters appear, or styles overrun each other (e.g., weight 1girl, adjust Expressiveh, bump steps, strengthen line-art tags).
+
+How the pieces work together (the assembly recipe)
+         1. Start with the base string.
+Use the provided quality and style anchors (e.g., 1girl, score_9, ... source_anime, rating_explicit, retro 90s anime style, detailed line art) as your first line. This locks quality, subject count, and an anime baseline before you add specifics.
+
+         2. Insert a Woman (Subject).
+Choose one descriptor set and paste it after the base string. Favor 2–3 signature traits (e.g., body silhouette + hair + vibe) rather than dumping every attribute; Pony responds best to concise, high-signal descriptors.
+
+         3. Add an Expression (face).
+Place expression tags immediately after the woman’s physical traits and before the pose (e.g., “with smoldering stare, half-lidded eyes…”). Weight if needed (e.g., (smoldering stare:1.2)), and consider Expressiveh ~0.7–0.8 to lift facial fidelity.
+
+         4. Choose a Pose.
+Pick one of the 40 poses and drop it in next. Each pose specifies angle/framing so it composes predictably with the subject and face you’ve set.
+
+         5. Set the Location.
+Append one background and only 2–3 salient details (e.g., “king-size bed, warm lamp glow”). Keep the scene supportive; if clutter creeps in, add the provided background-level negatives.
+
+         6. Select a Style (or blend 2).
+Add a single style (or blend up to two, rarely three) using its key feature tags (e.g., “bold high-contrast line art, vibrant neon colors”). When blending, emphasize the dominant style via ordering or light weighting; avoid over-blends to prevent mud.
+
+         7. Layer LoRAs—sparingly.
+Attach style/lighting/character LoRAs with their triggers and suggested weights. Keep the total ≤ 5  Prioritize the most important LoRA if you’re near the cap.
+
+         8. Apply the standard Negative Prompt.
+Use the packet’s TI codes + artifact/anatomy blockers to hard-block common failures (e.g., extra limbs/characters, low-res, signatures/watermarks, non-anime sources, safe/questionable ratings when you need explicit).
+
+         9. Use the recommended Settings.
+For Mage.space: Perfect Pony XL V6, Euler a, 25–30 steps, Guidance ~7–8, Prompt Enhance: On, Prompt Behavior: V2 Unlimited, Hires: On (0.3–0.5) with REAL-ESRGAN-X4-ANIME-CFORMER, portrait AR (512×768 or 1024×1536), optional CLIP Skip −2. Lock these in as your default preset.
+
+         10. Iterate and troubleshoot.
+
+            * Extra characters? Boost (1girl:1.2) or lower Expressiveh weight.
+
+            * Blurry/anatomy? Raise steps to 30–40, strengthen “detailed line art,” add anatomy negatives.
+
+            * Style drift? Re-emphasize the target style tags; reduce secondary style/LoRA weights.
+
+Ethics & scope
+This packet is scoped for adult characters only and emphasizes consensual, tasteful framing even in explicit contexts. Follow the included guidance to avoid harmful themes and maintain responsible use throughout your workflow.
+Who it’s for
+               * Artists who want a fast, modular way to compose anime nudes with reliable style control.
+
+               * AI agents/tools that need clear, ordered instructions (the packet includes placement/weighting rules for expressions, backgrounds, and styles specifically for agent use). 
+
+
+
+
+
+
+
+
+
+
+Subjects
+
+
+How to Use in a Prompt for Pony XL V6
+This section is your guide for future AI agents (or anyone) to use the women and pose repositories in your NSFW anime bible with Perfect Pony XL V6 on Mage.space. It’s built from our successful workflow, leveraging Pony’s strengths and avoiding pitfalls, based on research from Civitai, Reddit’s r/StableDiffusion, and the Pony Diffusion Prompt Guide.
+                  1. Base Prompt Structure: Always start with:
+text
+                  2. 1girl, score_9, score_8_up, score_7_up, score_6_up, score_5_up, score_4_up, source_anime, rating_explicit, retro 90s anime style, 2D illustration, detailed line art, vibrant pop art colors
+                     * 1girl: Ensures a single female subject (crucial to avoid extra characters).
+                     * score_9, score_8_up, ...: Boosts quality, as Pony is trained on ranked datasets.
+                     * source_anime: Locks in anime style.
+                     * rating_explicit: Enables NSFW explicit details (breasts, genitalia, etc.) without needing heavy descriptors.
+                     * Style tags (retro 90s anime style, ...): Enforce your desired aesthetic (bold outlines, flat shading, vibrant colors).
+                     3. Adding Women and Poses:
+                     * Select a woman from Batch 1 or 2 (e.g., “nude adult woman with long straight crimson hair, curvy hourglass figure, golden tanned skin, ... sultry vibe”).
+                     * Pair with a pose from your 40-pose repository (20 slutty, 20 artful, e.g., “Reverse Cowboy Grind: straddling an imaginary surface with arched back, low-angle view emphasizing exposed rear” or “Graceful Contrapposto Stand: standing with weight on one leg, hips shifted”).
+                     * Example: Combine Woman 1 with a pose:
+text
+                     * 1girl, score_9, score_8_up, score_7_up, score_6_up, score_5_up, score_4_up, source_anime, rating_explicit, retro 90s anime style, 2D illustration, detailed line art, vibrant pop art colors, nude adult woman with long straight crimson hair down to hips, curvy hourglass figure (bust 36C, waist 26", hips 38"), golden tanned skin, sharp cheekbones, sultry half-lidded eyes with a seductive smirk, full perky breasts with pink erect nipples, narrow waist flaring to wide hips, trimmed pubic hair above prominent labia and clitoris, firm round buttocks, long toned legs with smooth thighs to delicate feet, straddling an imaginary surface with arched back, low-angle view emphasizing exposed rear and grinding motion, dramatic lighting, expressiveh, e-girl aesthetic
+                        4. LoRA Integration:
+                        * Select up to 5 loras to use from the list of 31, typical selections will be characters, styles, or other. 
+                        5. Negative Prompt: Always use:
+text
+                        6. <TI:FFSD51AB6>, <TI:5D619863AC>, <TI:5FDAD45040BA>, <TI:8A94867251>, low-res, bad anatomy, bad hands, text, error, missing fingers, extra digit, fewer digits, cropped, worst quality, low quality, normal quality, jpeg artifacts, signature, watermark, username, blurry, artist name, (deformed, distorted, disfigured:1.3), poorly drawn, bad anatomy, wrong anatomy, extra limb, missing limb, floating limbs, (mutated hands and fingers:1.4), disconnected limbs, mutation, mutated, ugly, disgusting, blurry, amputation, source_pony, source_furry, source_cartoon, sketch, painting, monochrome, rating_safe, rating_questionable, two people, multiple characters, couple, male
+                           * Blocks non-anime styles, artifacts, and extra characters.
+                           * Textual inversion (TI) codes ensure Mage.space compatibility.
+                           7. Settings for Mage.space:
+                           * Model: Perfect Pony XL V6
+                           * Sampler: Euler a (clean anime lines)
+                           * Steps: 25-30 (Normal; avoids under-detailing)
+                           * Guidance Scale: Normal (~7-8; balances prompt adherence)
+                           * Prompt Enhance: On (expands NSFW details)
+                           * Prompt Behavior: V2 Unlimited (flexible for explicit content)
+                           * Hires: On, Strength ~0.3-0.5, Upscaler: REAL-ESRGAN-X4-ANIME-CFORMER
+                           * Aspect Ratio: Portrait (512x768 or 1024x1536 for full-body)
+                           * Seed: Random or fixed for variations
+                           * CLIP Skip: -2 (if available; prevents line distortion)
+
+
+                           8. Tips for Success:
+                           * Balance Descriptors: Focus on 2-3 key features (e.g., “curvy hourglass, sultry smirk, crimson hair”) to avoid overwhelming Pony. Measurements (e.g., 36C-26-38) are for reference; Pony interprets qualitative terms like “full perky breasts” better.
+                           * Test Iteratively: Run 1-2 prompts at a time. If proportions are off (e.g., hips too large), reduce Expressiveh weight or add negative tags like “overly exaggerated proportions.”
+                           * Ethical Focus: Always emphasize consensual, tasteful vibes (e.g., “seductive but confident”). Avoid violence or non-consent themes.
+                           * LoRA Tweaks: If outputs feel too modern, lower E-Girls to ~0.6. If too generic, boost Vixen’s Pony Styles to ~1.2.
+                           9. Troubleshooting:
+                           * Extra Characters: Reinforce “1girl” with higher weight (e.g., (1girl:1.2)) or lower Expressiveh weight.
+                           * Blurry/Anatomy Issues: Increase steps to 30-40 or add negative tags like “blurry, bad anatomy.”
+                           * Style Drift: Strengthen “retro 90s anime style, detailed line art” in prompt.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Subject
+
+
+Each woman is distinct in hair (color, style), body type (skinny, curvy, athletic, voluptuous—no extreme proportions), skin tone, facial features, expression, and vibe, ensuring they’re all conventionally attractive in an anime NSFW context. Descriptions are graphic (breasts, nipples, hips, genitalia, buttocks, legs, etc.) for your prompts, ready to slot into your Perfect Pony XL V6 setup on Mage.space with the same settings and LoRAs (S1 Dramatic Lighting ~0.2, Vixen’s Pony Styles ~1, Expressiveh ~0.7-0.8, E-Girls ~0.8). These align with your “bible” for the “Women” category.
+Settings Reminder:
+                           * Model: Perfect Pony XL V6
+                           * Sampler: Euler a
+                           * Steps: 25-30 (Normal)
+                           * Guidance Scale: Normal (~7-8)
+                           * Prompt Enhance: On
+                           * Prompt Behavior: V2 Unlimited
+                           * Hires: On, Strength ~0.3-0.5, Upscaler: REAL-ESRGAN-X4-ANIME-CFORMER
+                           * Aspect Ratio: Portrait (512x768 or 1024x1536)
+                           * LoRA Strengths: S1 Dramatic Lighting ~0.2, Vixen’s Pony Styles ~1, Expressiveh ~0.7-0.8, E-Girls ~0.8
+                           * Negative Prompt: <TI:FFSD51AB6>, <TI:5D619863AC>, <TI:5FDAD45040BA>, <TI:8A94867251>, low-res, bad anatomy, bad hands, text, error, missing fingers, extra digit, fewer digits, cropped, worst quality, low quality, normal quality, jpeg artifacts, signature, watermark, username, blurry, artist name, (deformed, distorted, disfigured:1.3), poorly drawn, bad anatomy, wrong anatomy, extra limb, missing limb, floating limbs, (mutated hands and fingers:1.4), disconnected limbs, mutation, mutated, ugly, disgusting, blurry, amputation, source_pony, source_furry, source_cartoon, sketch, painting, monochrome, rating_safe, rating_questionable, two people, multiple characters, couple, male
+
+
+
+
+                           1. Nude adult woman with long straight crimson hair down to hips, curvy hourglass figure (bust 36C, waist 26", hips 38"), golden tanned skin, sharp cheekbones, sultry half-lidded eyes with a seductive smirk, full perky breasts with pink erect nipples, narrow waist flaring to wide hips, trimmed pubic hair above prominent labia and clitoris, firm round buttocks, long toned legs with smooth thighs to delicate feet, slutty vibe like a confident femme fatale.
+
+
+                           2. Nude adult woman with short wavy platinum blonde hair, skinny petite build (bust 32A, waist 24", hips 34"), pale skin with faint freckles, round innocent eyes, shy blushing cheeks with parted lips, small pert breasts with soft areolas, flat stomach, narrow hips, smooth shaved pubic area revealing vulva details, tight small buttocks, slender legs to petite toes, innocent vibe like a curious schoolgirl.
+
+
+                           3. Nude adult woman with shoulder-length emerald green hair in loose curls, voluptuous curvy body (bust 38D, waist 28", hips 40"), sun-kissed skin, high cheekbones, preppy arched brows with a poised smile, large heavy breasts with dark nipples, soft belly with navel piercing, wide childbearing hips, bushy pubic mound over labia, plump buttocks, thick thighs to sturdy feet, preppy vibe like a chic socialite.
+
+
+                           4. Nude adult woman with long black hair in a single braid, athletic toned physique (bust 34B, waist 25", hips 36"), olive skin, fierce narrowed eyes, mischievous grin, medium firm breasts with puffy nipples, ripped abs, powerful hips, neat pubic strip over engorged clitoris, sculpted buttocks, strong legs with defined calves to broad feet, dominant vibe like a sporty competitor.
+
+
+                           5. Nude adult woman with curly auburn hair in a high bun, pear-shaped curvy body (bust 34B, waist 27", hips 42"), warm medium skin, soft doe eyes, gentle smile with dimples, modest breasts with rosy nipples, slight belly pooch, exaggerated hips, detailed vulva with visible arousal, large soft buttocks, shapely legs to dainty ankles, nurturing vibe like a caring artist.
+
+
+
+
+                           6. Nude adult woman with sleek silver hair to waist, skinny slender frame (bust 32A, waist 23", hips 33"), dark ebony skin, elegant almond eyes, serene closed-lip expression, flat chest with tiny nipples, lithe waist, subtle hips, bare pubic bone with minimalistic genitalia, flat buttocks, long slim legs to pointed feet, ethereal vibe like a mystical dancer.
+
+
+                           7. Nude adult woman with spiky pink hair in a mohawk, busty athletic build (bust 36D, waist 26", hips 37"), freckled fair skin, bold makeup eyes, rebellious sneer, oversized breasts with veiny undersides, chiseled abs, flared hips, wild pubic hair over swollen labia, perky tattooed buttocks, muscular thighs to sturdy feet, punk vibe like a defiant rockstar.
+
+
+                           8. Nude adult woman with long lavender hair in waves, voluptuous full-figured body (bust 38DD, waist 30", hips 44"), golden brown skin, plump cheeks, innocent wide eyes with pout, ample sagging breasts with stretch marks, rounded belly, broad hips, thick pubic bush, dimpled buttocks, chubby legs to rounded toes, cozy vibe like a plush romantic.
+
+
+                           9. Nude adult woman with asymmetrical blue hair (short one side, long other), lean skinny build (bust 32B, waist 24", hips 34"), porcelain skin, intense gaze, sly wink, small conical breasts with pierced nipples, flat toned stomach, narrow hips, smooth hairless pubic area, tight buttocks, sinewy legs to narrow feet, cunning vibe like a sly trickster.
+
+
+                           10. Nude adult woman with coiled orange hair in an afro, curvy plus-size frame (bust 40D, waist 32", hips 46"), deep chocolate skin, full lips, joyful laughing eyes, massive pendulous breasts with wide areolas, layered belly rolls, massive hips, dense pubic curls, enormous jiggling buttocks, thick legs to wide feet, vibrant vibe like a lively performer.
+
+
+                           11. Nude adult woman with sleek brown hair in a low ponytail, athletic inverted triangle body (bust 34C, waist 25", hips 35"), warm beige skin, strong jaw, determined eyes with firm expression, athletic breasts with small nipples, v-shaped torso, slim hips, minimal pubic trim, firm angular buttocks, strong legs to athletic feet, sporty vibe like a driven gymnast.
+
+
+
+
+
+
+                           12. Nude adult woman with frizzy teal hair in pigtails, extreme hourglass body (bust 36C, waist 24", hips 40"), ivory skin with rosy flushes, cute button nose, playful tongue-out expression, balloon-like breasts with puffy nipples, dramatic waist, exaggerated hips, shaved pubic mound with arousal drips, heart-shaped buttocks, curvy legs to cute toes, idol vibe like a teasing popstar.
+
+
+
+
+
+
+                           13. Nude adult woman with straight golden hair to mid-back, curvy apple-shaped body (bust 38C, waist 30", hips 38"), sun-kissed skin, elegant features, regal gaze with slight smile, heavy upper breasts with downward nipples, fuller upper belly, moderate hips, light pubic fuzz, rounded buttocks, balanced legs to elegant feet, regal vibe like a noble beauty.
+
+
+                           14. Nude adult woman with choppy indigo hair, muscular athletic build (bust 34B, waist 26", hips 36"), caramel skin, bold brows, fierce snarl, compact firm breasts with dark nipples, stocky torso with abs, sturdy hips, bushy pubic area, solid buttocks, strong legs to broad feet, fierce vibe like a determined fighter.
+
+
+                           15. Nude adult woman with layered violet hair in a shag, skinny banana-shaped body (bust 32A, waist 24", hips 34"), light olive skin, soft eyes, dreamy distant look, modest sloping breasts with subtle nipples, smooth torso, subtle hips, smooth pubic transition, flat toned buttocks, straight legs to slender feet, poetic vibe like a wistful dreamer.
+
+
+                           16. Nude adult woman with braided white hair in a crown, tall athletic build (bust 36B, waist 27", hips 38"), bronze skin, chiseled features, intense stare, large sculpted breasts with erect nipples, powerful core, wide hips, trimmed pubic arrow, massive firm buttocks, long striding legs to large feet, goddess vibe like a commanding warrior.
+
+
+                           17. Nude adult woman with slicked-back red hair, rectangular athletic body (bust 34B, waist 26", hips 36"), cool undertone skin, sharp nose, neutral hooded eyes, medium balanced breasts with average nipples, straight waist, even hips, neat pubic strip, rectangular buttocks, uniform legs to standard feet, stoic vibe like a calm guardian.
+
+
+
+
+                           18. Nude adult woman with voluminous cyan hair in curls, curvy bottom-heavy build (bust 34B, waist 28", hips 42"), honey skin, heart-shaped face, flirtatious wink, small perky breasts with tiny nipples, slim waist, explosive hips, wild pubic curls, oversized plush buttocks, dramatic thigh curves to tapered toes, siren vibe like a seductive temptress.
+
+
+
+
+                           19. Nude adult woman with straight ebony hair to ankles, skinny willowy build (bust 32A, waist 23", hips 33"), ghostly pale skin, delicate features, melancholic sad smile, barely-there breasts with faint nipples, rib-visible torso, bony hips, sparse pubic hair, bony buttocks, spindly legs to fragile feet, tragic vibe like a sorrowful heroine.
+
+
+                           20. Nude adult woman with spiked magenta hair, hybrid curvy-muscular build (bust 36C, waist 27", hips 39"), mocha skin, exotic eyes, ecstatic open-mouthed expression, hybrid firm-full breasts with textured nipples, blended abs and curves, balanced hips, detailed pubic design, toned plump buttocks, hybrid shapely legs to dynamic feet, passionate vibe like a fiery performer.
+
+
+Each woman is crafted with no overlap from Batch 1 in hair color/style, body type, skin tone, expression, or vibe. Descriptions are detailed (breasts, nipples, hips, genitalia, buttocks, legs, etc.), conventionally attractive in a 90s anime style, and ready to slot into prompts for your Perfect Pony XL V6 setup on Mage.space. Settings and LoRAs remain the same: S1 Dramatic Lighting (~0.2), Vixen’s Pony Styles (~1), Expressiveh (~0.7-0.8), E-Girls (~0.8).
+Settings Reminder:
+                           * Model: Perfect Pony XL V6
+                           * Sampler: Euler a
+                           * Steps: 25-30 (Normal)
+                           * Guidance Scale: Normal (~7-8)
+                           * Prompt Enhance: On
+                           * Prompt Behavior: V2 Unlimited
+                           * Hires: On, Strength ~0.3-0.5, Upscaler: REAL-ESRGAN-X4-ANIME-CFORMER
+                           * Aspect Ratio: Portrait (512x768 or 1024x1536)
+                           * Negative Prompt: <TI:FFSD51AB6>, <TI:5D619863AC>, <TI:5FDAD45040BA>, <TI:8A94867251>, low-res, bad anatomy, bad hands, text, error, missing fingers, extra digit, fewer digits, cropped, worst quality, low quality, normal quality, jpeg artifacts, signature, watermark, username, blurry, artist name, (deformed, distorted, disfigured:1.3), poorly drawn, bad anatomy, wrong anatomy, extra limb, missing limb, floating limbs, (mutated hands and fingers:1.4), disconnected limbs, mutation, mutated, ugly, disgusting, blurry, amputation, source_pony, source_furry, source_cartoon, sketch, painting, monochrome, rating_safe, rating_questionable, two people, multiple characters, couple, male
+
+
+
+
+
+
+
+
+                           1. Nude adult woman with long, sleek navy-blue hair in a high ponytail, skinny athletic build (bust 32B, waist 24", hips 35"), caramel skin with a warm glow, angular face with bold brows and a haughty smirk, small firm breasts with dark nipples, toned abs, narrow hips, smooth pubic area revealing detailed vulva, tight angular buttocks, lean legs with defined calves to slender feet, arrogant vibe like a confident runway model strutting her form.
+
+
+                           2. Nude adult woman with shoulder-length rose-pink hair in soft waves, curvy voluptuous build (bust 38D, waist 28", hips 42"), ivory skin with rosy undertones, heart-shaped face with wide innocent eyes and a gentle pout, large soft breasts with pink areolas, slight belly curve, wide swaying hips, bushy pubic mound over prominent labia, plump jiggling buttocks, thick thighs to rounded feet, shy vibe like a reserved romantic unveiling herself.
+
+
+                           3. Nude adult woman with choppy lime-green hair in a pixie cut, skinny petite frame (bust 32A, waist 23", hips 33"), pale porcelain skin, elfin features with a cheeky grin and freckled cheeks, flat chest with tiny budding nipples, flat stomach, subtle hips, minimalistic pubic slit, small perky buttocks, slender androgynous legs to petite toes, playful vibe like a mischievous sprite teasing with her pose.
+
+
+                           4. Nude adult woman with waist-length golden-blonde hair in loose curls, athletic hourglass build (bust 34C, waist 26", hips 38"), sun-kissed tan skin, sharp cheekbones with a sultry half-lidded gaze, full perky breasts with erect nipples, narrow waist flaring to hips, trimmed pubic strip over engorged clitoris, firm round buttocks, toned legs to delicate feet, seductive vibe like a femme fatale in control.
+
+
+                           5. Nude adult woman with long, straight raven-black hair, curvy pear-shaped body (bust 34B, waist 27", hips 41"), warm olive skin, soft round face with dreamy eyes and a subtle smile, modest breasts with rosy nipples, gentle belly pooch, exaggerated hips, detailed vulva with arousal cues, large soft buttocks with dimples, shapely legs to dainty ankles, nurturing vibe like a warm artist embracing her curves.
+
+
+                           6. Nude adult woman with spiky coral hair in a short crop, busty athletic build (bust 36C, waist 26", hips 37"), freckled fair skin, bold makeup with fierce narrowed eyes and a rebellious sneer, oversized breasts with veiny undersides, chiseled abs, flared hips, wild pubic hair over swollen labia, perky tattooed buttocks, muscular thighs to sturdy feet, punk vibe like a defiant street artist.
+                           7. Nude adult woman with wavy auburn hair to mid-back, voluptuous full-figured build (bust 38DD, waist 30", hips 43"), golden brown skin, plump cheeks with innocent wide eyes and a pout, ample sagging breasts with stretch marks, rounded belly, broad hips, thick pubic bush, dimpled buttocks, chubby legs to rounded toes, cozy vibe like a plush romantic lounging nude.
+
+
+                           8. Nude adult woman with long silver-grey hair in a loose braid, skinny slender frame (bust 32A, waist 23", hips 34"), ebony skin with a glossy sheen, elegant almond eyes with a serene closed-lip expression, flat chest with tiny nipples, lithe waist, subtle hips, bare pubic bone with minimalistic genitalia, flat buttocks, long slim legs to pointed feet, ethereal vibe like a mystical dancer in repose.
+
+
+                           9. Nude adult woman with asymmetrical teal hair (long one side, shaved other), lean skinny build (bust 32B, waist 24", hips 34"), porcelain skin with faint veins, intense gaze with a sly wink, small conical breasts with pierced nipples, flat toned stomach, narrow hips, smooth hairless pubic area, tight buttocks, sinewy legs to narrow feet, cunning vibe like a clever rogue posing provocatively.
+
+
+                           10. Nude adult woman with coiled amber hair in a tight bun, curvy plus-size frame (bust 40D, waist 31", hips 45"), deep mocha skin, full lips with joyful laughing eyes, massive pendulous breasts with wide areolas, layered belly rolls, massive hips, dense pubic curls, enormous jiggling buttocks, thick legs to wide feet, vibrant vibe like a lively performer celebrating her form.
+
+
+                           11. Nude adult woman with sleek chestnut-brown hair in a low bun, athletic inverted triangle body (bust 34B, waist 25", hips 35"), warm beige skin, strong jaw with determined eyes and a firm expression, athletic breasts with small nipples, v-shaped torso, slim hips, minimal pubic trim, firm angular buttocks, strong legs to athletic feet, sporty vibe like a driven competitor at rest.
+
+
+                           12. Nude adult woman with frizzy magenta hair in twin tails, extreme hourglass build (bust 36C, waist 24", hips 40"), ivory skin with rosy flushes, cute button nose with a playful tongue-out expression, balloon-like breasts with puffy nipples, dramatic waist, exaggerated hips, shaved pubic mound with arousal drips, heart-shaped buttocks, curvy legs to cute toes, idol vibe like a teasing anime star.
+                           13. Nude adult woman with straight platinum hair to mid-back, curvy apple-shaped body (bust 38C, waist 29", hips 38"), sun-kissed skin, elegant features with a regal gaze and slight smile, heavy upper breasts with downward nipples, fuller upper belly, moderate hips, light pubic fuzz, rounded buttocks, balanced legs to elegant feet, regal vibe like a noble beauty commanding attention.
+
+
+                           14. Nude adult woman with choppy violet hair in a bob, muscular athletic build (bust 34B, waist 26", hips 36"), caramel skin, bold brows with a fierce snarl, compact firm breasts with dark nipples, stocky torso with abs, sturdy hips, bushy pubic area, solid buttocks, strong legs to broad feet, fierce vibe like a determined fighter ready to strike.
+
+
+
+
+                           15. Nude adult woman with layered indigo hair in a shag, skinny banana-shaped body (bust 32A, waist 24", hips 34"), light olive skin, soft eyes with a dreamy distant look, modest sloping breasts with subtle nipples, smooth torso, subtle hips, smooth pubic transition, flat toned buttocks, straight legs to slender feet, poetic vibe like a wistful dreamer in contemplation.
+
+
+
+
+                           16. Nude adult woman with braided white-blonde hair in a crown, tall athletic build (bust 36B, waist 27", hips 38"), bronze skin, chiseled features with an intense stare, large sculpted breasts with erect nipples, powerful core, wide hips, trimmed pubic arrow, massive firm buttocks, long striding legs to large feet, goddess vibe like a commanding warrior.
+
+
+                           17. Nude adult woman with slicked-back burgundy hair, rectangular athletic body (bust 34B, waist 26", hips 36"), cool undertone skin, sharp nose with neutral hooded eyes, medium balanced breasts with average nipples, straight waist, even hips, neat pubic strip, rectangular buttocks, uniform legs to standard feet, stoic vibe like a calm guardian.
+
+
+                           18. Nude adult woman with voluminous cyan hair in curls, curvy bottom-heavy build (bust 34B, waist 28", hips 42"), honey skin, heart-shaped face with a flirtatious wink, small perky breasts with tiny nipples, slim waist, explosive hips, wild pubic curls, oversized plush buttocks, dramatic thigh curves to tapered toes, siren vibe like a seductive temptress.
+
+
+                           19. Nude adult woman with straight onyx hair to ankles, skinny willowy build (bust 32A, waist 23", hips 33"), ghostly pale skin, delicate features with a melancholic sad smile, barely-there breasts with faint nipples, rib-visible torso, bony hips, sparse pubic hair, bony buttocks, spindly legs to fragile feet, tragic vibe like a sorrowful heroine.
+
+
+                           20. Nude adult woman with spiked tangerine hair, hybrid curvy-muscular build (bust 36C, waist 27", hips 39"), mocha skin with a sheen, exotic eyes with an ecstatic open-mouthed expression, hybrid firm-full breasts with textured nipples, blended abs and curves, balanced hips, detailed pubic design, toned plump buttocks, hybrid shapely legs to dynamic feet, passionate vibe like a fiery performer in climax.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Positions 
+
+1. Reverse Cowboy Grind: Straddling an imaginary surface, leaning forward with arched back; low-angle view from behind emphasizes exposed rear and grinding motion.
+
+
+2. Face-to-Face Embrace: Kneeling with arms wrapped around herself, legs bent; close-up frontal angle highlights intertwined limbs and intense gaze.
+
+
+3. Over-the-Shoulder Lift: Standing with one leg raised high, arms balancing; side profile angle focuses on lifted leg’s curves and exposed groin.
+
+
+4. Bent-Back Arch: Lying back with spine dramatically arched, legs spread wide; top-down view showcases the arch and open hips.
+
+
+5. Sideways Scissor Lock: On her side, legs scissored and twisted; side angle captures hip alignment and skin contours.
+
+
+6. Standing Wall Press: Pinned against an imaginary wall, one leg raised; frontal view on pressed body, arched back, and intense expression.
+
+
+7. Lying Back Spread: Flat on back, legs wide apart; low-angle from below highlights exposed genitals and arched torso.
+8. 
+Seated Thigh Ride: Straddling an invisible seat, grinding thighs; side view on motion, exposed thighs, and teasing smirk.
+
+
+9. Over-the-Edge Hang: Upper body hanging off an edge, legs raised; dynamic side angle on hanging pose and lifted hips.
+
+
+10. Kneeling Back Bend: Kneeling bent backward, hands on floor; rear view emphasizes arched back and spread legs.
+
+
+11. Face-Down Lift: Face down, hips lifted high; low rear angle on elevated ass and exposed rear.
+
+
+12. Crossed Leg Lock: Sitting with legs crossed tightly; frontal close-up on exposed chest and locked eyes.
+
+
+13. Standing Rear Entry: Bent forward standing, hands on knees; side/rear angle on bent pose and exposed back.
+
+
+14. Lying Side Spoon: Side-lying, body curved; curved side view on hip curve and relaxed pose.
+
+
+15. Seated Face Sit: Sitting with hips raised, facing away; top-down on exposed rear and confident stance.
+
+
+16. Inverted V Spread: Bent at waist in a V, legs spread; rear view on spread stance and hanging torso.
+
+
+17. Chest-to-Chest Grind: Lying flat, arms pressing chest; close-up on skin-on-skin friction and passionate expression.
+
+
+18. Raised Leg Lift: Back-lying, one leg high; side angle on lifted leg, open groin, and stretched form.
+
+
+19. Kneeling Face-Off: Kneeling with one leaning back, hands supporting; frontal on grind pose and exposed body.
+
+
+20. Back-to-Chest Hug: Standing with arms wrapped around herself, rear entry pose; side angle on curves and thrusting motion.
+
+
+21. Graceful Contrapposto Stand: Standing with weight on one leg, hips shifted, arms relaxed at sides; three-quarter angle highlights natural curves and serene expression.
+
+
+22. Elegant Reclining Side: Lying on side, one arm supporting head, legs gently bent; side view captures flowing lines of the body and contemplative gaze.
+
+
+23. Seated Lotus Fold: Sitting cross-legged, hands resting on knees; frontal angle emphasizes balanced symmetry and peaceful introspection.
+
+
+24. Arched Back Kneel: Kneeling with back slightly arched, hands on thighs; low frontal view showcases elongated torso and subtle poise.
+
+
+25. Arms-Over-Head Stretch: Standing with arms raised overhead, body elongated; profile angle focuses on stretched form and soft lighting on skin.
+
+
+26. Curled Fetal Pose: Curled on side, knees to chest, arms hugging legs; overhead view highlights vulnerability and intimate curves.
+
+
+27. Seated Forward Lean: Sitting with torso leaning forward, arms draped over knees; three-quarter angle captures thoughtful expression and gentle contours.
+
+
+28. Standing Hip Tilt: Standing with one hand on hip, slight tilt; full-frontal view emphasizes confident stance and natural proportions.
+
+
+29. Lying Back Gaze: Flat on back, arms at sides, head turned; top-down angle showcases relaxed body and dreamy upward gaze.
+
+
+30. Kneeling Arms Crossed: Kneeling with arms crossed over chest; side angle highlights modest coverage and elegant lines.
+
+
+31. Twisted Torso Turn: Standing with torso twisted, one arm behind; profile view captures dynamic yet graceful rotation and skin highlights.
+
