@@ -1,0 +1,1524 @@
+﻿Introduction
+For Generations is a modular, production-ready prompting kit for Pony Diffusion V6 XL and compatible Pony-based checkpoints. It consolidates practical settings, negative prompts, LoRA guidance, and interchangeable catalogs of subjects (women), poses, facial expressions, backgrounds, and styles so you—or future AI agents—can assemble consistent SFW/NSFW anime outputs with minimal guesswork. The packet draws from hands-on testing and public guidance (e.g., Civitai/Pixiv/Reddit) and is written to be machine-parsable and creator-friendly.
+What’s inside (at a glance)
+* Subjects / Women: Two 20-item batches describing distinct adult characters (hair, build, skin tone, facial features, “vibe”). These are written deliberately “prompt-ready” (qualitative anatomy terms) to drop straight into your base string.
+
+* Positions (40): A balanced set—20 explicit poses for erotic framing and 20 artful poses for softer compositions—each specified with camera angle and emphasis so they pair cleanly with your subject.
+
+* Expressions (20): Face library (from Innocent Wide-Eyed to Orgasmic Ecstasy) plus a mini-guide on where to place expression tags in the prompt, how to weight them, and how to amplify with the Expressiveh LoRA.
+
+* Locations / Backgrounds (20): Clean, modular room/set descriptions (e.g., Cozy Master Bedroom, Modern Loft Bedroom) with notes on keeping backgrounds supportive—not dominant—and how to block clutter via negatives.
+
+* Styles (20): From Retro 90s Cel and Studio Trigger Neon to Ghibli-Inspired Soft and Pop Art Anime, including directions for blending 2–3 styles safely and when to add style-specific negatives.
+
+* LoRAs & Models:
+
+   * Base models: Perfect/“Prefect” Pony XL, AutismMix SDXL, Pony Diffusion V6 XL—each with recommended samplers/steps/clip-skip and usage notes.
+
+   * LoRA catalog & rules: Triggers, suggested weights, and the critical rule to keep active LoRAs ≤ 5 per generation to avoid degradation.
+
+      * Core settings & guardrails: A complete Mage.space preset (model, sampler, steps, guidance, Prompt Enhance/Behavior, Hires, upscaler, aspect ratios, optional CLIP Skip) and a standard negative prompt (including TI codes) to suppress artifacts, extra characters, and off-style drift.
+
+      * Troubleshooting & tips: What to tweak if faces blur, anatomy warps, extra characters appear, or styles overrun each other (e.g., weight 1girl, adjust Expressiveh, bump steps, strengthen line-art tags).
+
+How the pieces work together (the assembly recipe)
+         1. Start with the base string.
+Use the provided quality and style anchors (e.g., 1girl, score_9, ... source_anime, rating_explicit, retro 90s anime style, detailed line art) as your first line. This locks quality, subject count, and an anime baseline before you add specifics.
+
+         2. Insert a Woman (Subject).
+Choose one descriptor set and paste it after the base string. Favor 2–3 signature traits (e.g., body silhouette + hair + vibe) rather than dumping every attribute; Pony responds best to concise, high-signal descriptors.
+
+         3. Add an Expression (face).
+Place expression tags immediately after the woman’s physical traits and before the pose (e.g., “with smoldering stare, half-lidded eyes…”). Weight if needed (e.g., (smoldering stare:1.2)), and consider Expressiveh ~0.7–0.8 to lift facial fidelity.
+
+         4. Choose a Pose.
+Pick one of the 40 poses and drop it in next. Each pose specifies angle/framing so it composes predictably with the subject and face you’ve set.
+
+         5. Set the Location.
+Append one background and only 2–3 salient details (e.g., “king-size bed, warm lamp glow”). Keep the scene supportive; if clutter creeps in, add the provided background-level negatives.
+
+         6. Select a Style (or blend 2).
+Add a single style (or blend up to two, rarely three) using its key feature tags (e.g., “bold high-contrast line art, vibrant neon colors”). When blending, emphasize the dominant style via ordering or light weighting; avoid over-blends to prevent mud.
+
+         7. Layer LoRAs—sparingly.
+Attach style/lighting/character LoRAs with their triggers and suggested weights. Keep the total ≤ 5  Prioritize the most important LoRA if you’re near the cap.
+
+         8. Apply the standard Negative Prompt.
+Use the packet’s TI codes + artifact/anatomy blockers to hard-block common failures (e.g., extra limbs/characters, low-res, signatures/watermarks, non-anime sources, safe/questionable ratings when you need explicit).
+
+         9. Use the recommended Settings.
+For Mage.space: Perfect Pony XL V6, Euler a, 25–30 steps, Guidance ~7–8, Prompt Enhance: On, Prompt Behavior: V2 Unlimited, Hires: On (0.3–0.5) with REAL-ESRGAN-X4-ANIME-CFORMER, portrait AR (512×768 or 1024×1536), optional CLIP Skip −2. Lock these in as your default preset.
+
+         10. Iterate and troubleshoot.
+
+            * Extra characters? Boost (1girl:1.2) or lower Expressiveh weight.
+
+            * Blurry/anatomy? Raise steps to 30–40, strengthen “detailed line art,” add anatomy negatives.
+
+            * Style drift? Re-emphasize the target style tags; reduce secondary style/LoRA weights.
+
+Ethics & scope
+This packet is scoped for adult characters only and emphasizes consensual, tasteful framing even in explicit contexts. Follow the included guidance to avoid harmful themes and maintain responsible use throughout your workflow.
+Who it’s for
+               * Artists who want a fast, modular way to compose anime nudes with reliable style control.
+
+               * AI agents/tools that need clear, ordered instructions (the packet includes placement/weighting rules for expressions, backgrounds, and styles specifically for agent use). 
+
+
+
+
+
+
+
+
+
+
+Subjects
+
+
+How to Use in a Prompt for Pony XL V6
+This section is your guide for future AI agents (or anyone) to use the women and pose repositories in your NSFW anime bible with Perfect Pony XL V6 on Mage.space. It’s built from our successful workflow, leveraging Pony’s strengths and avoiding pitfalls, based on research from Civitai, Reddit’s r/StableDiffusion, and the Pony Diffusion Prompt Guide.
+                  1. Base Prompt Structure: Always start with:
+text
+                  2. 1girl, score_9, score_8_up, score_7_up, score_6_up, score_5_up, score_4_up, source_anime, rating_explicit, retro 90s anime style, 2D illustration, detailed line art, vibrant pop art colors
+                     * 1girl: Ensures a single female subject (crucial to avoid extra characters).
+                     * score_9, score_8_up, ...: Boosts quality, as Pony is trained on ranked datasets.
+                     * source_anime: Locks in anime style.
+                     * rating_explicit: Enables NSFW explicit details (breasts, genitalia, etc.) without needing heavy descriptors.
+                     * Style tags (retro 90s anime style, ...): Enforce your desired aesthetic (bold outlines, flat shading, vibrant colors).
+                     3. Adding Women and Poses:
+                     * Select a woman from Batch 1 or 2 (e.g., “nude adult woman with long straight crimson hair, curvy hourglass figure, golden tanned skin, ... sultry vibe”).
+                     * Pair with a pose from your 40-pose repository (20 slutty, 20 artful, e.g., “Reverse Cowboy Grind: straddling an imaginary surface with arched back, low-angle view emphasizing exposed rear” or “Graceful Contrapposto Stand: standing with weight on one leg, hips shifted”).
+                     * Example: Combine Woman 1 with a pose:
+text
+                     * 1girl, score_9, score_8_up, score_7_up, score_6_up, score_5_up, score_4_up, source_anime, rating_explicit, retro 90s anime style, 2D illustration, detailed line art, vibrant pop art colors, nude adult woman with long straight crimson hair down to hips, curvy hourglass figure (bust 36C, waist 26", hips 38"), golden tanned skin, sharp cheekbones, sultry half-lidded eyes with a seductive smirk, full perky breasts with pink erect nipples, narrow waist flaring to wide hips, trimmed pubic hair above prominent labia and clitoris, firm round buttocks, long toned legs with smooth thighs to delicate feet, straddling an imaginary surface with arched back, low-angle view emphasizing exposed rear and grinding motion, dramatic lighting, expressiveh, e-girl aesthetic
+                        4. LoRA Integration:
+                        * Select up to 5 loras to use from the list of 31, typical selections will be characters, styles, or other. 
+                        5. Negative Prompt: Always use:
+text
+                        6. <TI:FFSD51AB6>, <TI:5D619863AC>, <TI:5FDAD45040BA>, <TI:8A94867251>, low-res, bad anatomy, bad hands, text, error, missing fingers, extra digit, fewer digits, cropped, worst quality, low quality, normal quality, jpeg artifacts, signature, watermark, username, blurry, artist name, (deformed, distorted, disfigured:1.3), poorly drawn, bad anatomy, wrong anatomy, extra limb, missing limb, floating limbs, (mutated hands and fingers:1.4), disconnected limbs, mutation, mutated, ugly, disgusting, blurry, amputation, source_pony, source_furry, source_cartoon, sketch, painting, monochrome, rating_safe, rating_questionable, two people, multiple characters, couple, male
+                           * Blocks non-anime styles, artifacts, and extra characters.
+                           * Textual inversion (TI) codes ensure Mage.space compatibility.
+                           7. Settings for Mage.space:
+                           * Model: Perfect Pony XL V6
+                           * Sampler: Euler a (clean anime lines)
+                           * Steps: 25-30 (Normal; avoids under-detailing)
+                           * Guidance Scale: Normal (~7-8; balances prompt adherence)
+                           * Prompt Enhance: On (expands NSFW details)
+                           * Prompt Behavior: V2 Unlimited (flexible for explicit content)
+                           * Hires: On, Strength ~0.3-0.5, Upscaler: REAL-ESRGAN-X4-ANIME-CFORMER
+                           * Aspect Ratio: Portrait (512x768 or 1024x1536 for full-body)
+                           * Seed: Random or fixed for variations
+                           * CLIP Skip: -2 (if available; prevents line distortion)
+
+
+                           8. Tips for Success:
+                           * Balance Descriptors: Focus on 2-3 key features (e.g., “curvy hourglass, sultry smirk, crimson hair”) to avoid overwhelming Pony. Measurements (e.g., 36C-26-38) are for reference; Pony interprets qualitative terms like “full perky breasts” better.
+                           * Test Iteratively: Run 1-2 prompts at a time. If proportions are off (e.g., hips too large), reduce Expressiveh weight or add negative tags like “overly exaggerated proportions.”
+                           * Ethical Focus: Always emphasize consensual, tasteful vibes (e.g., “seductive but confident”). Avoid violence or non-consent themes.
+                           * LoRA Tweaks: If outputs feel too modern, lower E-Girls to ~0.6. If too generic, boost Vixen’s Pony Styles to ~1.2.
+                           9. Troubleshooting:
+                           * Extra Characters: Reinforce “1girl” with higher weight (e.g., (1girl:1.2)) or lower Expressiveh weight.
+                           * Blurry/Anatomy Issues: Increase steps to 30-40 or add negative tags like “blurry, bad anatomy.”
+                           * Style Drift: Strengthen “retro 90s anime style, detailed line art” in prompt.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Subject
+
+
+Each woman is distinct in hair (color, style), body type (skinny, curvy, athletic, voluptuous—no extreme proportions), skin tone, facial features, expression, and vibe, ensuring they’re all conventionally attractive in an anime NSFW context. Descriptions are graphic (breasts, nipples, hips, genitalia, buttocks, legs, etc.) for your prompts, ready to slot into your Perfect Pony XL V6 setup on Mage.space with the same settings and LoRAs (S1 Dramatic Lighting ~0.2, Vixen’s Pony Styles ~1, Expressiveh ~0.7-0.8, E-Girls ~0.8). These align with your “bible” for the “Women” category.
+Settings Reminder:
+                           * Model: Perfect Pony XL V6
+                           * Sampler: Euler a
+                           * Steps: 25-30 (Normal)
+                           * Guidance Scale: Normal (~7-8)
+                           * Prompt Enhance: On
+                           * Prompt Behavior: V2 Unlimited
+                           * Hires: On, Strength ~0.3-0.5, Upscaler: REAL-ESRGAN-X4-ANIME-CFORMER
+                           * Aspect Ratio: Portrait (512x768 or 1024x1536)
+                           * LoRA Strengths: S1 Dramatic Lighting ~0.2, Vixen’s Pony Styles ~1, Expressiveh ~0.7-0.8, E-Girls ~0.8
+                           * Negative Prompt: <TI:FFSD51AB6>, <TI:5D619863AC>, <TI:5FDAD45040BA>, <TI:8A94867251>, low-res, bad anatomy, bad hands, text, error, missing fingers, extra digit, fewer digits, cropped, worst quality, low quality, normal quality, jpeg artifacts, signature, watermark, username, blurry, artist name, (deformed, distorted, disfigured:1.3), poorly drawn, bad anatomy, wrong anatomy, extra limb, missing limb, floating limbs, (mutated hands and fingers:1.4), disconnected limbs, mutation, mutated, ugly, disgusting, blurry, amputation, source_pony, source_furry, source_cartoon, sketch, painting, monochrome, rating_safe, rating_questionable, two people, multiple characters, couple, male
+
+
+
+
+                           1. Nude adult woman with long straight crimson hair down to hips, curvy hourglass figure (bust 36C, waist 26", hips 38"), golden tanned skin, sharp cheekbones, sultry half-lidded eyes with a seductive smirk, full perky breasts with pink erect nipples, narrow waist flaring to wide hips, trimmed pubic hair above prominent labia and clitoris, firm round buttocks, long toned legs with smooth thighs to delicate feet, slutty vibe like a confident femme fatale.
+
+
+                           2. Nude adult woman with short wavy platinum blonde hair, skinny petite build (bust 32A, waist 24", hips 34"), pale skin with faint freckles, round innocent eyes, shy blushing cheeks with parted lips, small pert breasts with soft areolas, flat stomach, narrow hips, smooth shaved pubic area revealing vulva details, tight small buttocks, slender legs to petite toes, innocent vibe like a curious schoolgirl.
+
+
+                           3. Nude adult woman with shoulder-length emerald green hair in loose curls, voluptuous curvy body (bust 38D, waist 28", hips 40"), sun-kissed skin, high cheekbones, preppy arched brows with a poised smile, large heavy breasts with dark nipples, soft belly with navel piercing, wide childbearing hips, bushy pubic mound over labia, plump buttocks, thick thighs to sturdy feet, preppy vibe like a chic socialite.
+
+
+                           4. Nude adult woman with long black hair in a single braid, athletic toned physique (bust 34B, waist 25", hips 36"), olive skin, fierce narrowed eyes, mischievous grin, medium firm breasts with puffy nipples, ripped abs, powerful hips, neat pubic strip over engorged clitoris, sculpted buttocks, strong legs with defined calves to broad feet, dominant vibe like a sporty competitor.
+
+
+                           5. Nude adult woman with curly auburn hair in a high bun, pear-shaped curvy body (bust 34B, waist 27", hips 42"), warm medium skin, soft doe eyes, gentle smile with dimples, modest breasts with rosy nipples, slight belly pooch, exaggerated hips, detailed vulva with visible arousal, large soft buttocks, shapely legs to dainty ankles, nurturing vibe like a caring artist.
+
+
+
+
+                           6. Nude adult woman with sleek silver hair to waist, skinny slender frame (bust 32A, waist 23", hips 33"), dark ebony skin, elegant almond eyes, serene closed-lip expression, flat chest with tiny nipples, lithe waist, subtle hips, bare pubic bone with minimalistic genitalia, flat buttocks, long slim legs to pointed feet, ethereal vibe like a mystical dancer.
+
+
+                           7. Nude adult woman with spiky pink hair in a mohawk, busty athletic build (bust 36D, waist 26", hips 37"), freckled fair skin, bold makeup eyes, rebellious sneer, oversized breasts with veiny undersides, chiseled abs, flared hips, wild pubic hair over swollen labia, perky tattooed buttocks, muscular thighs to sturdy feet, punk vibe like a defiant rockstar.
+
+
+                           8. Nude adult woman with long lavender hair in waves, voluptuous full-figured body (bust 38DD, waist 30", hips 44"), golden brown skin, plump cheeks, innocent wide eyes with pout, ample sagging breasts with stretch marks, rounded belly, broad hips, thick pubic bush, dimpled buttocks, chubby legs to rounded toes, cozy vibe like a plush romantic.
+
+
+                           9. Nude adult woman with asymmetrical blue hair (short one side, long other), lean skinny build (bust 32B, waist 24", hips 34"), porcelain skin, intense gaze, sly wink, small conical breasts with pierced nipples, flat toned stomach, narrow hips, smooth hairless pubic area, tight buttocks, sinewy legs to narrow feet, cunning vibe like a sly trickster.
+
+
+                           10. Nude adult woman with coiled orange hair in an afro, curvy plus-size frame (bust 40D, waist 32", hips 46"), deep chocolate skin, full lips, joyful laughing eyes, massive pendulous breasts with wide areolas, layered belly rolls, massive hips, dense pubic curls, enormous jiggling buttocks, thick legs to wide feet, vibrant vibe like a lively performer.
+
+
+                           11. Nude adult woman with sleek brown hair in a low ponytail, athletic inverted triangle body (bust 34C, waist 25", hips 35"), warm beige skin, strong jaw, determined eyes with firm expression, athletic breasts with small nipples, v-shaped torso, slim hips, minimal pubic trim, firm angular buttocks, strong legs to athletic feet, sporty vibe like a driven gymnast.
+
+
+
+
+
+
+                           12. Nude adult woman with frizzy teal hair in pigtails, extreme hourglass body (bust 36C, waist 24", hips 40"), ivory skin with rosy flushes, cute button nose, playful tongue-out expression, balloon-like breasts with puffy nipples, dramatic waist, exaggerated hips, shaved pubic mound with arousal drips, heart-shaped buttocks, curvy legs to cute toes, idol vibe like a teasing popstar.
+
+
+
+
+
+
+                           13. Nude adult woman with straight golden hair to mid-back, curvy apple-shaped body (bust 38C, waist 30", hips 38"), sun-kissed skin, elegant features, regal gaze with slight smile, heavy upper breasts with downward nipples, fuller upper belly, moderate hips, light pubic fuzz, rounded buttocks, balanced legs to elegant feet, regal vibe like a noble beauty.
+
+
+                           14. Nude adult woman with choppy indigo hair, muscular athletic build (bust 34B, waist 26", hips 36"), caramel skin, bold brows, fierce snarl, compact firm breasts with dark nipples, stocky torso with abs, sturdy hips, bushy pubic area, solid buttocks, strong legs to broad feet, fierce vibe like a determined fighter.
+
+
+                           15. Nude adult woman with layered violet hair in a shag, skinny banana-shaped body (bust 32A, waist 24", hips 34"), light olive skin, soft eyes, dreamy distant look, modest sloping breasts with subtle nipples, smooth torso, subtle hips, smooth pubic transition, flat toned buttocks, straight legs to slender feet, poetic vibe like a wistful dreamer.
+
+
+                           16. Nude adult woman with braided white hair in a crown, tall athletic build (bust 36B, waist 27", hips 38"), bronze skin, chiseled features, intense stare, large sculpted breasts with erect nipples, powerful core, wide hips, trimmed pubic arrow, massive firm buttocks, long striding legs to large feet, goddess vibe like a commanding warrior.
+
+
+                           17. Nude adult woman with slicked-back red hair, rectangular athletic body (bust 34B, waist 26", hips 36"), cool undertone skin, sharp nose, neutral hooded eyes, medium balanced breasts with average nipples, straight waist, even hips, neat pubic strip, rectangular buttocks, uniform legs to standard feet, stoic vibe like a calm guardian.
+
+
+
+
+                           18. Nude adult woman with voluminous cyan hair in curls, curvy bottom-heavy build (bust 34B, waist 28", hips 42"), honey skin, heart-shaped face, flirtatious wink, small perky breasts with tiny nipples, slim waist, explosive hips, wild pubic curls, oversized plush buttocks, dramatic thigh curves to tapered toes, siren vibe like a seductive temptress.
+
+
+
+
+                           19. Nude adult woman with straight ebony hair to ankles, skinny willowy build (bust 32A, waist 23", hips 33"), ghostly pale skin, delicate features, melancholic sad smile, barely-there breasts with faint nipples, rib-visible torso, bony hips, sparse pubic hair, bony buttocks, spindly legs to fragile feet, tragic vibe like a sorrowful heroine.
+
+
+                           20. Nude adult woman with spiked magenta hair, hybrid curvy-muscular build (bust 36C, waist 27", hips 39"), mocha skin, exotic eyes, ecstatic open-mouthed expression, hybrid firm-full breasts with textured nipples, blended abs and curves, balanced hips, detailed pubic design, toned plump buttocks, hybrid shapely legs to dynamic feet, passionate vibe like a fiery performer.
+
+
+Each woman is crafted with no overlap from Batch 1 in hair color/style, body type, skin tone, expression, or vibe. Descriptions are detailed (breasts, nipples, hips, genitalia, buttocks, legs, etc.), conventionally attractive in a 90s anime style, and ready to slot into prompts for your Perfect Pony XL V6 setup on Mage.space. Settings and LoRAs remain the same: S1 Dramatic Lighting (~0.2), Vixen’s Pony Styles (~1), Expressiveh (~0.7-0.8), E-Girls (~0.8).
+Settings Reminder:
+                           * Model: Perfect Pony XL V6
+                           * Sampler: Euler a
+                           * Steps: 25-30 (Normal)
+                           * Guidance Scale: Normal (~7-8)
+                           * Prompt Enhance: On
+                           * Prompt Behavior: V2 Unlimited
+                           * Hires: On, Strength ~0.3-0.5, Upscaler: REAL-ESRGAN-X4-ANIME-CFORMER
+                           * Aspect Ratio: Portrait (512x768 or 1024x1536)
+                           * Negative Prompt: <TI:FFSD51AB6>, <TI:5D619863AC>, <TI:5FDAD45040BA>, <TI:8A94867251>, low-res, bad anatomy, bad hands, text, error, missing fingers, extra digit, fewer digits, cropped, worst quality, low quality, normal quality, jpeg artifacts, signature, watermark, username, blurry, artist name, (deformed, distorted, disfigured:1.3), poorly drawn, bad anatomy, wrong anatomy, extra limb, missing limb, floating limbs, (mutated hands and fingers:1.4), disconnected limbs, mutation, mutated, ugly, disgusting, blurry, amputation, source_pony, source_furry, source_cartoon, sketch, painting, monochrome, rating_safe, rating_questionable, two people, multiple characters, couple, male
+
+
+
+
+
+
+
+
+                           1. Nude adult woman with long, sleek navy-blue hair in a high ponytail, skinny athletic build (bust 32B, waist 24", hips 35"), caramel skin with a warm glow, angular face with bold brows and a haughty smirk, small firm breasts with dark nipples, toned abs, narrow hips, smooth pubic area revealing detailed vulva, tight angular buttocks, lean legs with defined calves to slender feet, arrogant vibe like a confident runway model strutting her form.
+
+
+                           2. Nude adult woman with shoulder-length rose-pink hair in soft waves, curvy voluptuous build (bust 38D, waist 28", hips 42"), ivory skin with rosy undertones, heart-shaped face with wide innocent eyes and a gentle pout, large soft breasts with pink areolas, slight belly curve, wide swaying hips, bushy pubic mound over prominent labia, plump jiggling buttocks, thick thighs to rounded feet, shy vibe like a reserved romantic unveiling herself.
+
+
+                           3. Nude adult woman with choppy lime-green hair in a pixie cut, skinny petite frame (bust 32A, waist 23", hips 33"), pale porcelain skin, elfin features with a cheeky grin and freckled cheeks, flat chest with tiny budding nipples, flat stomach, subtle hips, minimalistic pubic slit, small perky buttocks, slender androgynous legs to petite toes, playful vibe like a mischievous sprite teasing with her pose.
+
+
+                           4. Nude adult woman with waist-length golden-blonde hair in loose curls, athletic hourglass build (bust 34C, waist 26", hips 38"), sun-kissed tan skin, sharp cheekbones with a sultry half-lidded gaze, full perky breasts with erect nipples, narrow waist flaring to hips, trimmed pubic strip over engorged clitoris, firm round buttocks, toned legs to delicate feet, seductive vibe like a femme fatale in control.
+
+
+                           5. Nude adult woman with long, straight raven-black hair, curvy pear-shaped body (bust 34B, waist 27", hips 41"), warm olive skin, soft round face with dreamy eyes and a subtle smile, modest breasts with rosy nipples, gentle belly pooch, exaggerated hips, detailed vulva with arousal cues, large soft buttocks with dimples, shapely legs to dainty ankles, nurturing vibe like a warm artist embracing her curves.
+
+
+                           6. Nude adult woman with spiky coral hair in a short crop, busty athletic build (bust 36C, waist 26", hips 37"), freckled fair skin, bold makeup with fierce narrowed eyes and a rebellious sneer, oversized breasts with veiny undersides, chiseled abs, flared hips, wild pubic hair over swollen labia, perky tattooed buttocks, muscular thighs to sturdy feet, punk vibe like a defiant street artist.
+                           7. Nude adult woman with wavy auburn hair to mid-back, voluptuous full-figured build (bust 38DD, waist 30", hips 43"), golden brown skin, plump cheeks with innocent wide eyes and a pout, ample sagging breasts with stretch marks, rounded belly, broad hips, thick pubic bush, dimpled buttocks, chubby legs to rounded toes, cozy vibe like a plush romantic lounging nude.
+
+
+                           8. Nude adult woman with long silver-grey hair in a loose braid, skinny slender frame (bust 32A, waist 23", hips 34"), ebony skin with a glossy sheen, elegant almond eyes with a serene closed-lip expression, flat chest with tiny nipples, lithe waist, subtle hips, bare pubic bone with minimalistic genitalia, flat buttocks, long slim legs to pointed feet, ethereal vibe like a mystical dancer in repose.
+
+
+                           9. Nude adult woman with asymmetrical teal hair (long one side, shaved other), lean skinny build (bust 32B, waist 24", hips 34"), porcelain skin with faint veins, intense gaze with a sly wink, small conical breasts with pierced nipples, flat toned stomach, narrow hips, smooth hairless pubic area, tight buttocks, sinewy legs to narrow feet, cunning vibe like a clever rogue posing provocatively.
+
+
+                           10. Nude adult woman with coiled amber hair in a tight bun, curvy plus-size frame (bust 40D, waist 31", hips 45"), deep mocha skin, full lips with joyful laughing eyes, massive pendulous breasts with wide areolas, layered belly rolls, massive hips, dense pubic curls, enormous jiggling buttocks, thick legs to wide feet, vibrant vibe like a lively performer celebrating her form.
+
+
+                           11. Nude adult woman with sleek chestnut-brown hair in a low bun, athletic inverted triangle body (bust 34B, waist 25", hips 35"), warm beige skin, strong jaw with determined eyes and a firm expression, athletic breasts with small nipples, v-shaped torso, slim hips, minimal pubic trim, firm angular buttocks, strong legs to athletic feet, sporty vibe like a driven competitor at rest.
+
+
+                           12. Nude adult woman with frizzy magenta hair in twin tails, extreme hourglass build (bust 36C, waist 24", hips 40"), ivory skin with rosy flushes, cute button nose with a playful tongue-out expression, balloon-like breasts with puffy nipples, dramatic waist, exaggerated hips, shaved pubic mound with arousal drips, heart-shaped buttocks, curvy legs to cute toes, idol vibe like a teasing anime star.
+                           13. Nude adult woman with straight platinum hair to mid-back, curvy apple-shaped body (bust 38C, waist 29", hips 38"), sun-kissed skin, elegant features with a regal gaze and slight smile, heavy upper breasts with downward nipples, fuller upper belly, moderate hips, light pubic fuzz, rounded buttocks, balanced legs to elegant feet, regal vibe like a noble beauty commanding attention.
+
+
+                           14. Nude adult woman with choppy violet hair in a bob, muscular athletic build (bust 34B, waist 26", hips 36"), caramel skin, bold brows with a fierce snarl, compact firm breasts with dark nipples, stocky torso with abs, sturdy hips, bushy pubic area, solid buttocks, strong legs to broad feet, fierce vibe like a determined fighter ready to strike.
+
+
+
+
+                           15. Nude adult woman with layered indigo hair in a shag, skinny banana-shaped body (bust 32A, waist 24", hips 34"), light olive skin, soft eyes with a dreamy distant look, modest sloping breasts with subtle nipples, smooth torso, subtle hips, smooth pubic transition, flat toned buttocks, straight legs to slender feet, poetic vibe like a wistful dreamer in contemplation.
+
+
+
+
+                           16. Nude adult woman with braided white-blonde hair in a crown, tall athletic build (bust 36B, waist 27", hips 38"), bronze skin, chiseled features with an intense stare, large sculpted breasts with erect nipples, powerful core, wide hips, trimmed pubic arrow, massive firm buttocks, long striding legs to large feet, goddess vibe like a commanding warrior.
+
+
+                           17. Nude adult woman with slicked-back burgundy hair, rectangular athletic body (bust 34B, waist 26", hips 36"), cool undertone skin, sharp nose with neutral hooded eyes, medium balanced breasts with average nipples, straight waist, even hips, neat pubic strip, rectangular buttocks, uniform legs to standard feet, stoic vibe like a calm guardian.
+
+
+                           18. Nude adult woman with voluminous cyan hair in curls, curvy bottom-heavy build (bust 34B, waist 28", hips 42"), honey skin, heart-shaped face with a flirtatious wink, small perky breasts with tiny nipples, slim waist, explosive hips, wild pubic curls, oversized plush buttocks, dramatic thigh curves to tapered toes, siren vibe like a seductive temptress.
+
+
+                           19. Nude adult woman with straight onyx hair to ankles, skinny willowy build (bust 32A, waist 23", hips 33"), ghostly pale skin, delicate features with a melancholic sad smile, barely-there breasts with faint nipples, rib-visible torso, bony hips, sparse pubic hair, bony buttocks, spindly legs to fragile feet, tragic vibe like a sorrowful heroine.
+
+
+                           20. Nude adult woman with spiked tangerine hair, hybrid curvy-muscular build (bust 36C, waist 27", hips 39"), mocha skin with a sheen, exotic eyes with an ecstatic open-mouthed expression, hybrid firm-full breasts with textured nipples, blended abs and curves, balanced hips, detailed pubic design, toned plump buttocks, hybrid shapely legs to dynamic feet, passionate vibe like a fiery performer in climax.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Positions 
+
+1. Reverse Cowboy Grind: Straddling an imaginary surface, leaning forward with arched back; low-angle view from behind emphasizes exposed rear and grinding motion.
+
+
+2. Face-to-Face Embrace: Kneeling with arms wrapped around herself, legs bent; close-up frontal angle highlights intertwined limbs and intense gaze.
+
+
+3. Over-the-Shoulder Lift: Standing with one leg raised high, arms balancing; side profile angle focuses on lifted leg’s curves and exposed groin.
+
+
+4. Bent-Back Arch: Lying back with spine dramatically arched, legs spread wide; top-down view showcases the arch and open hips.
+
+
+5. Sideways Scissor Lock: On her side, legs scissored and twisted; side angle captures hip alignment and skin contours.
+
+
+6. Standing Wall Press: Pinned against an imaginary wall, one leg raised; frontal view on pressed body, arched back, and intense expression.
+
+
+7. Lying Back Spread: Flat on back, legs wide apart; low-angle from below highlights exposed genitals and arched torso.
+8. 
+Seated Thigh Ride: Straddling an invisible seat, grinding thighs; side view on motion, exposed thighs, and teasing smirk.
+
+
+9. Over-the-Edge Hang: Upper body hanging off an edge, legs raised; dynamic side angle on hanging pose and lifted hips.
+
+
+10. Kneeling Back Bend: Kneeling bent backward, hands on floor; rear view emphasizes arched back and spread legs.
+
+
+11. Face-Down Lift: Face down, hips lifted high; low rear angle on elevated ass and exposed rear.
+
+
+12. Crossed Leg Lock: Sitting with legs crossed tightly; frontal close-up on exposed chest and locked eyes.
+
+
+13. Standing Rear Entry: Bent forward standing, hands on knees; side/rear angle on bent pose and exposed back.
+
+
+14. Lying Side Spoon: Side-lying, body curved; curved side view on hip curve and relaxed pose.
+
+
+15. Seated Face Sit: Sitting with hips raised, facing away; top-down on exposed rear and confident stance.
+
+
+16. Inverted V Spread: Bent at waist in a V, legs spread; rear view on spread stance and hanging torso.
+
+
+17. Chest-to-Chest Grind: Lying flat, arms pressing chest; close-up on skin-on-skin friction and passionate expression.
+
+
+18. Raised Leg Lift: Back-lying, one leg high; side angle on lifted leg, open groin, and stretched form.
+
+
+19. Kneeling Face-Off: Kneeling with one leaning back, hands supporting; frontal on grind pose and exposed body.
+
+
+20. Back-to-Chest Hug: Standing with arms wrapped around herself, rear entry pose; side angle on curves and thrusting motion.
+
+
+21. Graceful Contrapposto Stand: Standing with weight on one leg, hips shifted, arms relaxed at sides; three-quarter angle highlights natural curves and serene expression.
+
+
+22. Elegant Reclining Side: Lying on side, one arm supporting head, legs gently bent; side view captures flowing lines of the body and contemplative gaze.
+
+
+23. Seated Lotus Fold: Sitting cross-legged, hands resting on knees; frontal angle emphasizes balanced symmetry and peaceful introspection.
+
+
+24. Arched Back Kneel: Kneeling with back slightly arched, hands on thighs; low frontal view showcases elongated torso and subtle poise.
+
+
+25. Arms-Over-Head Stretch: Standing with arms raised overhead, body elongated; profile angle focuses on stretched form and soft lighting on skin.
+
+
+26. Curled Fetal Pose: Curled on side, knees to chest, arms hugging legs; overhead view highlights vulnerability and intimate curves.
+
+
+27. Seated Forward Lean: Sitting with torso leaning forward, arms draped over knees; three-quarter angle captures thoughtful expression and gentle contours.
+
+
+28. Standing Hip Tilt: Standing with one hand on hip, slight tilt; full-frontal view emphasizes confident stance and natural proportions.
+
+
+29. Lying Back Gaze: Flat on back, arms at sides, head turned; top-down angle showcases relaxed body and dreamy upward gaze.
+
+
+30. Kneeling Arms Crossed: Kneeling with arms crossed over chest; side angle highlights modest coverage and elegant lines.
+
+
+31. Twisted Torso Turn: Standing with torso twisted, one arm behind; profile view captures dynamic yet graceful rotation and skin highlights.
+
+
+32. Seated Leg Extend: Sitting with one leg extended, arms supporting; low angle emphasizes leg length and balanced composition.
+
+
+33. Reclining Elbow Prop: Reclining on elbows, legs crossed; three-quarter view focuses on supported pose and subtle shadows.
+
+
+34. Standing Arms Behind: Standing with arms clasped behind back; rear three-quarter angle showcases posture and flowing hair.
+
+
+35. Curved Spine Sit: Sitting with spine curved forward, hands on floor; side view highlights arched form and introspective mood.
+
+
+36. Lying Prone Arch: Lying on stomach, upper body arched up; overhead angle captures lifted torso and serene expression.
+
+
+37. Kneeling Side Glance: Kneeling with body turned slightly, glancing over shoulder; profile angle emphasizes neck curve and soft lighting.
+
+
+38. Seated Hug Knees: Sitting hugging knees to chest; frontal view showcases compact form and gentle vulnerability.
+
+
+39. Standing Leg Cross: Standing with legs crossed, arms relaxed; full-body angle highlights poise and natural stance.
+
+
+40. Reclining Hand Rest: Reclining with one hand under head, legs extended; side angle captures relaxed elegance and subtle contours.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Expressions
+
+
+                           1. Innocent Wide-Eyed: Large, sparkling eyes gazing upward, slightly parted lips, raised brows with a gentle curve, faint blush on cheeks. Conveys naive curiosity.
+
+
+                           2. Shy Blush: Half-lidded eyes looking downward, pursed lips with a timid smile, furrowed brows, deep rosy blush across cheeks and nose. Exudes bashful charm.
+
+
+                           3. Dreamy Gaze: Soft, unfocused eyes staring into the distance, relaxed mouth with a subtle smile, smooth brows, faint flush. Evokes wistful longing.
+
+
+                           4. Coy Glance: Sideways glance with one eye partially covered by hair, small smirk, arched brow, light blush. Suggests playful teasing.
+
+
+                           5. Gentle Smile: Closed lips with a warm, upward curve, slightly squinted eyes, relaxed brows, soft cheek flush. Radiates kind warmth.
+
+
+                           6. Nervous Bite: Teeth gently biting lower lip, wide eyes with raised brows, flushed cheeks, tense expression. Shows anxious anticipation.
+
+
+                           7. Pouting Sulks: Puffed-out lips, furrowed brows, narrowed eyes looking aside, light blush. Conveys petulant charm.
+
+
+                           8. Curious Tilt: Head tilted, one brow raised, wide curious eyes, slightly open mouth with a hint of smile. Exudes inquisitive innocence.
+
+
+                           9. Flirtatious Wink: One eye closed in a wink, sly smirk, arched brow, glowing cheeks. Projects confident allure.
+
+
+                           10. Smoldering Stare: Half-lidded eyes with intense focus, parted lips with a seductive curve, raised brow, subtle blush. Exudes sultry confidence.
+
+
+                           11. Ecstatic Moan: Eyes rolled back slightly, open mouth with a gasp, flushed cheeks, furrowed brows in pleasure. Conveys intense arousal.
+
+
+                           12. Mischievous Grin: Wide, cheeky grin with bared teeth, squinted eyes, raised brows, light flush. Suggests playful defiance.
+
+
+                           13. Haughty Sneer: Lifted chin, narrowed eyes with a scornful gaze, pursed lips with a slight smirk, no blush. Radiates arrogant dominance.
+
+
+                           14. Passionate Cry: Wide open mouth in a moan, eyes clenched shut, furrowed brows, heavy blush across face. Exudes raw desire.
+
+
+                           15. Seductive Smirk: Crooked smile with parted lips, half-lidded eyes with a knowing look, arched brow, glowing blush. Projects femme fatale allure.
+
+
+                           16. Defiant Glare: Narrowed eyes with a fierce stare, clenched jaw, furrowed brows, no blush. Conveys rebellious intensity.
+
+
+                           17. Blissful Sigh: Relaxed eyes half-closed, soft open-mouthed smile, smooth brows, faint blush. Shows contented pleasure.
+
+
+                           18. Lustful Gaze: Heavy-lidded eyes with dilated pupils, parted lips with tongue slightly out, flushed cheeks, intense brow arch. Exudes overt sexual desire.
+
+
+                           19. Teasing Tongue: Tongue sticking out playfully, squinted eyes, raised brows, rosy cheeks. Conveys cheeky seduction.
+                           20. Orgasmic Ecstasy: Eyes rolled back, wide open mouth in a loud moan, flushed face, tensed brows. Radiates peak arousal.
+How an AI Can Incorporate Expressions into Prompts
+AI agents (like Grok or others) can seamlessly integrate these expressions into your NSFW anime bible prompts for Perfect Pony XL V6 on Mage.space, enhancing the emotional and visual impact of your 40 women, 40 poses, 20 backgrounds, and 20 styles. Here’s a detailed guide to ensure accurate incorporation, based on your established workflow and research from Civitai, Pixiv, Reddit’s r/StableDiffusion, and anime expression guides:
+                           1. Base Prompt Structure:
+                           * Start with your core prompt: 1girl, score_9, score_8_up, score_7_up, score_6_up, score_5_up, score_4_up, source_anime, rating_explicit, nude adult woman with [woman description], [pose description], in [background description], [style description].
+                           * Insert the expression after the woman description and before the pose, using key facial cues (e.g., “with smoldering stare, half-lidded eyes with intense focus, parted lips with a seductive curve”). Example:
+text
+                           * 1girl, score_9, score_8_up, score_7_up, score_6_up, score_5_up, score_4_up, source_anime, rating_explicit, nude adult woman with long straight crimson hair down to hips, curvy hourglass figure (bust 36C, waist 26", hips 38"), golden tanned skin, sharp cheekbones, with smoldering stare, half-lidded eyes with intense focus, parted lips with a seductive curve, straddling an imaginary surface with arched back, low-angle view emphasizing exposed rear and grinding motion, in a cozy master bedroom with king-size bed and soft candlelight, Studio Trigger Neon, bold high-contrast line art, vibrant neon colors, dynamic angular shading, dramatic lighting, expressiveh, e-girl aesthetic
+                              2. Expression Placement and Weighting:
+                              * Place the expression description right after the woman’s physical traits (e.g., hair, body, skin) to tie it to her face. Use concise descriptors (e.g., “smoldering stare, half-lidded eyes, seductive curve”) to avoid overloading the prompt.
+                              * For emphasis, weight the expression with (expression:1.2) if it’s critical (e.g., (smoldering stare:1.2)). Reduce to ~0.8 if the pose or style should dominate.
+                              * Use the Expressiveh LoRA (~0.7-0.8) to amplify facial details, as it’s trained for “expressive face, hentai style details.” Example: Add “expressiveh, expressive face” to the prompt’s end.
+Matching Expressions to Vibes:
+                              * Pair expressions with the woman’s vibe and pose for coherence:
+                              * Innocent Vibes (e.g., Woman 2: petite, shy schoolgirl): Use Innocent Wide-Eyed, Shy Blush, or Dreamy Gaze with artful poses like Seated Hug Knees or Lying Back Gaze.
+                              * Preppy/Confident Vibes (e.g., Woman 3: voluptuous socialite): Use Flirtatious Wink, Coy Glance, or Haughty Sneer with poses like Standing Hip Tilt or Seated Lotus Fold.
+                              * Slutty/Provocative Vibes (e.g., Woman 1: curvy femme fatale): Use Smoldering Stare, Ecstatic Moan, or Orgasmic Ecstasy with poses like Reverse Cowboy Grind or Lying Back Spread.
+                              * Avoid mismatched vibes (e.g., Innocent Wide-Eyed with Inverted V Spread) unless intentional for contrast.
+Settings for Consistency:
+                              * Use your bible’s settings: Perfect Pony XL V6, Euler a, 25-30 steps, Normal Guidance (~7-8), Hires On (Strength ~0.3-0.5), REAL-ESRGAN-X4-ANIME-CFORMER, Portrait (512x768 or 1024x1536).
+                              * Negative Prompt: Include your standard tags (<TI:FFSD51AB6>, ..., low-res, bad anatomy, ..., two people, multiple characters) and add expression-specific negatives (e.g., “no distorted face, no blurry eyes” for Ecstatic Moan).
+Tips for AI Agents:
+                              * Focus on Key Features: Highlight 2-3 expression elements (e.g., “half-lidded eyes, seductive smirk” for Smoldering Stare) to ensure Pony prioritizes the face. Test with low steps (15-20) for quick iterations, then upscale with Hires.
+                              * Research New Expressions: Source additional expressions from Civitai (search “Pony XL expressions”), Pixiv (browse hentai facial tags), or ArtStation (anime character studies). Focus on eye, mouth, and blush cues for replicability.
+                              * Balancing with Other Elements: Ensure the expression doesn’t overpower the pose or style. If the face dominates, reduce Expressiveh weight or simplify descriptors (e.g., “seductive smirk” instead of full description).
+                              * Troubleshooting: If expressions are off (e.g., eyes too large), strengthen “expressive face” or add negative tags like “no exaggerated eyes.” For blurry faces, increase steps to 30-40 or boost Guidance to ~9.
+
+
+
+
+Expanding Expressions:
+                              * Add new expressions by researching anime trope guides (e.g., TV Tropes’ “Facial Expressions” or heroineproblem.com’s character sliders). For example, add “Tsundere Scowl” (furrowed brows, pursed lips, side glare) for variety.
+                              * Test new expressions with a single woman, pose, and background to confirm compatibility before adding to the bible.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Locations
+
+
+                              1. Cozy Master Bedroom: Spacious room with a king-size bed draped in soft white sheets, wooden nightstands with lamps casting warm glows, large windows with sheer curtains letting in natural light, neutral beige walls for a serene, intimate space.
+
+
+                              2. Minimalist Guest Room: Simple bed with gray linens, single side table, plain white walls, hardwood floors, and a small rug, soft overhead lighting creating clean shadows for a modern, uncluttered nude setting.
+
+
+                              3. Vintage Boudoir: Ornate vanity mirror with brushes and perfumes, satin pillows on a chaise lounge, lace curtains, and soft lamp light on floral wallpaper, evoking a glamorous, retro intimate atmosphere.
+
+
+                              4. Modern Loft Bedroom: High ceilings with exposed beams, platform bed with black sheets, large floor-to-ceiling windows overlooking a blank view, concrete floors, and pendant lights for a contemporary urban feel.
+
+
+                              5. Rustic Cabin Bedroom: Wooden walls and ceiling, quilted bedspread on a log-frame bed, stone fireplace with gentle embers, woven rug, and lantern lighting for a warm, secluded indoor retreat.
+
+
+                              6. Elegant Study Nook: Bookshelves lining walls, leather armchair beside a desk, reading lamp with soft illumination, polished wood floors, and heavy drapes for an intellectual, private space.
+
+
+                              7. Sunny Sunroom: Glass walls with potted plants, wicker furniture and cushions, tiled floor, natural sunlight streaming in, white sheer blinds for a bright, airy house extension.
+
+
+
+
+                              8. Attic Hideaway: Slanted wooden ceiling with beams, old trunk as a table, mattress on the floor with blankets, small skylight window, and string lights for a hidden, nostalgic spot.
+
+
+                              9. Luxurious En Suite Bathroom: Marble countertops, freestanding bathtub with bubbles, fogged mirror, towel racks, and ambient recessed lighting for a spa-like, clean bathing area.
+
+
+                              10. Cozy Living Room Corner: Plush sofa with throw pillows, coffee table with books, bay window with cushions, carpeted floor, and floor lamp for a relaxed, homey lounging space.
+
+
+                              11. Kitchen Island Setup: Granite countertop island, bar stools, pendant lights hanging above, stainless steel appliances in background, tiled backsplash for a casual, domestic vibe.
+
+
+                              12. Home Office Den: Wooden desk with lamp, swivel chair, bookshelves with organized volumes, rug on hardwood floor, and window with blinds for a focused, private work area.
+
+
+                              13. Balcony Adjoined Bedroom: Sliding glass doors to a small balcony with railing, bed nearby with linens, potted flowers outside, city view blurred, soft indoor lighting.
+
+
+                              14. Hallway Alcove: Narrow corridor with wall sconces, small bench or stool, framed artwork on walls, carpet runner, leading to doors for a transitional, intimate house space.
+
+
+                              15. Basement Lounge: Low ceiling with recessed lights, sectional sofa with blankets, entertainment center with shelves, concrete walls painted neutral, for a cozy underground retreat.
+
+
+                              16. Formal Dining Room: Long wooden table with chairs, chandelier overhead, sideboard with vases, patterned rug underfoot, large windows with curtains for an elegant, spacious area.
+
+
+                              17. Nursery Turned Retreat: Soft pastel walls, crib converted to daybed, rocking chair, toy shelves emptied, gentle lamp light, for a gentle, repurposed family space.
+
+
+                              18. Walk-In Closet: Mirrored doors, clothing racks with empty hangers, shoe shelves, central island bench, bright overhead lights for a private, organized dressing area.
+
+
+                              19. Home Gym Corner: Yoga mat on floor, weights and mirror wall, exercise ball, towel rack, ventilated windows with blinds for a fitness-focused, clean indoor spot.
+
+
+                              20. Conservatory Extension: Glass roof and walls with indoor plants, wicker seating, tiled floor, natural light filtering through, connected to house for a greenhouse-like serene space.
+How an AI Can Use These as Bases for Specific Aspects
+AI agents (like Grok or similar models) can treat these backgrounds as modular bases in Pony XL V6 prompts to enhance NSFW anime nudes without overwhelming the scene. Start with the base prompt structure from your bible (e.g., 1girl, score_9, ... , retro 90s anime style), then append the background description after the woman and pose (e.g., ", in a cozy master bedroom with king-size bed and soft candlelight"). Focus on 2-3 key elements (e.g., "wooden nightstands, silk sheets") to avoid clutter—Pony interprets qualitative details like "warm glows" for lighting or "neutral walls" for simplicity. For replication, use LoRA triggers (e.g., add "dramatic lighting" for shadows) and negative tags to block busy elements (e.g., add "no clutter, no crowds" to your negative prompt). Test iteratively: Generate with low steps (15-20) first, then upscale with Hires for refinement. Expand by varying aspects (e.g., change "warm glows" to "cool blue lighting" for mood) or research Civitai for background-specific LoRAs (e.g., "InteriorStyle_v1" at ~0.5 weight) to blend seamlessly, ensuring the focus stays on the nude subject while adding contextual depth for your re-drawing process.
+
+
+
+
+
+
+
+
+
+
+Styles
+
+
+                              1. Studio Trigger Neon: Bold, high-contrast line art with exaggerated proportions, vibrant neon colors (pinks, blues, yellows), dynamic angular shading, inspired by Kill la Kill. Sharp edges and exaggerated highlights amplify the nude form’s energy and confidence.
+
+
+                              2. Retro 90s Cel Animation: Clean, thick black outlines with flat, vibrant color fills, soft cel-shading for depth, inspired by Sailor Moon. Minimal gradients, crisp details, and bright pastels enhance the nostalgic feel.
+
+
+                              3. Pop Art Anime: Comic book-inspired with bold outlines, halftone dot shading, and vivid primary colors (red, blue, yellow), drawing from Akira and Roy Lichtenstein. High-contrast patterns pop against nude skin.
+
+
+                              4. Ghibli-Inspired Soft Anime: Delicate line art with subtle, hand-painted textures, muted yet rich colors, inspired by Spirited Away. Gentle gradients and soft lighting create an ethereal glow.
+
+
+                              5. Cyberpunk Anime: Neon-lit, high-tech aesthetic with glowing accents (cyan, magenta), thin line art, and reflective surfaces, inspired by Ghost in the Shell (1995). Dark backgrounds with light flares highlight curves.
+
+
+                              6. Shigenori Soejima Stylized: Angular, expressive line work with vibrant color blocks and dramatic poses, inspired by Persona 4. Bold shadows and stylized proportions emphasize personality.
+
+
+                              7. CLAMP Ornate Anime: Intricate, flowing line art with elegant details, vivid jewel tones (emerald, ruby), inspired by Cardcaptor Sakura. Ornate shading adds sophistication.
+
+
+                              8. 90s OVA Grit: Rough, sketch-like line art with muted, grainy colors and textured shading, inspired by Bubblegum Crisis. Adds a raw, retro edge.
+
+
+                              9. Hentai Line Art: Ultra-clean, thin lines with minimal shading, hyper-detailed anatomy, and bright colors, inspired by classic 90s hentai. Emphasizes explicit details.
+
+
+                              10. Tetsuya Nomura Fantasy Anime: Sleek, angular lines with glossy highlights, dark and vibrant color palettes, inspired by Final Fantasy VII. Dramatic flair.
+
+
+                              11. Mecha Anime Chrome: Metallic, reflective textures with sharp lines, cool blue-gray tones, inspired by Neon Genesis Evangelion. Futuristic sheen enhances athletic bodies.
+
+
+                              12. Shigenobu Matsumoto Bold: Thick, expressive outlines with flat, saturated colors, inspired by Hunter x Hunter (1999). Minimalist yet striking.
+
+
+                              13. Magical Girl Sparkle: Glittery highlights, pastel gradients, and soft outlines, inspired by Pretty Cure. Adds a whimsical, glowing charm to innocent vibes.
+
+
+                              14. Retro Sci-Fi Anime: Clean lines with bold, retro-futuristic colors (teal, orange), inspired by Cowboy Bebop. Dynamic lighting.
+
+
+                              15. Gothic Anime Elegance: Dark, moody palettes with intricate line work, crimson and violet accents, inspired by Vampire Hunter D. Adds mystery to poses.
+
+
+                              16. Y2K Anime Flash: Bright, glossy colors with metallic highlights, chunky outlines, inspired by early 2000s anime like Digimon. Playful and bold.
+
+
+                              17. Neo-Traditional Anime: Blend of 90s clean lines with modern smooth gradients, inspired by Naruto’s early art. Balances retro and contemporary.
+
+
+                              18. Watercolor Anime: Soft, translucent color washes with delicate lines, inspired by Mononoke’s painterly style. Adds an artistic, dreamy quality.
+
+
+                              19. Street Art Anime: Graffiti-inspired with bold spray-paint textures, vibrant urban colors, inspired by Jet Set Radio. Edgy and raw.
+
+
+                              20. Classic Shojo Glow: Thin, elegant lines with soft pastel shading, sparkling highlights, inspired by Fruits Basket. Romantic and delicate.
+
+
+How an AI Can Use and Blend These Styles
+AI agents (e.g., Grok or other models) can integrate these styles into Perfect Pony XL V6 prompts on Mage.space to enhance your NSFW anime nudes while keeping the focus on the women and poses. Here’s a guide to ensure seamless use and blending, based on your bible’s workflow and research from Civitai, Reddit’s r/StableDiffusion, and Pixiv style guides:
+                              1. Base Prompt Integration:
+                              * Start with your core prompt: 1girl, score_9, score_8_up, score_7_up, score_6_up, score_5_up, score_4_up, source_anime, rating_explicit, nude adult woman with [woman description], [pose description], [background description].
+                              * Append the style description after the background, using specific tags (e.g., “Studio Trigger Neon, bold high-contrast line art, vibrant neon colors, dynamic angular shading”). Example:
+text
+                              * 1girl, score_9, score_8_up, score_7_up, score_6_up, score_5_up, score_4_up, source_anime, rating_explicit, nude adult woman with long straight crimson hair down to hips, curvy hourglass figure (bust 36C, waist 26", hips 38"), golden tanned skin, sharp cheekbones, sultry half-lidded eyes with a seductive smirk, full perky breasts with pink erect nipples, narrow waist flaring to wide hips, trimmed pubic hair above prominent labia and clitoris, firm round buttocks, long toned legs with smooth thighs to delicate feet, straddling an imaginary surface with arched back, low-angle view emphasizing exposed rear and grinding motion, in a cozy master bedroom with king-size bed and soft candlelight, Studio Trigger Neon, bold high-contrast line art, vibrant neon colors, dynamic angular shading, dramatic lighting, expressiveh, e-girl aesthetic
+                              * Use key style tags (e.g., “bold line art,” “vibrant colors,” “cel-shading”) to reinforce the aesthetic without overloading the prompt.
+                                 2. Blending Styles:
+                                 * Combine 2-3 styles for nuanced effects, prioritizing complementary aesthetics. For example:
+                                 * Studio Trigger Neon + Pop Art Anime: Merge “vibrant neon colors, dynamic angular shading” with “halftone dot shading, vivid primary colors” for a bold, comic-like vibrancy. Prompt: Studio Trigger Neon, Pop Art Anime, bold high-contrast line art, vibrant neon and primary colors, halftone dot shading.
+                                 * Retro 90s Cel Animation + Ghibli-Inspired Soft Anime: Blend “clean thick outlines, flat vibrant colors” with “soft gradients, muted rich colors” for a nostalgic yet dreamy look. Prompt: Retro 90s Cel Animation, Ghibli-Inspired Soft Anime, clean thick outlines, vibrant yet muted colors, soft cel-shading.
+                                 * Balance weights by emphasizing the dominant style (e.g., (Studio Trigger Neon:1.2), Pop Art Anime) if one should take precedence. Avoid over-blending (more than 3 styles) to prevent muddy outputs.
+Settings for Consistency:
+                                 * Use your bible’s settings: Perfect Pony XL V6, Euler a, 25-30 steps, Normal Guidance (~7-8), Hires On (Strength ~0.3-0.5), REAL-ESRGAN-X4-ANIME-CFORMER, Portrait (512x768 or 1024x1536).
+                                 * Negative Prompt: Include your standard negative tags (<TI:FFSD51AB6>, ..., low-res, bad anatomy, ..., two people, multiple characters) and add style-specific negatives (e.g., “no blurry textures” for Hentai Line Art, “no excessive gradients” for Retro 90s Cel Animation).
+Tips for AI Agents:
+                                 * Focus on Key Features: Highlight 2-3 style elements (e.g., “bold line art, vibrant colors” for Pop Art Anime) to avoid overwhelming Pony. Test with low steps (15-20) for quick iterations, then upscale.
+                                 * Research New Styles: Source additional styles from Civitai (search “Pony XL styles”), Pixiv (browse retro anime tags), or ArtStation (90s anime galleries). Test new LoRAs with weights ~0.5-1.2 and note trigger words.
+                                 * Blending Balance: When blending, ensure styles share a visual thread (e.g., vibrant colors or clean lines). Use commas to separate style tags or weight them (e.g., (Retro 90s Cel Animation:1.3), Ghibli-Inspired Soft Anime).
+                                 * Troubleshooting: If styles clash (e.g., neon colors overpower cel-shading), reduce secondary style weight or add negative tags like “no oversaturated colors.” For blurry outputs, increase steps to 30-40 or strengthen “detailed line art.”
+Expanding Styles:
+                                 * Add new styles by researching anime subgenres on Civitai or Pixiv (e.g., “retro mecha,” “shoujo sparkle”). For each, define line work, color palette, and shading (e.g., “thin lines, pastel colors, glittery highlights”).
+                                 * Test new styles with a single woman and pose to confirm compatibility before adding to the bible.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Loras & Models
+
+
+Base Models
+You mentioned three downloaded base models: Prefect Pony XL (likely a typo for "Perfect Pony XL," but listed as "Prefect" on CivitAI), AutismMix SDXL, and Pony Diffusion V6 XL. These are all checkpoint merges or fine-tuned models based on Pony architecture, designed for generating anime, cartoon, furry, or stylized images. Below is a detailed how-to for each, including everything extracted from their pages (e.g., recommended settings, usage tips, compatibility). These models are used as the foundation in tools like Automatic1111's Stable Diffusion web UI (A1111) or similar interfaces. General setup:
+                                 * Installation/How-To Use:
+                                 * Select the model from the dropdown in the UI.
+                                 * Use natural language prompts, but incorporate quality tags (e.g., "score_9, score_8_up") at the start for better results.
+                                 * No negative prompts are often needed, but add "3d" to negatives for more anime-like outputs if desired.
+                                 * Recommended global settings (applicable to all unless overridden): Sampler: Euler a, Steps: 20-40, CFG Scale: 5-7, Resolution: 1024x1024 or similar (use Hires. fix for upscaling), Clip Skip: 2.
+                                 * For LoRA integration (detailed below): Add LoRAs to prompts via syntax like <lora:lora_filename:weight>, but never exceed 5 LoRAs per generation to avoid image degradation or errors.
+                                 * Test with simple prompts first; experiment with weights and tags.
+                                 * If issues arise (e.g., artifacts), use extensions like After Detailer (ADetailer) for faces or Tiled Diffusion for upscaling.
+1. Prefect Pony XL (v6)
+                                 * Type: Checkpoint Merge.
+                                 * Description: A work-in-progress model with updates for better LoRA support, cleaned styles, baked-in VAE, and additional training data (15,000 steps). Strong for realistic styles but versatile for anime/cartoon. Versions include v5 (final) and earlier; v5 is recommended.
+                                 * Compatible With: Pony-based LoRAs (most in your list). Good for SFW/NSFW.
+                                 * Trigger Words/Quality Tags: Not specified; use general Pony tags like "source_anime" or "source_pony".
+                                 * Recommended Settings:
+                                 * Clip Skip: 2.
+                                 * ENSD: 31337.
+                                 * Sampler: DPM++ 2M (for v1 lightning) or Euler a.
+                                 * Steps: 8 (lightning) or 25+.
+                                 * Use Hires. fix or img2img for higher resolution.
+                                 * No face restore; use ADetailer for faces.
+                                 * Upscaler: 4x-UltraSharp.
+                                 * Optional: Noise Inversion for extra details.
+                                 * Usage Tips/How-To:
+                                 * Best for LoRA-heavy workflows due to improved support.
+                                 * Run via API on SinkIn.ai if local setup fails.
+                                 * For online generation: Use tensor.art (v5: https://tensor.art/models/815661199413897287).
+                                 * Prompt Example (general): "score_9, score_8_up, a cute pony in a neon city, detailed fur".
+                                 * Support early access via Patreon for NSFW LoRAs.
+                                 * Other Notes: Licensed for non-commercial use; stats show high popularity (1,385+ reviews).
+2. AutismMix SDXL
+                                 * Type: Checkpoint Merge.
+                                 * Description: A Pony mix for predictability, reducing reliance on complex negatives. Versions: AutismMix_confetti (preferred for general use, better hands, less style swing), AutismMix_pony (more compatible with Pony styles), AutismMix_DPO (similar to confetti). Good for anime/cartoon with balanced SFW/NSFW.
+                                 * Compatible With: Pony LoRAs; train new LoRAs on AutismMix_pony for best results.
+                                 * Trigger Words/Quality Tags: "score_9, score_8_up, score_7_up, score_6_up, score_5_up, score_4_up, source_anime, BREAK". Add "3d" to negatives for anime focus.
+                                 * Recommended Settings:
+                                 * Sampler: Euler a.
+                                 * Steps: 25.
+                                 * CFG Scale: 7.
+                                 * Resolution: 1024px.
+                                 * Lightning versions need specific settings (check download "about model").
+                                 * Usage Tips/How-To:
+                                 * Avoid "schizo negatives" or SDXL/pony embeds— they may worsen results.
+                                 * For noise/artifacts: Use sd-webui-prevent-artifact extension.
+                                 * Run in Forge UI if issues occur.
+                                 * Prompt Example: "score_9, score_8_up, a gothic girl with tattoos, neon lights".
+                                 * Best for styles from base Pony; experiment with versions.
+                                 * Other Notes: High downloads (195k+); use for LoRA training.
+3. Pony Diffusion V6 XL
+                                 * Type: Checkpoint Trained (Fine-tuned/DreamBooth).
+                                 * Description: Versatile for SFW/NSFW anthro, feral, humanoids. Trained on 2.6M images (balanced anime/cartoon/furry/pony, safe/explicit). Filters underage content; Opt-in artist data.
+                                 * Compatible With: All Pony LoRAs in your list.
+                                 * Trigger Words/Quality Tags: "score_9, score_8_up, score_7_up, score_6_up, score_5_up, score_4_up". Special: "source_pony, source_furry, source_cartoon, source_anime, rating_safe/questionable/explicit". For pony style: "anthro pony" or "source_pony".
+                                 * Recommended Settings:
+                                 * Clip Skip: 2.
+                                 * Sampler: Euler a.
+                                 * Steps: 25.
+                                 * Resolution: 1024px.
+                                 * Usage Tips/How-To:
+                                 * Prompts: Start with quality tags, then natural language/tags (e.g., "score_9, score_8_up, feral pony in vintage 90s style").
+                                 * No negatives needed; supports characters/series recognition.
+                                 * Pseudo-signatures may appear—use inpainting to remove.
+                                 * Discord for support/free bot; examples on purplesmart.ai.
+                                 * Prompt Template: "score_9, score_8_up, [description], tag1, tag2".
+                                 * Other Notes: Modified Fair AI License; no commercial inference without permission (except CivitAI/Hugging Face). Join Discord for community.
+LoRAs
+These are adapters for the base models above (all compatible with Pony bases). Key rule: Never load more than 5 LoRAs per generation to prevent image distortion or errors. In A1111, integrate by:
+                                 * Place .safetensors in models/Lora folder.
+                                 * In prompt: Add <lora:filename_without_extension:weight> (e.g., <lora:bestfootpose:0.7>).
+                                 * Include trigger words in prompt.
+                                 * Start with recommended weight; adjust 0.5-1.0.
+                                 * Test combinations in groups of 1-5 (e.g., style + pose + character).
+                                 * If overloading, prioritize (e.g., style LoRA at higher weight).
+Below is a table summarizing all LoRAs from your list. I included everything available: triggers, weights, compatibles, notes. Some pages had limited info (e.g., no examples), so I noted gaps. All are SafeTensor format, Pony-compatible unless stated.
+LoRA Name (Your Label)
+	Model Name
+	Type
+	Trigger Words
+	Recommended Weight
+	Compatible Bases
+	Usage Notes / How-To Integrate
+	Other Details
+	pony anime 90s
+	Vixon's Anime/Manga Styles - 90's Anime
+	LoRA
+	90s4n1m3
+	0.7
+	Pony (all your models)
+	Add to prompt with trigger; e.g., "lora:90s-anime:0.7, 90s4n1m3, retro scene". Avoid >5 LoRAs.
+	Tags: style, anime, retro, 90s. No examples provided.
+	pony gothic styles
+	Vixon's Anime/Manga Styles - Gothic Retro Anime
+	LoRA
+	(Insufficient info; infer: gothicretroanime)
+	(Insufficient; try 0.8)
+	Pony
+	Use as style LoRA; combine with details LoRAs.
+	Limited details; tags: gothic, retro, anime.
+	bestfootpose
+	Bestfootpose
+	LoRA
+	bestfootpose, barefoot, toes
+	(Not specified; try 0.7-1.0)
+	Pony
+	"lora:bestfootpose:0.8, bestfootpose, pose focus". Use Hires. fix. Clip Skip: 2.
+	For foot poses; stable but use high-res fixes. Tags: poses, feet.
+	expressivehentai
+	ExpressiveH Hentai LoRA Style
+	LoRA
+	(Access restricted; insufficient)
+	(Insufficient; try 0.8)
+	Pony
+	(Limited; assume standard integration with hentai tags).
+	UK access issue; tags: hentai, expressive. Specific version: 382152.
+	Rebecca from Cyberpunk: Edgerunners [Pony]
+	Rebecca from Cyberpunk: Edgerunners [Pony]
+	LoRA
+	ERRebecca, 1girl, green hair, twin tails, red pupils, colored sclera, white skin, red tattoo
+	(Not specified; try 1.0)
+	Pony
+	"lora:rebecca-pony:1.0, ERRebecca, cyberpunk scene". Use ADetailer/Hires. fix (0.25-0.35)/ControlNet.
+	Character LoRA; try example prompts.
+	s1 dramatic lihting
+	S1 Dramatic Lighting
+	LoRA
+	s1_dram
+	(Not specified; try 0.8-1.0)
+	Pony
+	"lora:s1-dramatic:0.8, s1_dram, dappled light". Optional neg: 3d. Clip Skip: 2.
+	Lighting effect; flexible for styles. Training: 3,600 steps. Specific version: 761452.
+	egirls
+	E-Girls
+	LoRA
+	egirl
+	(Not specified; try 0.7)
+	Pony
+	"lora:e-girls:0.7, egirl, punk outfit".
+	Concept LoRA; tags: punk, goth, scene. Specific version: 620647.
+	vixons comic styles archie
+	Vixon's Comic Styles - Shubina & Archie Comic
+	LoRA
+	4RCH13
+	(Not specified; try 0.8)
+	Pony
+	"lora:archie-comic:0.8, 4RCH13, comic panel".
+	Comic style; multiple versions listed. Specific version: 939754.
+	popartanimestyle
+	Pop Art Anime Style
+	LoRA
+	p0p4rt, colorful
+	0.8
+	Pony
+	"lora:pop-art-anime:0.8, p0p4rt, vibrant scene".
+	Style LoRA; works best at 0.8.
+	vintage cartoon style
+	Vintage Cartoon Style
+	LoRA
+	vintoons, cartoon style, pin-up
+	0.9 (range 0.7-1.1)
+	Pony
+	"lora:vintage-cartoon:0.9, vintoons, retro art". Optional: retro, film grain. Clip Skip: 2.
+	1950-70s comic/illustration style.
+	incase style
+	Incase Style
+	LoRA
+	(None explicit)
+	1.0
+	Pony
+	"lora:incase-style:1.0, artist style prompt". Clip Skip: 2.
+	Artist style (InCase). Training: 3 epochs. Specific version: 378950.
+	Commix - Style Lora For Autismmix Sdxl
+	COMMIX - Style LORA for AutismMix SDXL
+	LoRA
+	commix style
+	0.8-1.0
+	Pony, best with AutismMix SDXL
+	"lora:commix-style:0.9, commix style, comic art". Clip Skip: 2. Sampler: Euler a. Hires. fix: Res 512x768->1024x1536, Denoise 5. ADetailer for faces.
+	Comic style; use with embeds like zPDXL3. Pos: detailxl; Neg: negativeXL_D. Training: 2,500 steps.
+	kiwi
+	Cyberpunk: Edgerunners - Kiwi
+	LoRA
+	cpkiwi
+	0.8
+	Pony
+	"lora:kiwi:0.8, cpkiwi, blonde hair, mouth mask". Add "cyborg" for naked/jawless. Clip Skip: 1.
+	Character (outfit/naked); add "body markings" if missing details. Training: 10 epochs.
+	vixons pony styles character sheet
+	Vixon's Pony Styles - character sheet
+	LoRA
+	cut3ch4r, multiple views
+	0.8
+	Pony
+	"lora:character-sheet:0.8, cut3ch4r, reference sheet".
+	For character sheets; tags: style, horror, neon.
+	neon city
+	Neon City Pony XL
+	Embedding (Textual Inversion, use like LoRA)
+	NeonCity_PDXL
+	(Not specified; try 1.0)
+	Pony
+	"lora:neon-city:1.0, NeonCity_PDXL, background only". Clip Skip: 2.
+	Background only; struggles with "no humans". Not ideal for pure backgrounds.
+	Watercoloured Noir Detective Style - Artstyle
+	Pdxl
+	Watercoloured Noir Detective Style - Artstyle
+	PDXL
+	LoRA
+	p4int3dn0ir art style
+	(Not specified; try 1.0)
+	Pony
+	Lucy "Lucyna Kushinada" (ルーシー) - Cyberpunk: Edge Runners (サイバーパンク エッジランナーズ)
+	Lucy "Lucyna Kushinada" - Cyberpunk: Edge Runners
+	LoRA
+	lucy, short hair, bangs, blue eyes, blue hair, multicolored hair, makeup, multicolored eyes; Outfit: bare hips, bodysuit, etc.
+	1.0
+	Pony
+	"lora:lucy-cyberpunk:1.0, lucy, monowire".
+	Character LoRA; include lora:cyberpunk-lucy-s1-ponyxl-lora-nochekaiser:1.
+	cig smoking
+	Cigarette - Smoking
+	LoRA
+	cigarette, smoking, mouth hold, fire, lighter, holding
+	(Not specified; try 0.7)
+	Pony
+	"lora:smoking:0.7, cigarette, smoking pose".
+	For smoking concepts.
+	expression sheet
+	Expression Anime Character Sheet / PONY DIFFUSION
+	LoRA
+	character sheet, multiple views, reference sheet, expressions
+	0.8 (0.7-1.0)
+	Pony, best on 4th tail (Hentai model)
+	"lora:expression-sheet:0.8, character sheet, emotions like blush, smile". Clip Skip: 1. Use booru tags for emotions.
+	Heads/emotions only; reduce weight for full-body. Retro: 1990s (style). Training: 30 epochs.
+	rogue
+	Rogue / Marvel / (NSFW/SFW) SDXL LORA PONY
+	LoRA
+	rogueSDXL, 1girl, solo, long hair, brown hair, gloves, green eyes, etc.
+	0.8 or 1.0
+	Pony
+	"lora:rogue-marvel:0.8, rogueSDXL, superhero pose". Clip Skip: 2. Use ADetailer.
+	Marvel character; NSFW/SFW. Training: 10 epochs.
+	thong and top
+	Chained Vampira Thong & Sinner Top
+	LoRA
+	latex panties, latex halterneck, fishnets, sinner top, english text, clothes writing, thighhighs over pantyhose
+	0.7
+	Illustrious (Pony-compatible)
+	"lora:chained-vampira:0.7, latex panties, gothic outfit".
+	Clothing LoRA; do not reupload.
+	voverface
+	V Over Face
+	LoRA
+	v over face, tongue out, oral invitation
+	(Not specified; try 0.8)
+	Pony
+	"lora:v-over-face:0.8, v over face, pose".
+	Pose LoRA; tags: poses, v.
+	prone with feet up
+	Prone with Feet Up
+	LoRA
+	prone, on stomach, lying, the pose
+	(Not specified; try 0.8)
+	Pony
+	"lora:prone-feet-up:0.8, prone, feet up".
+	Pose LoRA.
+	blowing kisses
+	Blowing Kisses
+	LoRA
+	blowing kiss, k1ss3s, looking at viewer, heart, one eye closed, blush
+	0.6
+	Pony
+	"lora:blowing-kisses:0.6, blowing kiss".
+	Pose/expression; best at 0.6.
+	gothic neon
+	Vixon's Pony Styles - gothic neon
+	LoRA
+	g0th1c, glowing, neon lights, glowing eyes
+	0.8
+	Pony
+	"lora:gothic-neon:0.8, g0th1c, neon scene".
+	Style LoRA.
+	ghibli
+	Vixon's Anime/Manga Styles - Ghibli v2
+	LoRA
+	ghibli
+	(Not specified; try 0.8)
+	Pony
+	"lora:ghibli-v2:0.8, ghibli, fantasy landscape".
+	Ghibli style. Specific version: 661440.
+	goth details
+	Vixon's Pony Styles - Gothic Details
+	LoRA
+	gd, gothic, spikes, fishnet pantyhose, latex
+	(Not specified; try 0.8)
+	Pony
+	"lora:gothic-details:0.8, gd, gothic outfit".
+	Details LoRA. Specific version: 973511.
+	junji ito
+	Vixon's Anime/Manga Styles - Junji Ito
+	LoRA
+	junj11t0, junji ito, monochrome, creepy, manga
+	(Not specified; try 0.8)
+	Pony
+	"lora:junji-ito:0.8, junj11t0, horror scene".
+	Horror manga style. Specific version: 562610.
+	tattoos
+	Tattoos
+	LoRA
+	t4ts, tattoos, tattoo
+	0.7
+	Pony
+	"lora:tattoos:0.7, t4ts, body art".
+	Concept LoRA. Specific version: 637541.
+	fangs
+	Fang Helper
+	LoRA
+	f4ng, small fangs, fangs
+	0.7
+	Pony
+	"lora:fang-helper:0.7, f4ng, teeth focus".
+	Teeth/fang helper. Specific version: 603705.
+	vintage 90s sdxl
+	Vintage 1990s Anime SDXL LoRA (Style) Pony
+	LoRA
+	Vintage, 1990s (style)
+	0.5-0.75 (under 1)
+	Pony
+	"lora:vintage-90s:0.6, Vintage, 1990s (style), faded colors". Clip Skip: 1.
+	Retro anime; add triggers for effect. Training: 20,000 steps.
+	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Pony Prompting
+
+Best Prompting Methods for Pony Diffusion V6 XL (as of August 2025)
+Pony Diffusion V6 XL (often abbreviated as Pony V6 or PDV6XL) is a highly versatile SDXL-based model fine-tuned for generating SFW and NSFW content in styles like anime, furry, cartoon, and pony-themed art. It's trained on ~2.6 million images with balanced datasets (anime/cartoon/furry/pony) and captions, enabling strong prompt adherence through natural language, tags, or a mix. Unlike many models, it doesn't require negative prompts or generic quality boosters like "masterpiece" or "HD"—it relies on specific tags for optimization.
+Based on community guides, forums (e.g., Reddit's r/StableDiffusion), blogs, and official resources updated through mid-2025, the key to maximizing results is structured prompting, strategic tag use, and compatible settings. In 2025, users emphasize ethical generation (e.g., avoiding inappropriate content), experimenting with merges like AutismMix for better coherence, and leveraging community resources like tag spreadsheets. Prompt adherence has improved with updates, but issues like pseudo-signatures persist—use inpainting or V5.5 as workarounds. Below, I'll break down methods, with examples and tips.
+1. Basic Prompt Structure: Get the Most Out of Your Prompt
+The model's opinionated template ensures high-quality outputs without negatives. Start prompts with quality tags, followed by a natural language description, then optional booru-style tags (comma-separated) for emphasis. This structure leverages the training data's ranking system, where images were scored from 9 (best) to 1 (worst).
+                                 * Recommended Template:
+text
+                                 * score_9, score_8_up, score_7_up, score_6_up, score_5_up, score_4_up, [natural language description], [tag1, tag2, ...]
+                                    * Why this? The full "score_X_up" string is a training artifact—using just "score_9" weakens the effect. Include most or all for optimal quality. Shorter versions (e.g., "score_9, score_8_up, score_7_up") work but may reduce sharpness.
+                                    * Natural language: Describe what you want in plain English (e.g., "a cute anthro pony in a neon city"). The model understands complex sentences due to caption training.
+                                    * Tags: Add Danbooru-style tags (e.g., "1girl, green hair, cyberpunk") to boost specifics. Order matters—put important elements first.
+                                    * Source Tags for Style Guidance: Use these to filter datasets and steer aesthetics:
+                                    * source_pony: Pony/My Little Pony style (e.g., colorful, magical).
+                                    * source_furry: Anthropomorphic animals.
+                                    * source_cartoon: General cartoons.
+                                    * source_anime: Anime/manga vibes. Example: Add "source_anime" for more stylized, less realistic outputs. Negate with negatives if needed (e.g., "negative prompt: source_cartoon").
+                                    * Rating Tags for Content Control:
+                                    * rating_safe: SFW, clean.
+                                    * rating_questionable: Mild NSFW (e.g., suggestive).
+                                    * rating_explicit: Full NSFW. Include in positives for desired level; use negatives to block (e.g., "negative prompt: rating_explicit").
+                                    * Example Prompts:
+                                    * Basic: "score_9, score_8_up, score_7_up, score_6_up, score_5_up, score_4_up, a feral pony in a forest, source_pony, colorful mane, big eyes"
+                                    * Advanced (multi-subject): "score_9, score_8_up, score_7_up, 2girls, anthro fox and wolf hugging, seductive pose, bedroom, source_furry, rating_questionable"
+                                    * Realistic: "score_9, score_8_up, score_7_up, 1boy standing on a building, short black hair, long sleeves, source_cartoon, realistic, fantasy"
+Tips to Maximize: Keep prompts concise (under 75 tokens) for better adherence—long prompts can cause "schizo" results. Use parentheses for emphasis: "(gothic neon:1.2)". Experiment with tag order: Subject > Style > Details > Background.
+2. Advanced Prompting Techniques
+To push beyond basics and achieve mind-blowing results in 2025:
+                                    * Danbooru Tags for Precision: Pony excels with booru tags (from sites like Danbooru). Use 99% tags over natural language for consistency—e.g., "1girl, solo, long hair, brown hair, gloves, green eyes" instead of sentences. Resources like this Google Sheet list thousands of compatible tags.
+                                    * Multi-Subject Prompts: Use "BREAK" or parentheses for separation: "score_9, score_8_up, 1girl, (blue hair:1.1), BREAK, 1boy, (interaction: hugging)". For realism, try merges like Goddess of Realism.
+                                    * Embeddings and LoRAs: Enhance with Pony-specific add-ons (from CivitAI):
+                                    * Embeddings: For faces/hands (e.g., "pony-pdxl-negative-embeddings").
+                                    * LoRAs: Styles like "Sinfully Stylish" for lighting (weight 0.8). Syntax: "lora:style-lora:0.7". Limit to 3-5 LoRAs; train custom ones on 105+ images for characters.
+                                    * Negative Prompts (If Needed): Rarely required, but for artifacts: "score_3, score_2, score_1, blurry, deformed, 3d". Use embeddings like negativeXL_D.
+                                    * Consistency Tricks: For series (e.g., graphic novels), use detailed tags + inpainting/ADetailer for faces/hands. 3D posing software for backgrounds. Merges like AutismMix_Confetti reduce "style swings".
+                                    * Ethical/2025-Specific: Avoid biases; use rating tags responsibly. New tools like OneTrainer for LoRA training (presets in 2025 updates).
+3. Settings for Best Results
+                                    * Sampler/Steps: Euler a, 20-25 steps. CFG Scale: 5-7 (higher for adherence).
+                                    * Resolution: 1024x1024 base; use Hires. fix (upscaler: 4x-UltraSharp, denoise 0.3-0.5).
+                                    * Clip Skip: 2 (or -2 in some UIs) to avoid blobs.
+                                    * VAE: Baked-in, but try sdxl_vae.safetensors for vibrancy.
+                                    * UI Tips: In A1111, set Emphasis to "No Norm" for long prompts. Fooocus: Higher guidance (5+); styles for shortcuts (e.g., anime_safe). ComfyUI: Custom workflows for sources.
+                                    * Hardware: Runs on standard GPUs; use merges for efficiency.
+4. Common Pitfalls and 2025 Optimizations
+                                    * Lackluster Images: Add full score tags; use short, tag-heavy prompts. In 2025, Flux merges improve adherence but may censor—stick to Pony for uncensored.
+                                    * Artifacts (e.g., Signatures): Inpaint; future models (e.g., Astra) address this.
+                                    * Hands/Backgrounds: Pony is strong on hands/feet (1/9 mutation rate), but use ADetailer. Backgrounds need manual fixes.
+                                    * Updates in 2025: Community focuses on ethical AI (e.g., no underage filters built-in). New resources: Hugging Face/Github for optimized versions; CivitAI for 2025 LoRAs. Experiment with CLIP for clarity.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Example Prompts
+
+# Prompt 1: Sultry Cyberpunk Siren
+**Prompt**: 1girl, score_9, score_8_up, score_7_up, score_6_up, score_5_up, score_4_up, source_anime, rating_explicit, nude adult woman with long sleek navy-blue hair in a high ponytail, skinny athletic build (bust 32B, waist 24", hips 35"), caramel skin with a warm glow, angular face with bold brows, with smoldering stare, half-lidded eyes with intense focus, parted lips with a seductive curve, straddling an imaginary surface with arched back, low-angle view emphasizing exposed rear and grinding motion, in a modern loft bedroom with high ceilings, exposed beams, and large floor-to-ceiling windows with a neon city glow, Cyberpunk Anime, neon-lit aesthetic, glowing cyan and magenta accents, thin line art, reflective surfaces, <lora:s1-dramatic:0.8>, <lora:neon-city:1.0>, <lora:expressiveh:0.8>, <lora:popartanimestyle:0.6>, expressiveh, e-girl aesthetic
+
+
+**Negative Prompt**: <TI:FFSD51AB6>, <TI:5D619863AC>, <TI:5FDAD45040BA>, <TI:8A94867251>, low-res, bad anatomy, bad hands, text, error, missing fingers, extra digit, fewer digits, cropped, worst quality, low quality, normal quality, jpeg artifacts, signature, watermark, username, blurry, artist name, (deformed, distorted, disfigured:1.3), poorly drawn, bad anatomy, wrong anatomy, extra limb, missing limb, floating limbs, (mutated hands and fingers:1.4), disconnected limbs, mutation, mutated, ugly, disgusting, blurry, amputation, source_pony, source_furry, source_cartoon, sketch, painting, monochrome, rating_safe, rating_questionable, two people, multiple characters, couple, male, no distorted face, no blurry eyes
+
+
+**Settings**:
+- Model: Perfect Pony XL V6
+- Sampler: Euler a
+- Steps: 25
+- Guidance Scale: 7
+- Prompt Enhance: On
+- Prompt Behavior: V2 Unlimited
+- Hires: On (Strength 0.4)
+- Upscaler: REAL-ESRGAN-X4-ANIME-CFORMER
+- Aspect Ratio: Portrait (512x768)
+- CLIP Skip: -2
+- **LoRAs and Weights**:
+  - S1 Dramatic Lighting: 0.8
+  - Neon City Pony XL: 1.0
+  - ExpressiveH Hentai LoRA Style: 0.8
+  - Pop Art Anime Style: 0.6
+
+
+---
+
+
+
+
+# Prompt 2: Innocent Retro Schoolgirl
+**Prompt**: 1girl, score_9, score_8_up, score_7_up, score_6_up, score_5_up, score_4_up, source_anime, rating_explicit, nude adult woman with short wavy platinum blonde hair, skinny petite build (bust 32A, waist 24", hips 34"), pale skin with faint freckles, round innocent eyes, with shy blush, half-lidded eyes looking downward, pursed lips with a timid smile, deep rosy blush across cheeks and nose, seated hugging knees to chest, frontal view showcasing compact form and gentle vulnerability, in a minimalist guest room with simple bed, gray linens, and soft overhead lighting, Retro 90s Cel Animation, clean thick black outlines, flat vibrant color fills, soft cel-shading, <lora:pony-anime-90s:0.7>, <lora:expressiveh:0.7>, <lora:vintage-90s:0.6>, expressiveh
+
+
+**Negative Prompt**: <TI:FFSD51AB6>, <TI:5D619863AC>, <TI:5FDAD45040BA>, <TI:8A94867251>, low-res, bad anatomy, bad hands, text, error, missing fingers, extra digit, fewer digits, cropped, worst quality, low quality, normal quality, jpeg artifacts, signature, watermark, username, blurry, artist name, (deformed, distorted, disfigured:1.3), poorly drawn, bad anatomy, wrong anatomy, extra limb, missing limb, floating limbs, (mutated hands and fingers:1.4), disconnected limbs, mutation, mutated, ugly, disgusting, blurry, amputation, source_pony, source_furry, source_cartoon, sketch, painting, monochrome, rating_safe, rating_questionable, two people, multiple characters, couple, male, no distorted face, no blurry eyes
+
+
+**Settings**:
+- Model: Perfect Pony XL V6
+- Sampler: Euler a
+- Steps: 25
+- Guidance Scale: 7
+- Prompt Enhance: On
+- Prompt Behavior: V2 Unlimited
+- Hires: On (Strength 0.4)
+- Upscaler: REAL-ESRGAN-X4-ANIME-CFORMER
+- Aspect Ratio: Portrait (512x768)
+- CLIP Skip: -2
+- **LoRAs and Weights**:
+  - Vixon's Anime/Manga Styles - 90's Anime: 0.7
+  - ExpressiveH Hentai LoRA Style: 0.7
+  - Vintage 1990s Anime SDXL LoRA: 0.6
+
+
+---
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# Prompt 3: Gothic Warrior Goddess
+**Prompt**: 1girl, score_9, score_8_up, score_7_up, score_6_up, score_5_up, score_4_up, source_anime, rating_explicit, nude adult woman with braided white-blonde hair in a crown, tall athletic build (bust 36B, waist 27", hips 38"), bronze skin, chiseled features, with defiant glare, narrowed eyes with a fierce stare, clenched jaw, furrowed brows, standing with arms clasped behind back, rear three-quarter angle showcasing posture and flowing hair, in a rustic cabin bedroom with wooden walls, quilted bedspread, and gentle ember glow from a stone fireplace, Gothic Anime Elegance, dark moody palettes, intricate line work, crimson and violet accents, <lora:s1-dramatic:0.8>, <lora:gothic-neon:0.8>, <lora:expressiveh:0.7>, <lora:goth-details:0.8>, expressiveh
+
+
+**Negative Prompt**: <TI:FFSD51AB6>, <TI:5D619863AC>, <TI:5FDAD45040BA>, <TI:8A94867251>, low-res, bad anatomy, bad hands, text, error, missing fingers, extra digit, fewer digits, cropped, worst quality, low quality, normal quality, jpeg artifacts, signature, watermark, username, blurry, artist name, (deformed, distorted, disfigured:1.3), poorly drawn, bad anatomy, wrong anatomy, extra limb, missing limb, floating limbs, (mutated hands and fingers:1.4), disconnected limbs, mutation, mutated, ugly, disgusting, blurry, amputation, source_pony, source_furry, source_cartoon, sketch, painting, monochrome, rating_safe, rating_questionable, two people, multiple characters, couple, male, no distorted face, no blurry eyes
+
+
+**Settings**:
+- Model: Perfect Pony XL V6
+- Sampler: Euler a
+- Steps: 30
+- Guidance Scale: 8
+- Prompt Enhance: On
+- Prompt Behavior: V2 Unlimited
+- Hires: On (Strength 0.5)
+- Upscaler: REAL-ESRGAN-X4-ANIME-CFORMER
+- Aspect Ratio: Portrait (1024x1536)
+- CLIP Skip: -2
+- **LoRAs and Weights**:
+  - S1 Dramatic Lighting: 0.8
+  - Vixon's Pony Styles - Gothic Neon: 0.8
+  - ExpressiveH Hentai LoRA Style: 0.7
+  - Vixon's Pony Styles - Gothic Details: 0.8
+
+
+---
+
+
+
+
+
+
+
+
+# Prompt 4: Playful Pop Idol
+**Prompt**: 1girl, score_9, score_8_up, score_7_up, score_6_up, score_5_up, score_4_up, source_anime, rating_explicit, nude adult woman with frizzy magenta hair in twin tails, extreme hourglass build (bust 36C, waist 24", hips 40"), ivory skin with rosy flushes, cute button nose, with teasing tongue, tongue sticking out playfully, squinted eyes, raised brows, rosy cheeks, seated with one leg extended, arms supporting, low angle emphasizing leg length and balanced composition, in a conservatory extension with glass roof, indoor plants, and natural light filtering through, Magical Girl Sparkle, glittery highlights, pastel gradients, soft outlines, <lora:expressiveh:0.8>, <lora:blowing-kisses:0.6>, <lora:popartanimestyle:0.8>, expressiveh, e-girl aesthetic
+
+
+**Negative Prompt**: <TI:FFSD51AB6>, <TI:5D619863AC>, <TI:5FDAD45040BA>, <TI:8A94867251>, low-res, bad anatomy, bad hands, text, error, missing fingers, extra digit, fewer digits, cropped, worst quality, low quality, normal quality, jpeg artifacts, signature, watermark, username, blurry, artist name, (deformed, distorted, disfigured:1.3), poorly drawn, bad anatomy, wrong anatomy, extra limb, missing limb, floating limbs, (mutated hands and fingers:1.4), disconnected limbs, mutation, mutated, ugly, disgusting, blurry, amputation, source_pony, source_furry, source_cartoon, sketch, painting, monochrome, rating_safe, rating_questionable, two people, multiple characters, couple, male, no distorted face, no blurry eyes
+
+
+**Settings**:
+- Model: Perfect Pony XL V6
+- Sampler: Euler a
+- Steps: 25
+- Guidance Scale: 7
+- Prompt Enhance: On
+- Prompt Behavior: V2 Unlimited
+- Hires: On (Strength 0.4)
+- Upscaler: REAL-ESRGAN-X4-ANIME-CFORMER
+- Aspect Ratio: Portrait (512x768)
+- CLIP Skip: -2
+- **LoRAs and Weights**:
+  - ExpressiveH Hentai LoRA Style: 0.8
+  - Blowing Kisses: 0.6
+  - Pop Art Anime Style: 0.8
+
+
+---
+
+
+
+
+
+
+
+
+
+
+
+
+# Prompt 5: Melancholic Watercolor Dreamer
+**Prompt**: 1girl, score_9, score_8_up, score_7_up, score_6_up, score_5_up, score_4_up, source_anime, rating_explicit, nude adult woman with straight onyx hair to ankles, skinny willowy build (bust 32A, waist 23", hips 33"), ghostly pale skin, delicate features, with dreamy gaze, soft unfocused eyes staring into the distance, relaxed mouth with a subtle smile, smooth brows, faint flush, reclining with one hand under head, legs extended, side angle capturing relaxed elegance and subtle contours, in an attic hideaway with slanted wooden ceiling, small skylight window, and string lights, Watercolor Anime, soft translucent color washes, delicate lines, <lora:expressiveh:0.7>, <lora:ghibli:0.8>, <lora:s1-dramatic:0.2>, expressiveh
+
+
+**Negative Prompt**: <TI:FFSD51AB6>, <TI:5D619863AC>, <TI:5FDAD45040BA>, <TI:8A94867251>, low-res, bad anatomy, bad hands, text, error, missing fingers, extra digit, fewer digits, cropped, worst quality, low quality, normal quality, jpeg artifacts, signature, watermark, username, blurry, artist name, (deformed, distorted, disfigured:1.3), poorly drawn, bad anatomy, wrong anatomy, extra limb, missing limb, floating limbs, (mutated hands and fingers:1.4), disconnected limbs, mutation, mutated, ugly, disgusting, blurry, amputation, source_pony, source_furry, source_cartoon, sketch, painting, monochrome, rating_safe, rating_questionable, two people, multiple characters, couple, male, no distorted face, no blurry eyes
+
+
+**Settings**:
+- Model: Perfect Pony XL V6
+- Sampler: Euler a
+- Steps: 30
+- Guidance Scale: 8
+- Prompt Enhance: On
+- Prompt Behavior: V2 Unlimited
+- Hires: On (Strength 0.5)
+- Upscaler: REAL-ESRGAN-X4-ANIME-CFORMER
+- Aspect Ratio: Portrait (1024x1536)
+- CLIP Skip: -2
+- **LoRAs and Weights**:
+  - ExpressiveH Hentai LoRA Style: 0.7
+  - Vixon's Anime/Manga Styles - Ghibli v2: 0.8
+  - S1 Dramatic Lighting: 0.2
